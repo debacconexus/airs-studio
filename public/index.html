@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIRS Studio — Build Your Nexus</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,#0a1f3a 0%,#07192f 60%,#050e1a 100%);color:#edf6ff;min-height:100vh}
+
+/* HEADER */
+.header{background:rgba(7,25,47,.97);border-bottom:1px solid rgba(98,200,255,.15);padding:0 32px;height:60px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-star{font-size:22px;color:#ffca58}
+.brand-name{font-size:18px;font-weight:800;color:#fff;letter-spacing:-.02em}
+.brand-name span{color:#ffca58}
+.brand-sub{font-size:11px;color:#7ea4cd;font-family:'IBM Plex Mono',monospace}
+.header-right{display:flex;align-items:center;gap:12px}
+.igm-bar{font-size:11px;color:#9db8d7;font-family:'IBM Plex Mono',monospace;display:flex;align-items:center;gap:8px}
+.igm-ok{color:#33e0c4;font-weight:700}
+.igm-val{color:#ffca58;font-weight:700}
+
+/* HERO */
+.hero{text-align:center;padding:64px 24px 48px;max-width:900px;margin:0 auto}
+.hero-eyebrow{font-size:11px;font-weight:700;color:#62c8ff;text-transform:uppercase;letter-spacing:.16em;margin-bottom:14px}
+.hero h1{font-size:42px;font-weight:800;color:#fff;margin-bottom:16px;letter-spacing:-.03em;line-height:1.1}
+.hero h1 span{color:#ffca58}
+.hero p{font-size:15px;color:#9db8d7;line-height:1.7;max-width:660px;margin:0 auto 32px}
+.hero-badges{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:48px}
+.hero-badge{font-size:11px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid rgba(150,205,255,.2);color:#9db8d7}
+
+/* ARCHITECTURE STRIP */
+.arch-strip{display:grid;grid-template-columns:1fr 40px 1fr 40px 1fr;gap:0;max-width:900px;margin:0 auto 48px;align-items:center}
+.arch-node{background:rgba(10,31,58,.8);border:1px solid rgba(150,205,255,.15);border-radius:12px;padding:20px;text-align:center}
+.arch-node.nexus{border-color:rgba(255,202,88,.3)}
+.arch-node.node{border-color:rgba(138,141,255,.3)}
+.arch-node.pod{border-color:rgba(51,224,196,.3)}
+.arch-icon{font-size:28px;margin-bottom:8px}
+.arch-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.arch-node.nexus .arch-title{color:#ffca58}
+.arch-node.node .arch-title{color:#8a8dff}
+.arch-node.pod .arch-title{color:#33e0c4}
+.arch-desc{font-size:11px;color:#9db8d7;line-height:1.5}
+.arch-arrow{text-align:center;font-size:20px;color:#2d5080}
+
+/* GENERATOR */
+.generator{max-width:900px;margin:0 auto;padding:0 24px 64px}
+.gen-card{background:rgba(10,31,58,.8);border:1px solid rgba(138,141,255,.3);border-radius:16px;padding:32px;margin-bottom:24px}
+.gen-label{font-size:12px;font-weight:700;color:#8a8dff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.gen-label::before{content:'⬡';font-size:14px}
+.domain-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px}
+.chip{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(150,205,255,.2);background:rgba(10,31,58,.8);color:#9db8d7;transition:all .2s}
+.chip:hover{border-color:#8a8dff;color:#8a8dff;background:rgba(138,141,255,.08)}
+.chip.selected{border-color:#8a8dff;color:#8a8dff;background:rgba(138,141,255,.15)}
+.gen-input{width:100%;background:rgba(7,25,47,.9);border:1px solid rgba(150,205,255,.2);border-radius:10px;padding:16px;font-size:14px;color:#edf6ff;font-family:'Inter',sans-serif;resize:vertical;min-height:100px;margin-bottom:16px;transition:border-color .2s}
+.gen-input:focus{outline:none;border-color:#8a8dff}
+.gen-input::placeholder{color:#3a5a7a}
+.gen-btn{width:100%;padding:16px;border-radius:10px;background:linear-gradient(135deg,#534AB7,#8a8dff);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.04em;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
+.gen-btn:hover{opacity:.9;transform:translateY(-1px)}
+.gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* PROGRESS */
+.progress-card{background:rgba(10,31,58,.8);border:1px solid rgba(138,141,255,.3);border-radius:16px;padding:28px;margin-bottom:24px;display:none}
+.progress-card.visible{display:block}
+.progress-title{font-size:14px;font-weight:700;color:#8a8dff;margin-bottom:20px;display:flex;align-items:center;gap:8px}
+.progress-steps{display:flex;flex-direction:column;gap:12px}
+.progress-step{display:flex;align-items:center;gap:12px;font-size:13px}
+.step-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.step-icon.pending{background:rgba(150,205,255,.1);color:#5a7a9a;border:1px solid rgba(150,205,255,.15)}
+.step-icon.active{background:rgba(138,141,255,.15);color:#8a8dff;border:1px solid rgba(138,141,255,.4)}
+.step-icon.done{background:rgba(51,224,196,.15);color:#33e0c4;border:1px solid rgba(51,224,196,.4)}
+.step-icon.error{background:rgba(255,133,119,.15);color:#ff8577;border:1px solid rgba(255,133,119,.4)}
+.step-text{color:#c8dff0}
+.step-text.pending{color:#5a7a9a}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(138,141,255,.3);border-top-color:#8a8dff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* NEXUS RESULT */
+.nexus-result{background:rgba(10,31,58,.8);border:2px solid rgba(51,224,196,.3);border-radius:16px;padding:28px;margin-bottom:24px;display:none}
+.nexus-result.visible{display:block}
+.nexus-result-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px}
+.nexus-name{font-size:20px;font-weight:700;color:#33e0c4;margin-bottom:4px}
+.nexus-desc{font-size:13px;color:#9db8d7}
+.nexus-url{font-size:13px;font-family:'IBM Plex Mono',monospace;color:#ffca58;background:rgba(255,202,88,.08);border:1px solid rgba(255,202,88,.2);padding:8px 14px;border-radius:6px;margin-top:8px;display:inline-block}
+.nexus-url a{color:#ffca58;text-decoration:none}
+.nexus-url a:hover{text-decoration:underline}
+.open-btn{padding:10px 20px;border-radius:8px;background:linear-gradient(135deg,#0F6E56,#33e0c4);border:none;color:#07192f;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;display:inline-block}
+
+.nexus-meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px}
+.meta-card{background:rgba(7,25,47,.8);border:1px solid rgba(150,205,255,.12);border-radius:8px;padding:12px}
+.meta-label{font-size:10px;font-weight:700;color:#7ea4cd;text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px}
+.meta-value{font-size:12px;color:#edf6ff;line-height:1.5}
+
+/* POD BUILDER */
+.pod-builder{background:rgba(10,31,58,.8);border:1px solid rgba(255,202,88,.2);border-radius:16px;padding:28px;margin-bottom:24px;display:none}
+.pod-builder.visible{display:block}
+.pod-builder-title{font-size:14px;font-weight:700;color:#ffca58;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.pod-suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.pod-chip{padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid rgba(255,202,88,.2);background:rgba(255,202,88,.05);color:#ffca58;transition:all .2s}
+.pod-chip:hover{background:rgba(255,202,88,.12);border-color:rgba(255,202,88,.4)}
+.pod-input{width:100%;background:rgba(7,25,47,.9);border:1px solid rgba(255,202,88,.2);border-radius:8px;padding:12px;font-size:13px;color:#edf6ff;font-family:'Inter',sans-serif;margin-bottom:12px}
+.pod-input:focus{outline:none;border-color:#ffca58}
+.pod-btn{padding:12px 24px;border-radius:8px;background:linear-gradient(135deg,#7a5500,#ffca58);border:none;color:#07192f;font-size:13px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif}
+
+.pods-built{margin-top:16px}
+.pod-item{background:rgba(255,202,88,.06);border:1px solid rgba(255,202,88,.15);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:10px}
+.pod-item-icon{font-size:18px}
+.pod-item-name{font-size:13px;font-weight:600;color:#ffca58}
+.pod-item-type{font-size:11px;color:#9db8d7}
+
+/* NEXUS LIST */
+.nexus-list{max-width:900px;margin:0 auto;padding:0 24px 64px}
+.nexus-list-title{font-size:16px;font-weight:700;color:#62c8ff;margin-bottom:16px;text-transform:uppercase;letter-spacing:.08em}
+.nexus-list-item{background:rgba(10,31,58,.7);border:1px solid rgba(150,205,255,.12);border-radius:10px;padding:16px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;transition:border-color .2s}
+.nexus-list-item:hover{border-color:rgba(51,224,196,.3)}
+.nexus-list-name{font-size:14px;font-weight:700;color:#edf6ff;margin-bottom:2px}
+.nexus-list-meta{font-size:11px;color:#7ea4cd}
+.nexus-status{font-size:10px;font-weight:700;padding:3px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.08em}
+.status-deployed{background:rgba(51,224,196,.12);color:#33e0c4;border:1px solid rgba(51,224,196,.3)}
+.status-building{background:rgba(138,141,255,.12);color:#8a8dff;border:1px solid rgba(138,141,255,.3)}
+.status-error{background:rgba(255,133,119,.12);color:#ff8577;border:1px solid rgba(255,133,119,.3)}
+
+.footer{text-align:center;padding:24px;border-top:1px solid rgba(150,205,255,.08);font-size:11px;color:#5a7a9a}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="brand">
+    <div class="brand-star">★</div>
+    <div>
+      <div class="brand-name">AIRS <span>Studio</span></div>
+      <div class="brand-sub">Governed AI Nexus Generator</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="igm-bar">
+      IGM: <span class="igm-ok">GOVERNED ✓</span>
+      &nbsp;|&nbsp; BUDGET: <span class="igm-val">150</span>
+      &nbsp;|&nbsp; TOKENS IN: <span class="igm-val" id="hdr-in">0</span>
+      &nbsp;|&nbsp; TOKENS OUT: <span class="igm-val" id="hdr-out">0</span>
+    </div>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-eyebrow">DeBacco Nexus LLC · USPTO Patent Pending 19/571,156</div>
+  <h1>Build Your <span>Nexus.</span><br>Design Your Pods.</h1>
+  <p>Describe your domain problem. AIRS Studio generates your complete governed data infrastructure — a live, deployed Nexus powered by the IGM. Then the Node builds custom Pods to personalize it.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">⬡ IGM Pre-inference Governance</span>
+    <span class="hero-badge">◈ Node-powered Pod Builder</span>
+    <span class="hero-badge">★ Institutional Ownership</span>
+    <span class="hero-badge">🔒 AES-256 PII Protection</span>
+    <span class="hero-badge">📋 Mandatory Audit Trail</span>
+  </div>
+</div>
+
+<div style="max-width:900px;margin:0 auto;padding:0 24px;margin-bottom:48px">
+  <div class="arch-strip">
+    <div class="arch-node nexus">
+      <div class="arch-icon">⬡</div>
+      <div class="arch-title">The Nexus</div>
+      <div class="arch-desc">Your governed data core — generated from your domain problem. IGM at the center. Collection, logging, reporting, audit envelope.</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node node">
+      <div class="arch-icon">◈</div>
+      <div class="arch-title">The Node</div>
+      <div class="arch-desc">The AI builder engine. Reads your Nexus and generates custom attachments on demand. Governed by the same IGM.</div>
+    </div>
+    <div class="arch-arrow">→</div>
+    <div class="arch-node pod">
+      <div class="arch-icon">⬟</div>
+      <div class="arch-title">Your Pods</div>
+      <div class="arch-desc">Windows. Rooms. Doorways. Dropdowns. Infographics. Self-designed attachments purpose-built for your Nexus.</div>
+    </div>
+  </div>
+</div>
+
+<div class="generator">
+
+  <div class="gen-card">
+    <div class="gen-label">Describe your domain problem — AIRS Studio generates your Nexus</div>
+    <div class="domain-chips">
+      <div class="chip" onclick="selectDomain(this,'Build a tracking system for fatal child abuse prevention — case worker documentation, cross-agency sharing, fatality review board reporting with full chain of custody')">👶 Child welfare</div>
+      <div class="chip" onclick="selectDomain(this,'Build a maternal mortality surveillance system — field workers document maternal deaths across districts for cross-border UN reporting and preventable death analysis')">🏥 Maternal mortality</div>
+      <div class="chip" onclick="selectDomain(this,'Build a university History department education culture tracking system — student engagement, faculty research, curriculum documentation, outcome reporting')">🎓 University education</div>
+      <div class="chip" onclick="selectDomain(this,'Build a refugee intake and services tracking system — arrival documentation, needs assessment, service referrals, durable solution tracking across UN agencies')">🌍 Refugee services</div>
+      <div class="chip" onclick="selectDomain(this,'Build a community mental health case management system — clinician documentation, treatment plans, crisis tracking, insurance audit trail, outcome reporting')">🧠 Mental health</div>
+      <div class="chip" onclick="selectDomain(this,'Build a disaster response coordination system — multi-agency incident logging, resource deployment, cross-border sharing with full chain of custody')">🚨 Disaster response</div>
+    </div>
+    <textarea class="gen-input" id="nexus-prompt" placeholder="Or describe your own domain problem... e.g. 'Build a tracking system that manages a university program's History department education culture'"></textarea>
+    <button class="gen-btn" onclick="generateNexus()" id="gen-btn">
+      <span>⬡</span>
+      <span id="gen-btn-text">Generate My Nexus with AIRS Studio</span>
+    </button>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-card" id="progress-card">
+    <div class="progress-title"><span class="spinner"></span> AIRS Studio is building your Nexus...</div>
+    <div class="progress-steps" id="progress-steps">
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-1-icon">1</div>
+        <div class="step-text pending" id="step-1-text">IGM classifying domain and governance tier...</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-2-icon">2</div>
+        <div class="step-text pending" id="step-2-text">Claude generating governed Nexus codebase...</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-3-icon">3</div>
+        <div class="step-text pending" id="step-3-text">Writing server, frontend, and database schema...</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-4-icon">4</div>
+        <div class="step-text pending" id="step-4-text">Provisioning Railway project and PostgreSQL database...</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-5-icon">5</div>
+        <div class="step-text pending" id="step-5-text">Deploying to Railway and activating IGM governance...</div>
+      </div>
+      <div class="progress-step">
+        <div class="step-icon pending" id="step-6-icon">★</div>
+        <div class="step-text pending" id="step-6-text">Your Nexus is live — ready for Pod customization</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEXUS RESULT -->
+  <div class="nexus-result" id="nexus-result">
+    <div class="nexus-result-header">
+      <div>
+        <div class="nexus-name" id="result-name">Your Nexus</div>
+        <div class="nexus-desc" id="result-desc"></div>
+        <div class="nexus-url" id="result-url"></div>
+      </div>
+      <a id="result-open-btn" href="#" target="_blank" class="open-btn">Open Nexus →</a>
+    </div>
+    <div class="nexus-meta">
+      <div class="meta-card">
+        <div class="meta-label">Primary entity</div>
+        <div class="meta-value" id="result-entity">—</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Governance tier</div>
+        <div class="meta-value" id="result-tier">IGM · Standard</div>
+      </div>
+      <div class="meta-card">
+        <div class="meta-label">Schema</div>
+        <div class="meta-value" id="result-schema">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POD BUILDER -->
+  <div class="pod-builder" id="pod-builder">
+    <div class="pod-builder-title">◈ Your Nexus is live. Now design your Pods with the Node.</div>
+    <div class="pod-suggestions" id="pod-suggestions"></div>
+    <input class="pod-input" id="pod-input" type="text" placeholder="Describe a Pod to build... e.g. 'A dashboard window showing enrollment by department'">
+    <button class="pod-btn" onclick="buildPod()">◈ Build Pod with Node</button>
+    <div class="pods-built" id="pods-built"></div>
+  </div>
+
+</div>
+
+<!-- NEXUS LIST -->
+<div class="nexus-list" id="nexus-list-section" style="display:none">
+  <div class="nexus-list-title">Your Nexus deployments</div>
+  <div id="nexus-list-items"></div>
+</div>
+
+<div class="footer">
+  AIRS Studio · Nexus · Node · Pod · DeBacco Nexus LLC · info@debacconexus.com · USPTO Patent Pending 19/571,156
+</div>
+
+<script>
+let currentNexusId = null;
+let pollInterval = null;
+let totalTokensIn = 0, totalTokensOut = 0;
+
+function selectDomain(el, text) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('nexus-prompt').value = text;
+}
+
+function setStep(num, state, text) {
+  const icon = document.getElementById(`step-${num}-icon`);
+  const txt = document.getElementById(`step-${num}-text`);
+  if (!icon) return;
+  icon.className = `step-icon ${state}`;
+  if (state === 'active') icon.innerHTML = '<span class="spinner"></span>';
+  else if (state === 'done') icon.textContent = '✓';
+  else if (state === 'error') icon.textContent = '✕';
+  else icon.textContent = num === 6 ? '★' : num;
+  if (txt) { txt.className = `step-text ${state === 'pending' ? 'pending' : ''}`; txt.textContent = text || txt.textContent; }
+}
+
+async function generateNexus() {
+  const prompt = document.getElementById('nexus-prompt').value.trim();
+  if (!prompt || prompt.length < 10) { alert('Please describe your domain problem in more detail.'); return; }
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  document.getElementById('gen-btn-text').textContent = 'Generating your Nexus...';
+
+  // Show progress
+  document.getElementById('progress-card').classList.add('visible');
+  document.getElementById('nexus-result').classList.remove('visible');
+  document.getElementById('pod-builder').classList.remove('visible');
+
+  // Animate step 1
+  setStep(1, 'active');
+
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      setStep(1, 'error', data.error);
+      btn.disabled = false;
+      document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+      return;
+    }
+
+    currentNexusId = data.nexus_id;
+    setStep(1, 'done');
+
+    // Poll for status
+    let stepShown = 1;
+    pollInterval = setInterval(async () => {
+      const statusRes = await fetch(`/api/status/${currentNexusId}`);
+      const statusData = await statusRes.json();
+      if (!statusData.success) return;
+
+      const nexus = statusData.nexus;
+
+      if (nexus.status === 'generating' && stepShown < 2) {
+        setStep(2, 'active');
+        stepShown = 2;
+      } else if (nexus.status === 'generated' && stepShown < 3) {
+        setStep(2, 'done');
+        setStep(3, 'active');
+        stepShown = 3;
+      } else if (nexus.status === 'built' && stepShown < 4) {
+        setStep(3, 'done');
+        setStep(4, 'active');
+        stepShown = 4;
+      } else if (nexus.status === 'deployed' && stepShown < 5) {
+        setStep(4, 'done');
+        setStep(5, 'active');
+        stepShown = 5;
+        setTimeout(() => {
+          setStep(5, 'done');
+          setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
+          clearInterval(pollInterval);
+          showNexusResult(nexus);
+          btn.disabled = false;
+          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+        }, 2000);
+      } else if (nexus.status === 'error') {
+        setStep(stepShown, 'error', nexus.error || 'Generation error');
+        clearInterval(pollInterval);
+        btn.disabled = false;
+        document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+      }
+    }, 2000);
+
+  } catch (err) {
+    console.error(err);
+    setStep(1, 'error', 'Connection error — is AIRS Studio server running?');
+    btn.disabled = false;
+    document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+  }
+}
+
+function showNexusResult(nexus) {
+  document.getElementById('nexus-result').classList.add('visible');
+  document.getElementById('result-name').textContent = '★ ' + (nexus.nexus_name || 'Your Nexus');
+  document.getElementById('result-desc').textContent = nexus.nexus_description || '';
+  document.getElementById('result-entity').textContent = nexus.primary_entity || '—';
+  document.getElementById('result-tier').textContent = `IGM · ${nexus.classification?.governance_tier === 'enhanced' ? 'Enhanced' : 'Standard'} governance`;
+  document.getElementById('result-schema').textContent = nexus.schema_description || '—';
+  
+  if (nexus.url) {
+    document.getElementById('result-url').innerHTML = `<a href="${nexus.url}" target="_blank">${nexus.url}</a>`;
+    document.getElementById('result-open-btn').href = nexus.url;
+  }
+
+  // Show pod builder
+  const podBuilder = document.getElementById('pod-builder');
+  podBuilder.classList.add('visible');
+
+  // Populate pod suggestions
+  const suggestions = nexus.pods_suggested || ['Dashboard window', 'Reporting room', 'Alert doorway', 'Custom infographic', 'Cross-agency doorway'];
+  const podChips = document.getElementById('pod-suggestions');
+  podChips.innerHTML = suggestions.map(s => {
+    const label = typeof s === 'object' ? (s.name || s.title || JSON.stringify(s)) : s;
+    return `<div class="pod-chip" onclick="document.getElementById('pod-input').value='${label}'">${label}</div>`;
+  }).join('');
+}
+
+async function buildPod() {
+  if (!currentNexusId) { alert('Please generate a Nexus first.'); return; }
+  const podDesc = document.getElementById('pod-input').value.trim();
+  if (!podDesc) { alert('Please describe your Pod.'); return; }
+
+  const btn = document.querySelector('.pod-btn');
+  btn.disabled = true;
+  btn.textContent = 'Node is building your Pod...';
+
+  try {
+    const res = await fetch('/api/pod/build', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nexus_id: currentNexusId, pod_description: podDesc })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      const pod = data.pod;
+      const podsDiv = document.getElementById('pods-built');
+      const icons = { window: '🪟', room: '🚪', doorway: '🚪', infographic: '📊', form: '📝' };
+      podsDiv.innerHTML += `
+        <div class="pod-item">
+          <div class="pod-item-icon">${icons[pod.pod_type] || '⬟'}</div>
+          <div>
+            <div class="pod-item-name">${pod.pod_name}</div>
+            <div class="pod-item-type">${pod.pod_type} · ${pod.description}</div>
+          </div>
+        </div>`;
+      document.getElementById('pod-input').value = '';
+    } else {
+      alert('Pod build error: ' + data.error);
+    }
+  } catch (err) {
+    alert('Connection error');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '◈ Build Pod with Node';
+}
+
+// Load existing Nexus deployments on page load
+window.addEventListener('load', async () => {
+  try {
+    const res = await fetch('/api/nexus');
+    const data = await res.json();
+    if (data.success && data.nexus_list.length > 0) {
+      document.getElementById('nexus-list-section').style.display = 'block';
+      const listDiv = document.getElementById('nexus-list-items');
+      listDiv.innerHTML = data.nexus_list.map(n => `
+        <div class="nexus-list-item">
+          <div>
+            <div class="nexus-list-name">${n.name || 'Unnamed Nexus'}</div>
+            <div class="nexus-list-meta">${n.description || ''} · ${n.domain || ''} · ${new Date(n.created_at).toLocaleDateString()}</div>
+          </div>
+          <span class="nexus-status status-${n.status === 'deployed' ? 'deployed' : n.status === 'error' ? 'error' : 'building'}">${n.status}</span>
+        </div>
+      `).join('');
+    }
+  } catch (e) {}
+});
+</script>
+</body>
+</html>
