@@ -372,44 +372,54 @@ app.post('/api/generate', async (req, res) => {
       console.log('[AIRS Studio] Pushed:', file.path);
     }
 
-    // Create Railway project
-    const projectData = await railwayQuery(
-      'mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }',
-      { input: { name: repoName, description: 'AIRS Nexus: ' + nexusData.nexus_name } }
-    );
-    const projectId = projectData.projectCreate.id;
-
-    // Get existing production environment (Railway auto-creates one on project creation)
-    const envData = await railwayQuery(
-      'query GetEnvironments($projectId: String!) { environments(projectId: $projectId) { edges { node { id name } } } }',
-      { projectId }
-    );
-    const environmentId = envData.environments.edges[0].node.id;
-
-    // Create service connected to GitHub repo
-    const serviceData = await railwayQuery(
-      'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
-      { input: { name: 'app', projectId, source: { repo: repoFullName } } }
-    );
-    const serviceId = serviceData.serviceCreate.id;
-
-    // Add PostgreSQL
-    await railwayQuery(
-      'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
-      { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
-    );
-
-    const liveUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
-
+    // Return success immediately after GitHub push — Railway provisions in background
+    const liveUrl = 'https://' + repoName + '-production.up.railway.app';
     nexusRegistry.set(nexusId, {
       ...nexusRegistry.get(nexusId),
       status: 'deployed',
-      railway: { projectId, environmentId, serviceId },
       github: repoFullName,
       url: liveUrl
     });
+    console.log('[AIRS Studio] Nexus ' + nexusId + ' code pushed, provisioning Railway in background...');
 
-    console.log('[AIRS Studio] Nexus ' + nexusId + ' deployed successfully:', liveUrl);
+    // Async Railway provisioning — does not block response
+    (async () => {
+      try {
+        const projectData = await railwayQuery(
+          'mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }',
+          { input: { name: repoName, description: 'AIRS Nexus: ' + nexusData.nexus_name } }
+        );
+        const projectId = projectData.projectCreate.id;
+
+        const envData = await railwayQuery(
+          'query GetEnvironments($projectId: String!) { environments(projectId: $projectId) { edges { node { id name } } } }',
+          { projectId }
+        );
+        const environmentId = envData.environments.edges[0].node.id;
+
+        const serviceData = await railwayQuery(
+          'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
+          { input: { name: 'app', projectId, source: { repo: repoFullName } } }
+        );
+        const serviceId = serviceData.serviceCreate.id;
+
+        await railwayQuery(
+          'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
+          { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
+        );
+
+        const finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
+        nexusRegistry.set(nexusId, {
+          ...nexusRegistry.get(nexusId),
+          status: 'deployed',
+          railway: { projectId, environmentId, serviceId },
+          url: finalUrl
+        });
+        console.log('[AIRS Studio] Nexus ' + nexusId + ' Railway provisioned:', finalUrl);
+      } catch (err) {
+        console.error('[AIRS Studio] Background Railway provisioning error:', err.message);
+      }
+    })();
 
   } catch (err) {
     const errDetail = err.response ? JSON.stringify(err.response.data) : err.message;
