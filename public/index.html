@@ -445,9 +445,14 @@ async function generateNexus() {
 
 function showNexusResult(nexus) {
   document.getElementById('nexus-result').classList.add('visible');
-  document.getElementById('result-name').textContent = '★ ' + (nexus.nexus_name || 'Your Nexus');
+  // Pull from live panel if nexus object missing name
+  const liveName = document.getElementById('live-nexus_name')?.textContent;
+  const liveEntity = document.getElementById('live-primary_entity')?.textContent;
+  const displayName = nexus.nexus_name || (liveName !== '—' ? liveName : null) || 'Your Nexus';
+  const displayEntity = nexus.primary_entity || (liveEntity !== '—' ? liveEntity : null) || '—';
+  document.getElementById('result-name').textContent = '★ ' + displayName;
   document.getElementById('result-desc').textContent = nexus.nexus_description || '';
-  document.getElementById('result-entity').textContent = nexus.primary_entity || '—';
+  document.getElementById('result-entity').textContent = displayEntity;
   document.getElementById('result-tier').textContent = `IGM · ${nexus.classification?.governance_tier === 'enhanced' ? 'Enhanced' : 'Standard'} governance`;
   document.getElementById('result-schema').textContent = nexus.schema_description || '—';
   
