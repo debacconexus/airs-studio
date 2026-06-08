@@ -525,23 +525,9 @@ app.post('/api/pod/build', async (req, res) => {
       'https://api.anthropic.com/v1/messages',
       {
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 4000,
-        system: `You are the AIRS Node — the Pod builder engine for AIRS Studio.
-You generate custom attachments (Pods) that extend a live Nexus deployment.
-A Pod is a self-contained module that attaches to the Nexus: a dashboard window, 
-a reporting room, an alert doorway, a custom infographic, a data entry form, etc.
-
-Generate a Pod as a JSON object with:
-{
-  "pod_name": "Short name",
-  "pod_type": "window|room|doorway|infographic|form",
-  "html_component": "Complete HTML/CSS/JS component that can be injected into the Nexus",
-  "api_endpoint": "Express route code to add to the Nexus server",
-  "description": "What this Pod does"
-}
-
-The Pod must match the AIRS brand: navy background, teal #33e0c4, gold #ffca58.
-Every Pod must be governed by the IGM — any AI interactions tagged [IGM-GOVERNED].`,
+        max_tokens: 800,
+        system: `You are the AIRS Node — the Pod builder engine for AIRS Studio. Respond ONLY with valid JSON, no markdown, no explanation. Generate a Pod descriptor as a JSON object with exactly these keys:
+{"pod_name":"Short name under 40 chars","pod_type":"window|room|doorway|infographic|form","description":"One sentence description under 100 chars","fields":["field1","field2","field3"],"color":"teal"}`,
         messages: [{
           role: 'user',
           content: `Build a Pod for a Nexus named "${nexus.nexus_name}" (${nexus.nexus_description}). Pod request: ${pod_description}`
