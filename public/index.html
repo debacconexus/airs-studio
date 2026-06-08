@@ -529,6 +529,39 @@ async function buildPod() {
   btn.textContent = '◈ Build Pod with Node';
 }
 
+// Load a previous Nexus into the result card
+async function loadNexus(n) {
+  currentNexusId = n.nexus_id || n.id;
+  const nexus = {
+    nexus_name: n.name,
+    nexus_description: n.description,
+    primary_entity: n.primary_entity || '—',
+    url: n.url || n.domain,
+    classification: { governance_tier: n.governance_tier || 'standard' },
+    schema_description: n.schema_description || '—',
+    pods_suggested: n.pods_suggested || []
+  };
+  showNexusResult(nexus);
+  document.getElementById('progress-card').classList.remove('visible');
+  // Load pods for this nexus
+  try {
+    const res = await fetch('/api/nexus/' + currentNexusId);
+    const data = await res.json();
+    if (data.success && data.nexus.pods) {
+      const podList = document.getElementById('pod-list');
+      if (podList) {
+        podList.innerHTML = data.nexus.pods.map(p => `
+          <div class="pod-item">
+            <div class="pod-icon">${p.pod_type === 'window' ? '🪟' : p.pod_type === 'room' ? '🏛' : p.pod_type === 'infographic' ? '📊' : p.pod_type === 'form' ? '📋' : '🚪'}</div>
+            <div><div class="pod-name">${p.pod_name}</div><div class="pod-desc">${p.pod_type} · ${p.description}</div></div>
+          </div>`).join('');
+      }
+    }
+  } catch(e) {}
+  document.getElementById('pod-builder').classList.add('visible');
+  window.scrollTo({ top: document.getElementById('nexus-result').offsetTop - 20, behavior: 'smooth' });
+}
+
 // Load existing Nexus deployments on page load
 window.addEventListener('load', async () => {
   try {
@@ -538,7 +571,7 @@ window.addEventListener('load', async () => {
       document.getElementById('nexus-list-section').style.display = 'block';
       const listDiv = document.getElementById('nexus-list-items');
       listDiv.innerHTML = data.nexus_list.map(n => `
-        <div class="nexus-list-item">
+        <div class="nexus-list-item" onclick="loadNexus(${JSON.stringify(n).replace(/"/g, '&quot;')})">
           <div>
             <div class="nexus-list-name">${n.name || 'Unnamed Nexus'}</div>
             <div class="nexus-list-meta">${n.description || ''} · ${n.domain || ''} · ${new Date(n.created_at).toLocaleDateString()}</div>
