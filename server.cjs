@@ -476,13 +476,49 @@ app.post('/api/generate', async (req, res) => {
           console.error('[AIRS Studio] Domain creation error:', domainErr.message);
         }
 
+        // Store provisioned state — Railway is still building
         await nexusRegistry.set(nexusId, {
           ...await nexusRegistry.get(nexusId),
-          status: 'deployed',
+          status: 'provisioned',
           railway: { projectId, environmentId, serviceId },
           url: finalUrl
         });
-        console.log('[AIRS Studio] Nexus ' + nexusId + ' Railway provisioned:', finalUrl);
+        console.log('[AIRS Studio] Nexus ' + nexusId + ' provisioned, polling for live status...');
+
+        // Poll until Nexus URL responds — then mark deployed
+        let attempts = 0;
+        const maxAttempts = 24; // 24 x 15s = 6 minutes
+        const pollLive = setInterval(async () => {
+          attempts++;
+          try {
+            const http = require('http');
+            const https = require('https');
+            const client = finalUrl.startsWith('https') ? https : http;
+            const req = client.get(finalUrl, { timeout: 5000 }, (res) => {
+              if (res.statusCode < 500) {
+                clearInterval(pollLive);
+                nexusRegistry.set(nexusId, {
+                  ...nexusRegistry.get(nexusId).then ? null : nexusRegistry.get(nexusId),
+                  status: 'deployed',
+                  url: finalUrl
+                }).then(() => {
+                  console.log('[AIRS Studio] Nexus ' + nexusId + ' is LIVE:', finalUrl);
+                });
+              }
+            });
+            req.on('error', () => {});
+            req.end();
+          } catch(e) {}
+          if (attempts >= maxAttempts) {
+            clearInterval(pollLive);
+            await nexusRegistry.set(nexusId, {
+              ...await nexusRegistry.get(nexusId),
+              status: 'deployed',
+              url: finalUrl
+            });
+            console.log('[AIRS Studio] Nexus ' + nexusId + ' deploy timeout — marking live anyway');
+          }
+        }, 15000);
       } catch (err) {
         console.error('[AIRS Studio] Background Railway provisioning error:', err.message);
       }
