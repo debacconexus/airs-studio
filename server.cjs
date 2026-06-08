@@ -121,8 +121,21 @@ async function generateNexusCode(prompt, nexusId, classification) {
     system: 'Generate complete Node.js/Express server.cjs for a "' + meta.nexus_name + '" system. Output ONLY raw JavaScript, no markdown. CommonJS, pg with DATABASE_URL, PORT env, serve static from public/, CRUD API, POST /api/contacts, GET /api/stats, [IGM-GOVERNED] tags on notes. Comments in ' + langHint + '.',
     messages: [{ role: 'user', content: 'Build server.cjs for: ' + prompt }]
   }, { headers: apiHeaders });
-  const serverCode = serverRes.data.content.map(function(c){ return c.text||''; }).join('').replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+  let serverCode = serverRes.data.content.map(function(c){ return c.text||''; }).join('').replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
   console.log('[AIRS Studio] Server length:', serverCode.length);
+  // Ensure server code is complete — append safe closing if truncated
+  const serverEnds = serverCode.trimEnd();
+  if (!serverEnds.endsWith(');') && !serverEnds.endsWith('}') && !serverEnds.endsWith("});")) {
+    console.log('[AIRS Studio] Server code truncated — appending safe closing...');
+    serverCode += "\n});\n";
+  }
+  // Count braces and close any unclosed ones
+  const openBraces = (serverCode.match(/{/g) || []).length;
+  const closeBraces = (serverCode.match(/}/g) || []).length;
+  if (openBraces > closeBraces) {
+    serverCode += '\n' + '}'.repeat(openBraces - closeBraces) + '\n';
+    console.log('[AIRS Studio] Closed', openBraces - closeBraces, 'unclosed braces');
+  }
 
   // Call C: frontend
   console.log('[AIRS Studio] Step C: frontend...');
