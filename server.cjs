@@ -528,7 +528,8 @@ app.get('/api/stream/:id', async (req, res) => {
         send({ type: 'status', nexus });
 
         // Stream metadata fields as they arrive
-        if (currentStatus === 'generated' && nexus.nexus_name) {
+        if ((currentStatus === 'generated' || currentStatus === 'built' || currentStatus === 'pushed') && nexus.nexus_name && lastStatus !== 'meta_sent') {
+          lastStatus = 'meta_sent';
           send({ type: 'meta', field: 'nexus_name', value: nexus.nexus_name });
           send({ type: 'meta', field: 'primary_entity', value: nexus.primary_entity });
           send({ type: 'meta', field: 'governance_tier', value: nexus.classification?.governance_tier });
