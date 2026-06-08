@@ -535,7 +535,7 @@ app.get('/api/stream/:id', async (req, res) => {
           send({ type: 'meta', field: 'governance_tier', value: nexus.classification?.governance_tier });
           if (nexus.fields) {
             nexus.fields.forEach((f, i) => {
-              setTimeout(() => send({ type: 'field', index: i, value: f }), i * 150);
+              setTimeout(() => send({ type: 'field', index: i, value: typeof f === 'object' ? (f.name || f.label || JSON.stringify(f)) : f }), i * 150);
             });
           }
           if (nexus.pods_suggested) {
