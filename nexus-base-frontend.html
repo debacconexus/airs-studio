@@ -947,7 +947,8 @@ function initHomeScreen(){
   if(nameEl) nameEl.textContent = m.nexus_name || 'AIRS Nexus';
   const headerName = document.getElementById('header-nexus-name');
   if(headerName) headerName.textContent = m.nexus_name || 'Nexus';
-  if(entityEl) entityEl.textContent = (m.entity_label || 'Record') + ' · Governed Data System · DeBacco Nexus LLC · USPTO 19/571,156';
+  const cleanEntity = (m.entity_label || 'Record').replace(/_/g,' ').replace(/\b\w/g, c=>c.toUpperCase());
+  if(entityEl) entityEl.textContent = cleanEntity + ' · Governed Data System · DeBacco Nexus LLC · USPTO 19/571,156';
   if(tierEl) tierEl.textContent = 'IGM · ' + (m.governance_tier || 'Standard');
   if(fieldsEl && m.fields) {
     fieldsEl.innerHTML = m.fields.map(f =>
