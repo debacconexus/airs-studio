@@ -298,7 +298,7 @@ async function writeNexusFiles(nexusId, serverCode, frontendCode, packageJson) {
 // ─── API ROUTES ───────────────────────────────────────────────────────────────
 
 // GET / — Serve the AIRS Studio UI
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
@@ -486,14 +486,14 @@ app.post('/api/generate', async (req, res) => {
 });
 
 // GET /api/status/:id — Check Nexus generation + deployment status
-app.get('/api/status/:id', (req, res) => {
+app.get('/api/status/:id', async (req, res) => {
   const nexus = await nexusRegistry.get(req.params.id);
   if (!nexus) return res.json({ success: false, error: 'Nexus not found' });
   res.json({ success: true, nexus });
 });
 
 // GET /api/nexus — List all Nexus deployments
-app.get('/api/nexus', (req, res) => {
+app.get('/api/nexus', async (req, res) => {
   const list = (await nexusRegistry.values()).map(n => ({
     id: n.id,
     name: n.nexus_name,
@@ -580,7 +580,7 @@ Every Pod must be governed by the IGM — any AI interactions tagged [IGM-GOVERN
 });
 
 // GET /api/nexus/:id/download — Download Nexus as deployable zip
-app.get('/api/nexus/:id/download', (req, res) => {
+app.get('/api/nexus/:id/download', async (req, res) => {
   const nexus = await nexusRegistry.get(req.params.id);
   if (!nexus || !nexus.local_path) return res.json({ success: false, error: 'Nexus build not found' });
 
