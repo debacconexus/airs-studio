@@ -21,7 +21,7 @@ const fs = require('fs');
 
 const app = express();
 app.use(express.json({ limit: '10mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { etag: false, maxAge: 0 }));
 
 const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 const RAILWAY_TOKEN = process.env.RAILWAY_API_TOKEN;
