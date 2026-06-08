@@ -28,8 +28,59 @@ const RAILWAY_TOKEN = process.env.RAILWAY_API_TOKEN;
 const RAILWAY_TEAM_ID = process.env.RAILWAY_TEAM_ID || null; // null for personal workspace
 const PORT = process.env.PORT || 8080;
 
-// In-memory Nexus registry (replace with PostgreSQL in production)
-const nexusRegistry = new Map();
+const { Pool } = require('pg');
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+
+// Initialize nexus_registry table
+async function initRegistry() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS nexus_registry (
+        nexus_id VARCHAR(255) PRIMARY KEY,
+        data JSONB NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('[AIRS Studio] Registry database ready');
+  } catch (err) {
+    console.error('[AIRS Studio] Registry DB init error:', err.message);
+  }
+}
+
+// Registry interface — drop-in replacement for Map
+const nexusRegistry = {
+  async set(id, data) {
+    try {
+      await pool.query(`
+        INSERT INTO nexus_registry (nexus_id, data, updated_at)
+        VALUES ($1, $2, CURRENT_TIMESTAMP)
+        ON CONFLICT (nexus_id) DO UPDATE
+        SET data = $2, updated_at = CURRENT_TIMESTAMP
+      `, [id, JSON.stringify(data)]);
+    } catch (err) {
+      console.error('[AIRS Studio] Registry set error:', err.message);
+    }
+  },
+  async get(id) {
+    try {
+      const result = await pool.query('SELECT data FROM nexus_registry WHERE nexus_id = $1', [id]);
+      return result.rows[0] ? result.rows[0].data : null;
+    } catch (err) {
+      console.error('[AIRS Studio] Registry get error:', err.message);
+      return null;
+    }
+  },
+  async values() {
+    try {
+      const result = await pool.query('SELECT data FROM nexus_registry ORDER BY created_at DESC');
+      return result.rows.map(r => r.data);
+    } catch (err) {
+      console.error('[AIRS Studio] Registry values error:', err.message);
+      return [];
+    }
+  }
+};
 
 // ─── RAILWAY GRAPHQL CLIENT ───────────────────────────────────────────────────
 async function railwayQuery(query, variables = {}) {
@@ -269,7 +320,7 @@ app.post('/api/generate', async (req, res) => {
     }
 
     // Register Nexus as pending
-    nexusRegistry.set(nexusId, {
+    await nexusRegistry.set(nexusId, {
       id: nexusId,
       prompt,
       status: 'generating',
@@ -285,8 +336,8 @@ app.post('/api/generate', async (req, res) => {
     
     const nexusData = await generateNexusCode(prompt, nexusId, classification);
     
-    nexusRegistry.set(nexusId, {
-      ...nexusRegistry.get(nexusId),
+    await nexusRegistry.set(nexusId, {
+      ...await nexusRegistry.get(nexusId),
       status: 'generated',
       nexus_name: nexusData.nexus_name,
       nexus_description: nexusData.nexus_description,
@@ -303,8 +354,8 @@ app.post('/api/generate', async (req, res) => {
       nexusData.frontend_code
     );
 
-    nexusRegistry.set(nexusId, {
-      ...nexusRegistry.get(nexusId),
+    await nexusRegistry.set(nexusId, {
+      ...await nexusRegistry.get(nexusId),
       status: 'built',
       local_path: nexusDir
     });
@@ -375,8 +426,8 @@ app.post('/api/generate', async (req, res) => {
 
     // Status: pushed — all files confirmed on GitHub
     const liveUrl = 'https://' + repoName + '-production.up.railway.app';
-    nexusRegistry.set(nexusId, {
-      ...nexusRegistry.get(nexusId),
+    await nexusRegistry.set(nexusId, {
+      ...await nexusRegistry.get(nexusId),
       status: 'pushed',
       github: repoFullName,
       url: liveUrl
@@ -411,8 +462,8 @@ app.post('/api/generate', async (req, res) => {
         );
 
         const finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
-        nexusRegistry.set(nexusId, {
-          ...nexusRegistry.get(nexusId),
+        await nexusRegistry.set(nexusId, {
+          ...await nexusRegistry.get(nexusId),
           status: 'deployed',
           railway: { projectId, environmentId, serviceId },
           url: finalUrl
@@ -426,8 +477,8 @@ app.post('/api/generate', async (req, res) => {
   } catch (err) {
     const errDetail = err.response ? JSON.stringify(err.response.data) : err.message;
     console.error("[AIRS Studio] Error generating Nexus", nexusId, errDetail);
-    nexusRegistry.set(nexusId, {
-      ...nexusRegistry.get(nexusId),
+    await nexusRegistry.set(nexusId, {
+      ...await nexusRegistry.get(nexusId),
       status: 'error',
       error: err.message
     });
@@ -436,14 +487,14 @@ app.post('/api/generate', async (req, res) => {
 
 // GET /api/status/:id — Check Nexus generation + deployment status
 app.get('/api/status/:id', (req, res) => {
-  const nexus = nexusRegistry.get(req.params.id);
+  const nexus = await nexusRegistry.get(req.params.id);
   if (!nexus) return res.json({ success: false, error: 'Nexus not found' });
   res.json({ success: true, nexus });
 });
 
 // GET /api/nexus — List all Nexus deployments
 app.get('/api/nexus', (req, res) => {
-  const list = Array.from(nexusRegistry.values()).map(n => ({
+  const list = (await nexusRegistry.values()).map(n => ({
     id: n.id,
     name: n.nexus_name,
     description: n.nexus_description,
@@ -460,7 +511,7 @@ app.get('/api/nexus', (req, res) => {
 app.post('/api/pod/build', async (req, res) => {
   const { nexus_id, pod_description } = req.body;
   
-  const nexus = nexusRegistry.get(nexus_id);
+  const nexus = await nexusRegistry.get(nexus_id);
   if (!nexus) return res.json({ success: false, error: 'Nexus not found' });
   if (nexus.status !== 'deployed') return res.json({ success: false, error: 'Nexus must be deployed before adding Pods' });
 
@@ -515,7 +566,7 @@ Every Pod must be governed by the IGM — any AI interactions tagged [IGM-GOVERN
     
     // Update Nexus registry with new Pod
     const existingPods = nexus.pods || [];
-    nexusRegistry.set(nexus_id, {
+    await nexusRegistry.set(nexus_id, {
       ...nexus,
       pods: [...existingPods, { id: podId, ...pod, created_at: new Date().toISOString() }]
     });
@@ -530,7 +581,7 @@ Every Pod must be governed by the IGM — any AI interactions tagged [IGM-GOVERN
 
 // GET /api/nexus/:id/download — Download Nexus as deployable zip
 app.get('/api/nexus/:id/download', (req, res) => {
-  const nexus = nexusRegistry.get(req.params.id);
+  const nexus = await nexusRegistry.get(req.params.id);
   if (!nexus || !nexus.local_path) return res.json({ success: false, error: 'Nexus build not found' });
 
   const archiver = require('archiver');
@@ -544,6 +595,10 @@ app.get('/api/nexus/:id/download', (req, res) => {
 });
 
 // ─── START ────────────────────────────────────────────────────────────────────
+initRegistry().then(() => {
+  console.log('[AIRS Studio] Registry initialized');
+});
+
 app.listen(PORT, () => {
   console.log(`
 ╔══════════════════════════════════════════════════════════╗
