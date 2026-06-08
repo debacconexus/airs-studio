@@ -461,7 +461,21 @@ app.post('/api/generate', async (req, res) => {
           { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
         );
 
-        const finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
+        // Generate public domain for the app service
+        let finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
+        try {
+          const domainData = await railwayQuery(
+            'mutation ServiceDomainCreate($input: ServiceDomainCreateInput!) { serviceDomainCreate(input: $input) { domain } }',
+            { input: { serviceId, environmentId } }
+          );
+          if (domainData && domainData.serviceDomainCreate && domainData.serviceDomainCreate.domain) {
+            finalUrl = 'https://' + domainData.serviceDomainCreate.domain;
+            console.log('[AIRS Studio] Domain created:', finalUrl);
+          }
+        } catch (domainErr) {
+          console.error('[AIRS Studio] Domain creation error:', domainErr.message);
+        }
+
         await nexusRegistry.set(nexusId, {
           ...await nexusRegistry.get(nexusId),
           status: 'deployed',
