@@ -185,7 +185,7 @@ async function generateNexusCode(prompt, nexusId, classification) {
   // Call C: frontend
   // Call C: use proven frontend template — fully interactive
   console.log('[AIRS Studio] Step C: loading frontend template...');
-  const frontendCode = fs.readFileSync(path.join(__dirname, 'nexus-frontend-template.html'), 'utf8');
+  const frontendCode = fs.readFileSync(path.join(__dirname, 'nexus-base-frontend.html'), 'utf8');
   console.log('[AIRS Studio] Frontend length:', frontendCode.length);
 
   return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode });
