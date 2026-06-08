@@ -205,13 +205,18 @@ async function generateNexusCode(prompt, nexusId, classification) {
 
   // Field label substitutions (6 fields from Call A)
   const fieldLabels = ['NAME','CASE #','COURTHOUSE','CHARGE TYPE','EMPLOYMENT','INTAKE DATE'];
+  const getFieldLabel = (f, fallback) => {
+    if (!f) return fallback;
+    if (typeof f === 'string') return f.toUpperCase();
+    return (f.label || f.name || f.field || fallback).toUpperCase();
+  };
   const domainFields = [
-    (fields[0]||'Field 1').toUpperCase(),
-    (fields[1]||'Field 2').toUpperCase(),
-    (fields[2]||'Field 3').toUpperCase(),
-    (fields[3]||'Field 4').toUpperCase(),
-    (fields[4]||'Field 5').toUpperCase(),
-    (fields[5]||'Field 6').toUpperCase()
+    getFieldLabel(fields[0], 'Field 1'),
+    getFieldLabel(fields[1], 'Field 2'),
+    getFieldLabel(fields[2], 'Field 3'),
+    getFieldLabel(fields[3], 'Field 4'),
+    getFieldLabel(fields[4], 'Field 5'),
+    getFieldLabel(fields[5], 'Field 6')
   ];
   fieldLabels.forEach((label, i) => {
     frontendCode = frontendCode.replaceAll('>' + label + '<', '>' + domainFields[i] + '<');
