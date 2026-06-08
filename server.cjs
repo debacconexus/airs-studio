@@ -404,16 +404,6 @@ app.post('/api/generate', async (req, res) => {
         );
         const serviceId = serviceData.serviceCreate.id;
 
-        // Set env vars on the app service
-        await railwayQuery(
-          'mutation VariableCollectionUpsert($input: VariableCollectionUpsertInput!) { variableCollectionUpsert }',
-          { input: { projectId, environmentId, serviceId, variables: {
-            NEXUS_NAME: nexusData.nexus_name,
-            TABLE_NAME: tableName,
-            ENTITY_LABEL: nexusData.primary_entity || 'Record',
-            NODE_ENV: 'production'
-          }}}
-        );
 
         await railwayQuery(
           'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
