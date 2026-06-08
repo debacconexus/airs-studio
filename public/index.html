@@ -65,6 +65,15 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,#0a1f3a 0%
 .progress-card.visible{display:block}
 .progress-title{font-size:14px;font-weight:700;color:#8a8dff;margin-bottom:20px;display:flex;align-items:center;gap:8px}
 .progress-steps{display:flex;flex-direction:column;gap:12px}
+.live-meta-panel{display:none;margin-top:20px;border-top:1px solid rgba(51,224,196,.2);padding-top:16px}
+.live-meta-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.live-meta-label{color:#5a7a9a;text-transform:uppercase;letter-spacing:.05em}
+.live-meta-value{color:#33e0c4;font-weight:600;min-width:120px;text-align:right}
+.live-fields{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.live-field-chip{background:rgba(51,224,196,.1);border:1px solid rgba(51,224,196,.3);color:#33e0c4;padding:3px 10px;border-radius:20px;font-size:11px}
+.live-pod-chip{background:rgba(255,202,88,.1);border:1px solid rgba(255,202,88,.3);color:#ffca58;padding:3px 10px;border-radius:20px;font-size:11px}
+.live-reveal{animation:revealPulse .4s ease}
+@keyframes revealPulse{0%{opacity:0;transform:translateY(4px)}100%{opacity:1;transform:translateY(0)}}
 .progress-step{display:flex;align-items:center;gap:12px;font-size:13px}
 .step-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
 .step-icon.pending{background:rgba(150,205,255,.1);color:#5a7a9a;border:1px solid rgba(150,205,255,.15)}
@@ -200,6 +209,26 @@ body{font-family:'Inter',sans-serif;background:linear-gradient(180deg,#0a1f3a 0%
 
   <!-- PROGRESS -->
   <div class="progress-card" id="progress-card">
+    <div class="live-meta-panel" id="live-meta-panel">
+      <div class="live-meta-row"><span class="live-meta-label">Nexus Name</span><span class="live-meta-value" id="live-nexus_name">—</span></div>
+      <div class="live-meta-row"><span class="live-meta-label">Primary Entity</span><span class="live-meta-value" id="live-primary_entity">—</span></div>
+      <div class="live-meta-row"><span class="live-meta-label">Governance Tier</span><span class="live-meta-value" id="live-governance_tier">—</span></div>
+      <div style="margin-top:10px"><div class="live-meta-label" style="margin-bottom:6px">Fields</div>
+      <div class="live-fields">
+        <span class="live-field-chip" id="live-field-0">—</span>
+        <span class="live-field-chip" id="live-field-1">—</span>
+        <span class="live-field-chip" id="live-field-2">—</span>
+        <span class="live-field-chip" id="live-field-3">—</span>
+        <span class="live-field-chip" id="live-field-4">—</span>
+        <span class="live-field-chip" id="live-field-5">—</span>
+      </div></div>
+      <div style="margin-top:10px"><div class="live-meta-label" style="margin-bottom:6px">Pod Seeds</div>
+      <div class="live-fields">
+        <span class="live-pod-chip" id="live-pod-0">—</span>
+        <span class="live-pod-chip" id="live-pod-1">—</span>
+        <span class="live-pod-chip" id="live-pod-2">—</span>
+      </div></div>
+    </div>
     <div class="progress-title"><span class="spinner"></span> AIRS Studio is building your Nexus...</div>
     <div class="progress-steps" id="progress-steps">
       <div class="progress-step">
@@ -333,46 +362,66 @@ async function generateNexus() {
     currentNexusId = data.nexus_id;
     setStep(1, 'done');
 
-    // Poll for status
+    // Live generation feed via SSE
     let stepShown = 1;
-    pollInterval = setInterval(async () => {
-      const statusRes = await fetch(`/api/status/${currentNexusId}`);
-      const statusData = await statusRes.json();
-      if (!statusData.success) return;
+    const evtSource = new EventSource(`/api/stream/${currentNexusId}`);
 
-      const nexus = statusData.nexus;
+    // Show live metadata panel
+    const livePanel = document.getElementById('live-meta-panel');
+    if (livePanel) livePanel.style.display = 'block';
 
-      if (nexus.status === 'generating' && stepShown < 2) {
-        setStep(2, 'active');
-        stepShown = 2;
-      } else if (nexus.status === 'generated' && stepShown < 3) {
-        setStep(2, 'done');
-        setStep(3, 'active');
-        stepShown = 3;
-      } else if (nexus.status === 'built' && stepShown < 4) {
-        setStep(3, 'done');
-        setStep(4, 'active');
-        stepShown = 4;
-      } else if (nexus.status === 'pushed' && stepShown < 5) {
-        setStep(4, 'done');
-        setStep(5, 'active');
-        stepShown = 5;
-      } else if (nexus.status === 'provisioned' && stepShown < 6) {
-        setStep(5, 'done');
-        setStep(6, 'active');
-        stepShown = 6;
-      } else if (nexus.status === 'deployed' && stepShown < 7) {
-        setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
-        clearInterval(pollInterval);
-        showNexusResult(nexus);
-        btn.disabled = false;
-        document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
-        stepShown = 7;
-      } else if (nexus.status === 'error') {
-        setStep(stepShown, 'error', nexus.error || 'Generation error');
-        clearInterval(pollInterval);
-        btn.disabled = false;
-        document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+    evtSource.onmessage = (e) => {
+      const msg = JSON.parse(e.data);
+
+      if (msg.type === 'meta') {
+        const el = document.getElementById('live-' + msg.field);
+        if (el) { el.textContent = msg.value; el.classList.add('live-reveal'); }
+      }
+
+      if (msg.type === 'field') {
+        const el = document.getElementById('live-field-' + msg.index);
+        if (el) { el.textContent = msg.value; el.classList.add('live-reveal'); }
+      }
+
+      if (msg.type === 'pod_seed') {
+        const el = document.getElementById('live-pod-' + msg.index);
+        if (el) { el.textContent = typeof msg.value === 'object' ? msg.value.name || JSON.stringify(msg.value) : msg.value; el.classList.add('live-reveal'); }
+      }
+
+      if (msg.type === 'status') {
+        const nexus = msg.nexus;
+        if (nexus.status === 'generating' && stepShown < 2) {
+          setStep(2, 'active');
+          stepShown = 2;
+        } else if (nexus.status === 'generated' && stepShown < 3) {
+          setStep(2, 'done');
+          setStep(3, 'active');
+          stepShown = 3;
+        } else if (nexus.status === 'built' && stepShown < 4) {
+          setStep(3, 'done');
+          setStep(4, 'active');
+          stepShown = 4;
+        } else if (nexus.status === 'pushed' && stepShown < 5) {
+          setStep(4, 'done');
+          setStep(5, 'active');
+          stepShown = 5;
+        } else if (nexus.status === 'provisioned' && stepShown < 6) {
+          setStep(5, 'done');
+          setStep(6, 'active');
+          stepShown = 6;
+        } else if (nexus.status === 'deployed' && stepShown < 7) {
+          setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
+          evtSource.close();
+          if (livePanel) livePanel.style.display = 'none';
+          showNexusResult(nexus);
+          btn.disabled = false;
+          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+          stepShown = 7;
+        } else if (nexus.status === 'error') {
+          setStep(stepShown, 'error', nexus.error || 'Generation error');
+          evtSource.close();
+          btn.disabled = false;
+          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
       }
     }, 2000);
 

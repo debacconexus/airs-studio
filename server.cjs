@@ -499,6 +499,63 @@ app.post('/api/generate', async (req, res) => {
   }
 });
 
+// GET /api/stream/:id — Server-Sent Events stream for live generation feed
+app.get('/api/stream/:id', async (req, res) => {
+  res.setHeader('Content-Type', 'text/event-stream');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders();
+
+  const nexusId = req.params.id;
+  let lastStatus = null;
+  let lastData = null;
+
+  const send = (data) => {
+    res.write('data: ' + JSON.stringify(data) + '\n\n');
+  };
+
+  const interval = setInterval(async () => {
+    try {
+      const nexus = await nexusRegistry.get(nexusId);
+      if (!nexus) return;
+
+      const currentStatus = nexus.status;
+      const currentData = JSON.stringify(nexus);
+
+      if (currentStatus !== lastStatus || currentData !== lastData) {
+        lastStatus = currentStatus;
+        lastData = currentData;
+        send({ type: 'status', nexus });
+
+        // Stream metadata fields as they arrive
+        if (currentStatus === 'generated' && nexus.nexus_name) {
+          send({ type: 'meta', field: 'nexus_name', value: nexus.nexus_name });
+          send({ type: 'meta', field: 'primary_entity', value: nexus.primary_entity });
+          send({ type: 'meta', field: 'governance_tier', value: nexus.classification?.governance_tier });
+          if (nexus.fields) {
+            nexus.fields.forEach((f, i) => {
+              setTimeout(() => send({ type: 'field', index: i, value: f }), i * 150);
+            });
+          }
+          if (nexus.pods_suggested) {
+            nexus.pods_suggested.forEach((p, i) => {
+              setTimeout(() => send({ type: 'pod_seed', index: i, value: p }), i * 200 + 500);
+            });
+          }
+        }
+
+        if (currentStatus === 'deployed' || currentStatus === 'error') {
+          setTimeout(() => { clearInterval(interval); res.end(); }, 1000);
+        }
+      }
+    } catch (err) {
+      console.error('[AIRS Studio] SSE error:', err.message);
+    }
+  }, 500);
+
+  req.on('close', () => { clearInterval(interval); });
+});
+
 // GET /api/status/:id — Check Nexus generation + deployment status
 app.get('/api/status/:id', async (req, res) => {
   const nexus = await nexusRegistry.get(req.params.id);
