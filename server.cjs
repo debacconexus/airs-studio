@@ -202,6 +202,12 @@ async function generateNexusCode(prompt, nexusId, classification) {
   frontendCode = frontendCode.replaceAll('ACTIVE VTC CASES', 'ACTIVE ' + entityLabel.toUpperCase() + ' RECORDS');
   frontendCode = frontendCode.replaceAll('Active VTC Caseload', 'Active ' + entityLabel + ' Records');
   frontendCode = frontendCode.replaceAll('JIV GOVERNED RECORD', entityLabel.toUpperCase() + ' GOVERNED RECORD');
+  frontendCode = frontendCode.replaceAll('COURT DATES THIS WEEK', 'UPCOMING EVENTS');
+  frontendCode = frontendCode.replaceAll('GRADUATED', 'COMPLETED');
+  frontendCode = frontendCode.replaceAll('TOTAL VETERANS', 'TOTAL RECORDS');
+  frontendCode = frontendCode.replaceAll('Search veteran...', 'Search ' + entityLabel.toLowerCase() + '...');
+  frontendCode = frontendCode.replaceAll('All Courthouses', 'All Locations');
+  frontendCode = frontendCode.replaceAll('NEXT COURT', 'NEXT DATE');
 
   // Field label substitutions (6 fields from Call A)
   const fieldLabels = ['NAME','CASE #','COURTHOUSE','CHARGE TYPE','EMPLOYMENT','INTAKE DATE'];
