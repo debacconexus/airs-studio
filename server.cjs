@@ -183,14 +183,9 @@ async function generateNexusCode(prompt, nexusId, classification) {
   console.log('[AIRS Studio] Server length:', serverCode.length);
 
   // Call C: frontend
-  console.log('[AIRS Studio] Step C: frontend...');
-  const frontendRes = await axios.post('https://api.anthropic.com/v1/messages', {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 5000,
-    system: 'Generate complete single-page HTML app for "' + meta.nexus_name + '". Output ONLY raw HTML, no markdown. Navy #07192f, teal #33e0c4, gold #ffca58, Inter font, IGM status bar in header, dashboard, intake form, contact log, search. Footer: AIRS Studio · DeBacco Nexus LLC · USPTO 19/571,156. ALL UI text, labels, buttons, placeholders, and headings must be in ' + langHint + '.',
-    messages: [{ role: 'user', content: 'Build index.html for: ' + prompt + '. Fields: ' + meta.fields.join(', ') }]
-  }, { headers: apiHeaders });
-  const frontendCode = frontendRes.data.content.map(function(c){ return c.text||''; }).join('').replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+  // Call C: use proven frontend template — fully interactive
+  console.log('[AIRS Studio] Step C: loading frontend template...');
+  const frontendCode = fs.readFileSync(path.join(__dirname, 'nexus-frontend-template.html'), 'utf8');
   console.log('[AIRS Studio] Frontend length:', frontendCode.length);
 
   return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode });

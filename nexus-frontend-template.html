@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIRS Nexus</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#061729;--navy2:#0a2140;--navy3:#102f59;--gold:#ffca58;--teal:#33e0c4;--cyan:#62c8ff;--coral:#ff8577;--violet:#8a8dff;--text:#eff7ff;--muted:#9db8d7;--border:rgba(150,205,255,.18);--shadow:0 24px 70px rgba(0,0,0,.30)}
+body{font-family:'Inter',sans-serif;font-size:15px;background:radial-gradient(circle at top left,#14396e 0%,#08192f 45%,#05111f 100%);color:#eff7ff;line-height:1.5;min-height:100vh;overflow-x:hidden}
+.header{background:linear-gradient(180deg,#0d2a4f,#061729);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 4px 24px rgba(0,0,0,.3)}
+.logo{font-size:20px;font-weight:800;color:#fff}.logo span{color:#ffca58}
+.igm-bar{font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9db8d7;display:flex;gap:8px;border-left:1px solid var(--border);padding-left:16px}
+.igm-bar .ok{color:#33e0c4}.igm-bar .val{color:#ffca58}
+.nav{position:fixed;top:64px;left:0;bottom:0;width:200px;background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border-right:1px solid var(--border);padding:12px 0;z-index:90}
+.nav-btn{width:calc(100% - 16px);background:none;border:1px solid transparent;color:#c8dff0;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:11px 16px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:10px;transition:all .15s;border-radius:18px;margin:3px 8px}
+.nav-btn:hover{background:rgba(255,255,255,.05);color:#fff}
+.nav-btn.active{background:linear-gradient(135deg,rgba(51,224,196,.18),rgba(98,200,255,.12));color:#33e0c4;border-color:rgba(98,200,255,.28)}
+.nav-section{font-size:10px;font-weight:700;color:#62c8ff;letter-spacing:.18em;text-transform:uppercase;padding:12px 16px 4px}
+.main{margin-left:200px;margin-top:64px;padding:28px 36px;min-height:calc(100vh - 64px)}
+.view{display:none}.view.active{display:block}
+.card{background:linear-gradient(180deg,rgba(17,46,86,.92),rgba(10,27,51,.96));border:1px solid var(--border);border-radius:22px;overflow:hidden;margin-bottom:16px;box-shadow:var(--shadow)}
+.card-header{background:linear-gradient(180deg,rgba(19,57,106,.9),rgba(12,35,66,.95));padding:14px 24px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.card-header h2{font-size:16px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:#fff}
+.card-body{padding:24px 28px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{border-radius:24px;padding:24px 28px;cursor:pointer;transition:all .2s;border:1px solid rgba(255,255,255,.07);background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02))}
+.stat-card:hover{transform:translateY(-2px)}
+.stat-card.teal{border-color:rgba(51,224,196,.3);background:linear-gradient(180deg,rgba(51,224,196,.08),rgba(51,224,196,.02))}
+.stat-card.gold{border-color:rgba(255,202,88,.3);background:linear-gradient(180deg,rgba(255,202,88,.08),rgba(255,202,88,.02))}
+.stat-card.cyan{border-color:rgba(98,200,255,.3);background:linear-gradient(180deg,rgba(98,200,255,.08),rgba(98,200,255,.02))}
+.stat-card.coral{border-color:rgba(255,133,119,.3);background:linear-gradient(180deg,rgba(255,133,119,.08),rgba(255,133,119,.02))}
+.stat-num{font-size:48px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:#eff7ff}
+.stat-card.teal .stat-num{color:#33e0c4}.stat-card.gold .stat-num{color:#ffca58}.stat-card.cyan .stat-num{color:#62c8ff}.stat-card.coral .stat-num{color:#ff8577}
+.stat-label{font-size:13px;color:#9db8d7;margin-top:6px;text-transform:uppercase;letter-spacing:.3px}
+.data-table{width:100%;border-collapse:collapse}
+.data-table th{background:rgba(16,47,89,.9);color:#9db8d7;font-size:12px;font-weight:600;padding:12px 16px;text-align:left;letter-spacing:.5px;text-transform:uppercase}
+.data-table td{padding:14px 16px;border-bottom:1px solid rgba(150,205,255,.1);font-size:14px;color:#eff7ff;vertical-align:middle}
+.data-table tr{cursor:pointer;transition:background .15s}
+.data-table tr:hover td{background:rgba(51,224,196,.05)}
+.data-table tr:last-child td{border-bottom:none}
+.search-bar{display:flex;gap:8px;margin-bottom:16px}
+.search-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:12px;padding:10px 14px;font-size:14px;font-family:'Inter',sans-serif;color:#eff7ff;outline:none;transition:border-color .15s}
+.search-input:focus{border-color:#33e0c4}
+.search-input::placeholder{color:#9aa8b8}
+.btn{background:linear-gradient(135deg,#33e0c4,#62c8ff);color:#061729;border:none;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:700;font-family:'Inter',sans-serif;cursor:pointer;letter-spacing:.3px;transition:all .15s}
+.btn:hover{opacity:.9;transform:translateY(-1px)}
+.btn-secondary{background:rgba(255,255,255,.06);color:#eff7ff;border:1px solid rgba(150,205,255,.2);padding:10px 20px;border-radius:12px;font-size:13px;font-weight:500;font-family:'Inter',sans-serif;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{background:rgba(255,255,255,.1)}
+.btn-sm{background:rgba(255,255,255,.08);color:#eff7ff;border:1px solid var(--border);padding:5px 12px;border-radius:8px;font-size:12px;cursor:pointer;transition:background .15s}
+.btn-sm:hover{background:rgba(255,255,255,.14)}
+.form-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:12px;font-weight:600;color:#9db8d7;letter-spacing:.3px;text-transform:uppercase}
+.form-input{background:rgba(255,255,255,.06);border:1px solid rgba(150,205,255,.2);border-radius:10px;padding:11px 14px;font-size:15px;font-family:'Inter',sans-serif;color:#eff7ff;outline:none;transition:border-color .15s;width:100%}
+.form-input:focus{border-color:#33e0c4;box-shadow:0 0 0 2px rgba(51,224,196,.1)}
+.form-input::placeholder{color:#5a7a9a}
+textarea.form-input{resize:vertical;min-height:100px}
+select.form-input option{background:#0a2140;color:#eff7ff}
+.badge{display:inline-block;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:600;letter-spacing:.3px}
+.badge-active{background:rgba(51,224,196,.15);color:#33e0c4;border:1px solid rgba(51,224,196,.3)}
+.badge-inactive{background:rgba(255,133,119,.15);color:#ff8577;border:1px solid rgba(255,133,119,.3)}
+.badge-pending{background:rgba(255,202,88,.15);color:#ffca58;border:1px solid rgba(255,202,88,.3)}
+.contact-item{background:rgba(255,255,255,.04);border:1px solid rgba(150,205,255,.12);border-radius:14px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:border-color .15s}
+.contact-item:hover{border-color:rgba(51,224,196,.3)}
+.contact-meta{font-size:11px;color:#9db8d7;font-family:'IBM Plex Mono',monospace;margin-bottom:6px}
+.contact-note{font-size:14px;color:#eff7ff;line-height:1.5}
+.contact-author{font-size:11px;color:#ffca58;margin-top:6px;font-family:'IBM Plex Mono',monospace}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.page-title{font-size:22px;font-weight:700;color:#eff7ff}
+.page-subtitle{font-size:13px;color:#9db8d7;margin-top:2px}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal{background:linear-gradient(180deg,rgba(17,46,86,.98),rgba(10,27,51,.99));border:1px solid rgba(150,205,255,.2);border-radius:22px;padding:32px;max-width:620px;width:90%;max-height:85vh;overflow-y:auto}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.modal-title{font-size:18px;font-weight:700;color:#eff7ff}
+.modal-close{background:none;border:none;color:#9db8d7;font-size:20px;cursor:pointer;padding:4px 8px;border-radius:6px}
+.modal-close:hover{color:#eff7ff;background:rgba(255,255,255,.08)}
+.toast{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,rgba(51,224,196,.2),rgba(98,200,255,.15));border:1px solid rgba(51,224,196,.4);border-radius:12px;padding:14px 20px;font-size:14px;color:#eff7ff;z-index:999;opacity:0;transform:translateY(10px);transition:all .3s;max-width:320px}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:rgba(139,28,34,.3);border-color:#8b1c22;color:#f87171}
+.empty-state{text-align:center;padding:60px 20px;color:#5a7a9a}
+.empty-state .icon{font-size:48px;margin-bottom:16px}
+.audit-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid rgba(150,205,255,.08)}
+.audit-dot{width:8px;height:8px;border-radius:50%;background:#33e0c4;margin-top:6px;flex-shrink:0}
+.audit-text{font-size:13px;color:#9db8d7}
+.audit-time{font-size:11px;color:#5a7a9a;font-family:'IBM Plex Mono',monospace;margin-top:2px}
+@media(max-width:768px){.nav{display:none}.main{margin-left:0;padding:16px}.stats-grid{grid-template-columns:repeat(2,1fr)}.form-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="header">
+  <div style="display:flex;align-items:center;gap:16px">
+    <div class="logo" id="app-title">AIRS <span>★</span></div>
+    <div class="igm-bar"><span>IGM</span><span class="ok">GOVERNED</span><span>|</span><span>AIRS Studio</span><span>|</span><span>USPTO 19/571,156</span></div>
+  </div>
+  <span style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#ffca58;font-weight:600" id="header-count">— records</span>
+</header>
+<nav class="nav">
+  <div class="nav-section">Navigation</div>
+  <button class="nav-btn active" onclick="showView('dashboard',this)"><span>📊</span>Dashboard</button>
+  <button class="nav-btn" onclick="showView('intake',this)"><span>➕</span>New Record</button>
+  <button class="nav-btn" onclick="showView('records',this)"><span>📋</span>All Records</button>
+  <button class="nav-btn" onclick="showView('search',this)"><span>🔍</span>Search</button>
+  <button class="nav-btn" onclick="showView('contacts',this)"><span>💬</span>Contact Log</button>
+  <button class="nav-btn" onclick="showView('audit',this)"><span>🔒</span>IGM Audit Trail</button>
+</nav>
+<main class="main">
+  <div class="view active" id="view-dashboard">
+    <div class="page-header">
+      <div><div class="page-title" id="dash-title">Dashboard</div><div class="page-subtitle" id="dash-subtitle">Governed data overview</div></div>
+      <button class="btn" onclick="showView('intake',document.querySelectorAll('.nav-btn')[1])">+ New Record</button>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card teal" onclick="showView('records',document.querySelectorAll('.nav-btn')[2])"><div class="stat-num" id="stat-total">—</div><div class="stat-label">Total Records</div></div>
+      <div class="stat-card gold" onclick="showView('records',document.querySelectorAll('.nav-btn')[2])"><div class="stat-num" id="stat-active">—</div><div class="stat-label">Active</div></div>
+      <div class="stat-card cyan" onclick="showView('records',document.querySelectorAll('.nav-btn')[2])"><div class="stat-num" id="stat-recent">—</div><div class="stat-label">Last 30 Days</div></div>
+      <div class="stat-card coral" onclick="showView('audit',document.querySelectorAll('.nav-btn')[5])"><div class="stat-num" id="stat-audit">—</div><div class="stat-label">Audit Entries</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Recent Records</h2><button class="btn-sm" onclick="showView('records',document.querySelectorAll('.nav-btn')[2])">View All</button></div>
+      <div class="card-body" style="padding:0"><table class="data-table"><thead><tr id="dash-thead"></tr></thead><tbody id="dash-tbody"><tr><td colspan="8" style="text-align:center;padding:40px;color:#5a7a9a">Loading...</td></tr></tbody></table></div>
+    </div>
+  </div>
+  <div class="view" id="view-intake">
+    <div class="page-header"><div><div class="page-title">New Record</div><div class="page-subtitle">Enter governed data — all fields IGM-tracked</div></div></div>
+    <div class="card">
+      <div class="card-header"><h2>Record Intake</h2></div>
+      <div class="card-body">
+        <div class="form-grid" id="intake-fields"></div>
+        <div class="form-group full" style="margin-top:8px">
+          <label class="form-label">Notes / IGM Governed Observations</label>
+          <textarea class="form-input" id="intake-notes" placeholder="Enter governed observations..."></textarea>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:20px">
+          <button class="btn" onclick="submitRecord()">Save Record</button>
+          <button class="btn-secondary" onclick="showView('records',document.querySelectorAll('.nav-btn')[2])">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="view" id="view-records">
+    <div class="page-header">
+      <div><div class="page-title">All Records</div><div class="page-subtitle" id="records-label">Loading...</div></div>
+      <button class="btn" onclick="showView('intake',document.querySelectorAll('.nav-btn')[1])">+ New Record</button>
+    </div>
+    <div class="card"><div class="card-body" style="padding:0"><table class="data-table"><thead><tr id="records-thead"></tr></thead><tbody id="records-tbody"></tbody></table></div></div>
+  </div>
+  <div class="view" id="view-search">
+    <div class="page-header"><div><div class="page-title">Search Records</div><div class="page-subtitle">Query governed data by any field</div></div></div>
+    <div class="card"><div class="card-body">
+      <div class="search-bar">
+        <input class="search-input" id="search-input" placeholder="Search records..." onkeydown="if(event.key==='Enter')doSearch()">
+        <button class="btn" onclick="doSearch()">Search</button>
+        <button class="btn-secondary" onclick="clearSearch()">Clear</button>
+      </div>
+      <table class="data-table"><thead><tr id="search-thead"></tr></thead><tbody id="search-tbody"><tr><td colspan="8" style="text-align:center;padding:40px;color:#5a7a9a">Enter a search term above</td></tr></tbody></table>
+    </div></div>
+  </div>
+  <div class="view" id="view-contacts">
+    <div class="page-header"><div><div class="page-title">Contact Log</div><div class="page-subtitle">IGM-governed contact entries</div></div></div>
+    <div class="card">
+      <div class="card-header"><h2>Log New Contact</h2></div>
+      <div class="card-body">
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Record ID</label><input class="form-input" id="contact-record-id" placeholder="Record ID" type="number"></div>
+          <div class="form-group"><label class="form-label">Contact Type</label><select class="form-input" id="contact-type"><option value="phone">Phone</option><option value="in-person">In Person</option><option value="email">Email</option><option value="court">Court</option><option value="referral">Referral</option><option value="other">Other</option></select></div>
+          <div class="form-group"><label class="form-label">Author</label><input class="form-input" id="contact-author" placeholder="Your name"></div>
+          <div class="form-group full"><label class="form-label">Notes</label><textarea class="form-input" id="contact-notes" placeholder="Enter contact notes..."></textarea></div>
+        </div>
+        <button class="btn" onclick="submitContact()">Log Contact</button>
+      </div>
+    </div>
+    <div id="contacts-list"><div class="empty-state"><div class="icon">💬</div><p>Enter a Record ID above to log a contact</p></div></div>
+  </div>
+  <div class="view" id="view-audit">
+    <div class="page-header"><div><div class="page-title">IGM Audit Trail</div><div class="page-subtitle">Every action governed and logged · USPTO 19/571,156</div></div></div>
+    <div class="card"><div class="card-header"><h2>Audit Log</h2></div><div class="card-body" id="audit-list"><div class="empty-state"><div class="icon">🔒</div><p>Loading audit trail...</p></div></div></div>
+  </div>
+</main>
+<div class="modal-overlay" id="record-modal">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title" id="modal-title">Record Detail</div><button class="modal-close" onclick="closeModal()">&#x2715;</button></div>
+    <div id="modal-body"></div>
+    <div style="margin-top:20px"><button class="btn-secondary" onclick="closeModal()">Close</button></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let FIELDS=['field_1','field_2','field_3','field_4','field_5','field_6'];
+let ENTITY='Record',NEXUS_NAME='AIRS Nexus',allRecords=[];
+async function init(){
+  try{
+    const r=await fetch('/api/stats'),d=await r.json();
+    if(d.success){
+      const s=d.stats;
+      ENTITY=s.entity_label||'Record';
+      NEXUS_NAME=s.nexus_name||'AIRS Nexus';
+      document.getElementById('app-title').innerHTML=NEXUS_NAME+' <span style="color:#ffca58">&#9733;</span>';
+      document.title=NEXUS_NAME+' — AIRS';
+      document.getElementById('dash-title').textContent=NEXUS_NAME;
+      document.getElementById('dash-subtitle').textContent='Governed data overview · IGM · DeBacco Nexus LLC';
+      document.getElementById('stat-total').textContent=s.total||0;
+      document.getElementById('stat-active').textContent=s.active||0;
+      document.getElementById('stat-recent').textContent=s.recent_30_days||0;
+      document.getElementById('stat-audit').textContent=s.audit_entries||0;
+      document.getElementById('header-count').textContent=(s.total||0)+' records';
+      if(s.fields) FIELDS=s.fields;
+    }
+  }catch(e){}
+  buildForm();buildHeaders();
+  await loadRecords();
+  initAudit();
+}
+function fmt(f){return f.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+function buildForm(){
+  document.getElementById('intake-fields').innerHTML=FIELDS.map(f=>`<div class="form-group"><label class="form-label">${fmt(f)}</label><input class="form-input" id="f-${f}" placeholder="${fmt(f)}..."></div>`).join('')+`<div class="form-group"><label class="form-label">Status</label><select class="form-input" id="f-status"><option value="active">Active</option><option value="pending">Pending</option><option value="inactive">Inactive</option><option value="closed">Closed</option></select></div>`;
+}
+function buildHeaders(){
+  const vis=FIELDS.slice(0,4);
+  const h='<th>#</th>'+vis.map(f=>`<th>${fmt(f)}</th>`).join('')+'<th>Status</th><th>Created</th><th></th>';
+  ['dash-thead','records-thead','search-thead'].forEach(id=>document.getElementById(id).innerHTML=h);
+}
+async function loadRecords(){
+  try{
+    const r=await fetch('/api/records'),d=await r.json();
+    if(!d.success)return;
+    allRecords=d.records||[];
+    document.getElementById('records-label').textContent=allRecords.length+' total records';
+    renderTable('dash-tbody',allRecords.slice(0,10));
+    renderTable('records-tbody',allRecords);
+  }catch(e){}
+}
+function renderTable(id,rows){
+  const tb=document.getElementById(id);
+  if(!rows||!rows.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#5a7a9a"><div style="font-size:32px;margin-bottom:8px">&#128203;</div>No records yet — <a href="#" onclick="showView('intake',document.querySelectorAll('.nav-btn')[1]);return false" style="color:#33e0c4">add one</a></td></tr>';return;}
+  const vis=FIELDS.slice(0,4);
+  tb.innerHTML=rows.map(r=>`<tr onclick="openRecord(${r.id})"><td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9db8d7">#${r.id}</td>${vis.map(f=>`<td>${r[f]||'<span style="color:#5a7a9a">—</span>'}</td>`).join('')}<td><span class="badge badge-${r.status==='active'?'active':r.status==='pending'?'pending':'inactive'}">${r.status||'active'}</span></td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9db8d7">${r.created_at?new Date(r.created_at).toLocaleDateString():'—'}</td><td><button class="btn-sm" onclick="event.stopPropagation();openRecord(${r.id})">View</button></td></tr>`).join('');
+}
+async function submitRecord(){
+  const body={status:document.getElementById('f-status').value,notes:document.getElementById('intake-notes').value};
+  FIELDS.forEach(f=>{const el=document.getElementById('f-'+f);if(el)body[f]=el.value||'';});
+  try{
+    const r=await fetch('/api/records',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.success){toast('Record saved');document.getElementById('intake-notes').value='';FIELDS.forEach(f=>{const el=document.getElementById('f-'+f);if(el)el.value='';});await loadRecords();showView('records',document.querySelectorAll('.nav-btn')[2]);}
+    else toast('Error: '+d.error,true);
+  }catch(e){toast('Save failed',true);}
+}
+function doSearch(){
+  const q=document.getElementById('search-input').value.toLowerCase().trim();
+  if(!q){renderTable('search-tbody',allRecords);return;}
+  renderTable('search-tbody',allRecords.filter(r=>FIELDS.some(f=>(r[f]||'').toLowerCase().includes(q))||(r.notes||'').toLowerCase().includes(q)||String(r.id).includes(q)));
+}
+function clearSearch(){document.getElementById('search-input').value='';renderTable('search-tbody',allRecords);}
+async function openRecord(id){
+  try{
+    const r=await fetch('/api/records/'+id),d=await r.json();
+    if(!d.success)return;
+    const rec=d.record,contacts=d.contacts||[];
+    document.getElementById('modal-title').textContent=ENTITY+' #'+id;
+    document.getElementById('modal-body').innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">${FIELDS.map(f=>`<div><div style="font-size:11px;color:#9db8d7;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">${fmt(f)}</div><div style="font-size:15px;color:#eff7ff">${rec[f]||'<span style="color:#5a7a9a">—</span>'}</div></div>`).join('')}<div><div style="font-size:11px;color:#9db8d7;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Status</div><span class="badge badge-${rec.status==='active'?'active':'pending'}">${rec.status||'active'}</span></div><div><div style="font-size:11px;color:#9db8d7;text-transform:uppercase;letter-spacing:.3px;margin-bottom:4px">Created</div><div style="font-size:13px;font-family:'IBM Plex Mono',monospace;color:#9db8d7">${rec.created_at?new Date(rec.created_at).toLocaleString():'—'}</div></div></div>${rec.notes?`<div style="margin-bottom:20px"><div style="font-size:11px;color:#9db8d7;text-transform:uppercase;letter-spacing:.3px;margin-bottom:8px">Notes</div><div style="background:rgba(255,202,88,.05);border:1px solid rgba(255,202,88,.2);border-radius:10px;padding:14px;font-size:14px;color:#eff7ff;line-height:1.6">${rec.notes}</div></div>`:''} ${contacts.length?`<div style="font-size:13px;color:#9db8d7;text-transform:uppercase;letter-spacing:.3px;margin-bottom:12px">Contact Log (${contacts.length})</div>${contacts.map(c=>`<div class="contact-item"><div class="contact-meta">${c.contact_type||'contact'} · ${c.created_at?new Date(c.created_at).toLocaleString():''}</div><div class="contact-note">${c.notes||''}</div><div class="contact-author">${c.author||'System'}</div></div>`).join('')}`:''}`;
+    document.getElementById('record-modal').classList.add('show');
+  }catch(e){toast('Could not load record',true);}
+}
+function closeModal(){document.getElementById('record-modal').classList.remove('show');}
+async function submitContact(){
+  const body={record_id:parseInt(document.getElementById('contact-record-id').value),contact_type:document.getElementById('contact-type').value,notes:document.getElementById('contact-notes').value,author:document.getElementById('contact-author').value};
+  if(!body.record_id||!body.notes){toast('Record ID and notes required',true);return;}
+  try{
+    const r=await fetch('/api/contacts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const d=await r.json();
+    if(d.success){toast('Contact logged');document.getElementById('contact-notes').value='';document.getElementById('contact-record-id').value='';}
+    else toast('Error: '+d.error,true);
+  }catch(e){toast('Log failed',true);}
+}
+function initAudit(){
+  document.getElementById('audit-list').innerHTML=`<div class="audit-item"><div class="audit-dot"></div><div><div class="audit-text">IGM Audit Trail active — all record operations logged</div><div class="audit-time">DeBacco Nexus LLC · USPTO Patent Pending 19/571,156</div></div></div><div class="audit-item"><div class="audit-dot" style="background:#ffca58"></div><div><div class="audit-text">System initialized · ${NEXUS_NAME}</div><div class="audit-time">${new Date().toLocaleString()}</div></div></div>`;
+}
+function showView(id,btn){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('view-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='records')loadRecords();
+  if(id==='search'){buildHeaders();renderTable('search-tbody',allRecords);}
+}
+function toast(msg,err){
+  const el=document.getElementById('toast');
+  el.textContent=msg;el.className='toast show'+(err?' error':'');
+  setTimeout(()=>el.classList.remove('show'),3000);
+}
+document.getElementById('record-modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
+window.addEventListener('load',init);
+</script>
+</body>
+</html>
