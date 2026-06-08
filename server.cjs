@@ -222,6 +222,17 @@ async function generateNexusCode(prompt, nexusId, classification) {
     frontendCode = frontendCode.replaceAll('>' + label + '<', '>' + domainFields[i] + '<');
   });
 
+  // Embed nexus metadata as JSON for home screen
+  const nexusMeta = JSON.stringify({
+    nexus_name: nexusTitle,
+    entity_label: entityLabel,
+    fields: domainFields,
+    pods: meta.pods_suggested || [],
+    governance_tier: meta.classification?.governance_tier || 'Standard',
+    schema_description: meta.schema_description || ''
+  });
+  frontendCode = frontendCode.replace('</head>', '<script>window.NEXUS_META=' + nexusMeta + ';</script></head>');
+
   console.log('[AIRS Studio] Token substitution complete — entity:', entityLabel, '| fields:', domainFields.join(', '));
 
   return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode });

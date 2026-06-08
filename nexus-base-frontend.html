@@ -300,7 +300,7 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
   <div class="header-left">
     <div>
       <div class="logo" onclick="togglePrivacy()" style="cursor:pointer" title="Lock Screen">&#11088; Civ<span>GATE</span></div>
-      <div class="logo-sub" onclick="showIGMModal()" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Learn about IGM Governance">LA County MVA · Governed AI Case Management</div>
+      <div class="logo-sub" onclick="showIGMModal()" style="cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px" title="Learn about IGM Governance">Governed AI Data System · DeBacco Nexus LLC</div>
     </div>
     <div class="igm-status">
       IGM: <span class="ok">GOVERNED ✓</span>
@@ -328,7 +328,7 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
   <div style="text-align:center;margin-bottom:32px">
     <div style="font-size:64px;margin-bottom:16px">&#11088;</div>
     <div style="color:#d97706;font-size:52px;font-weight:800;letter-spacing:3px;font-family:'Inter',sans-serif">Civ<span style="color:#ffffff">GATE</span></div>
-    <div style="color:#7fa8d0;font-size:16px;margin-top:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px">LA County MVA · Governed AI Case Management</div>
+    <div style="color:#7fa8d0;font-size:16px;margin-top:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.5px">Governed AI Data System · DeBacco Nexus LLC</div>
   </div>
   <!-- Divider -->
   <div style="width:200px;height:2px;background:linear-gradient(90deg,transparent,#ffca58,transparent);margin-bottom:32px"></div>
@@ -341,13 +341,16 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
 
 <!-- NAV -->
 <nav class="nav">
-  <div class="nav-section">CivGATE</div>
+  <div class="nav-section">AIRS Nexus</div>
 
   <button class="nav-btn active" data-mode="dashboard" onclick="showMode('dashboard')" style="background:linear-gradient(135deg,rgba(255,202,88,.22),rgba(255,152,0,.12));color:#d97706;border-color:rgba(217,119,6,.4);font-weight:700;font-size:14px">
     <span class="icon">⬛</span> Dashboard
   </button>
   <button class="nav-btn" data-mode="intake" onclick="showMode('intake')">
-    <span class="icon">＋</span> New Intake
+    <span class="icon">＋</span> New Record
+  </button>
+  <button class="nav-btn active" data-mode="home" onclick="showMode('home')">
+    <span class="icon">⬡</span> Home
   </button>
   <button class="nav-btn" data-mode="veterans" onclick="showMode('veterans')">
     <span class="icon">⌕</span> Veterans
@@ -358,15 +361,11 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
     <span class="icon">✏️</span> Raw Note
   </button>
   <button class="nav-btn" data-mode="courtcalendar" onclick="showMode('courtcalendar')">
-    <span class="icon">📅</span> Court Calendar
+    <span class="icon">📅</span> Calendar
   </button>
   <button class="nav-btn" data-mode="docketarchive" onclick="showMode('docketarchive')">
     <span class="icon">📋</span> Document Archive
   </button>
-  <button class="nav-btn" data-mode="jail" onclick="showMode('jail')" style="opacity:0.5;cursor:not-allowed" disabled title="Coming Soon">
-    <span class="icon">🔒</span> County Jail
-  </button>
-
   <hr class="nav-divider">
   <div class="nav-section">Reports</div>
   <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')">
@@ -378,6 +377,34 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
 
 <!-- MAIN -->
 <div class="main">
+
+<!-- HOME -->
+<div id="mode-home" style="padding:24px">
+  <div style="background:linear-gradient(135deg,#1a3a5c,#0f2440);border-radius:16px;padding:32px;margin-bottom:24px;border:1px solid rgba(100,130,170,.3)">
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:8px">
+      <div style="font-size:28px;font-weight:800;color:#ffffff;font-family:'Inter',sans-serif" id="home-nexus-name">AIRS Nexus</div>
+      <div style="background:rgba(51,224,196,.15);border:1px solid rgba(51,224,196,.3);color:#33e0c4;font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;font-family:'IBM Plex Mono',monospace" id="home-gov-tier">IGM · Standard</div>
+    </div>
+    <div style="font-size:13px;color:#9db8d7;font-family:'IBM Plex Mono',monospace" id="home-entity-label">Governed Data System · DeBacco Nexus LLC · USPTO 19/571,156</div>
+  </div>
+
+  <!-- SCHEMA FIELDS -->
+  <div style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:700;color:#4a6080;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">SCHEMA FIELDS</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px" id="home-fields-grid"></div>
+  </div>
+
+  <!-- PODS -->
+  <div style="margin-bottom:24px">
+    <div style="font-size:11px;font-weight:700;color:#4a6080;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px">GENERATED PODS</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px" id="home-pods-grid"></div>
+  </div>
+
+  <!-- ENTER BUTTON -->
+  <button onclick="showMode('dashboard')" style="background:linear-gradient(135deg,#0d9488,#0284c7);color:#fff;border:none;padding:16px 40px;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;letter-spacing:.3px">
+    Enter Records →
+  </button>
+</div>
 
 <!-- DASHBOARD -->
 <div id="mode-dashboard">
@@ -679,7 +706,7 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:#f0f4f8;color:#1a2
       <div class="transfer-btns">
         <button class="btn-excel" onclick="downloadLog()">⬇ Download Full Log</button>
         <button class="btn-new" style="background:#1a4a2a" onclick="window.open('https://vetpro.panosoft.com/VetProWeb/index.jsp?pp=ViewDashboard','_blank')">Open VetPro</button>
-        <button class="btn-new" onclick="newIntake()">+ New Intake</button>
+        <button class="btn-new" onclick="newIntake()">+ New Record</button>
       </div>
     </div>
     <div class="transfer-body" id="transfer-body"></div>
@@ -909,18 +936,52 @@ function togSection(hdr){
   hdr.nextElementSibling.classList.toggle('hidden');
   hdr.classList.toggle('closed');
 }
+function initHomeScreen(){
+  const m = window.NEXUS_META;
+  if(!m) return;
+  const nameEl = document.getElementById('home-nexus-name');
+  const entityEl = document.getElementById('home-entity-label');
+  const tierEl = document.getElementById('home-gov-tier');
+  const fieldsEl = document.getElementById('home-fields-grid');
+  const podsEl = document.getElementById('home-pods-grid');
+  if(nameEl) nameEl.textContent = m.nexus_name || 'AIRS Nexus';
+  if(entityEl) entityEl.textContent = (m.entity_label || 'Record') + ' · Governed Data System · DeBacco Nexus LLC · USPTO 19/571,156';
+  if(tierEl) tierEl.textContent = 'IGM · ' + (m.governance_tier || 'Standard');
+  if(fieldsEl && m.fields) {
+    fieldsEl.innerHTML = m.fields.map(f =>
+      '<div style="background:#fff;border:1px solid rgba(100,130,170,.2);border-radius:10px;padding:14px 16px">' +
+      '<div style="font-size:11px;color:#9db8d7;font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">FIELD</div>' +
+      '<div style="font-size:14px;font-weight:600;color:#1a2332">' + f + '</div></div>'
+    ).join('');
+  }
+  if(podsEl && m.pods && m.pods.length) {
+    const colors = {'window':'#0284c7','room':'#0d9488','doorway':'#d97706','infographic':'#7c3aed','form':'#dc2626'};
+    podsEl.innerHTML = m.pods.map(p => {
+      const name = typeof p === 'object' ? (p.pod_name||p.name||'Pod') : p;
+      const type = typeof p === 'object' ? (p.pod_type||p.type||'window') : 'window';
+      const desc = typeof p === 'object' ? (p.description||'') : '';
+      const color = colors[type] || '#0d9488';
+      return '<div style="background:#fff;border:2px solid ' + color + '33;border-radius:12px;padding:18px">' +
+        '<div style="font-size:11px;font-weight:700;color:' + color + ';letter-spacing:1px;text-transform:uppercase;margin-bottom:6px">' + type + '</div>' +
+        '<div style="font-size:15px;font-weight:700;color:#1a2332;margin-bottom:6px">' + name + '</div>' +
+        '<div style="font-size:12px;color:#4a6080;line-height:1.5">' + desc + '</div></div>';
+    }).join('');
+  }
+}
+
 function showMode(mode){
   window.currentMode = mode;
-  // Update mobile nav active state
   document.querySelectorAll('.mnav-btn[data-mmode]').forEach(b=>{
     b.classList.toggle('active', b.dataset.mmode===mode);
   });
-  ['dashboard','intake','followup','search','veterans','datalog','rawnote','courtcalendar','docketarchive'].forEach(m=>{
-    document.getElementById('mode-'+m).style.display=m===mode?'block':'none';
+  ['home','dashboard','intake','followup','search','veterans','datalog','rawnote','courtcalendar','docketarchive'].forEach(m=>{
+    const el = document.getElementById('mode-'+m);
+    if(el) el.style.display=m===mode?'block':'none';
   });
   document.querySelectorAll('.nav-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.mode===mode);
   });
+  if(mode==='home') initHomeScreen();
   if(mode==='dashboard') loadDashboard();
   if(mode==='datalog') { loadDataLog(); loadInfographic(); }
   if(mode==='docketarchive') { loadDocketArchive(); }
@@ -1581,7 +1642,7 @@ async function loadCaseload(){
     const data=await res.json();
     const tbody=document.getElementById('caseload-tbody');
     if(!data.success||!data.veterans||data.veterans.length===0){
-      tbody.innerHTML='<tr><td colspan="8" class="empty"><div class="e-icon">⬛</div><p>No veterans in system yet. Start with a New Intake.</p></td></tr>';
+      tbody.innerHTML='<tr><td colspan="8" class="empty"><div class="e-icon">⬛</div><p>No veterans in system yet. Start with a New Record.</p></td></tr>';
       document.getElementById('stat-active').textContent='0';
       document.getElementById('stat-total').textContent='0';
       document.getElementById('stat-grads').textContent='0';
@@ -3326,7 +3387,7 @@ function showIGMModal() {
 // ── INIT ──
 document.getElementById('i-date').value=new Date().toISOString().slice(0,10);
 initPOS();
-loadDashboard();
+showMode('home');
 
 function formatSSN(el) {
   let v = el.value.replace(/\D/g, '').substring(0, 9);
