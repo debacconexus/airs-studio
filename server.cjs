@@ -113,29 +113,12 @@ async function generateNexusCode(prompt, nexusId, classification) {
   const meta = JSON.parse(metaClean);
   console.log('[AIRS Studio] Nexus:', meta.nexus_name);
 
-  // Call B: server code
-  console.log('[AIRS Studio] Step B: server...');
-  const serverRes = await axios.post('https://api.anthropic.com/v1/messages', {
-    model: 'claude-sonnet-4-20250514',
-    max_tokens: 6000,
-    system: 'Generate complete Node.js/Express server.cjs for a "' + meta.nexus_name + '" system. Output ONLY raw JavaScript, no markdown. CommonJS, pg with DATABASE_URL, PORT env, serve static from public/, CRUD API, POST /api/contacts, GET /api/stats, [IGM-GOVERNED] tags on notes. Comments in ' + langHint + '.',
-    messages: [{ role: 'user', content: 'Build server.cjs for: ' + prompt }]
-  }, { headers: apiHeaders });
-  let serverCode = serverRes.data.content.map(function(c){ return c.text||''; }).join('').replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+  // Call B: use proven base template — no truncation risk
+  console.log('[AIRS Studio] Step B: loading base template...');
+  const fs_read = require('fs');
+  const templatePath = require('path').join(__dirname, 'nexus-template.cjs');
+  let serverCode = fs_read.readFileSync(templatePath, 'utf8');
   console.log('[AIRS Studio] Server length:', serverCode.length);
-  // Ensure server code is complete — append safe closing if truncated
-  const serverEnds = serverCode.trimEnd();
-  if (!serverEnds.endsWith(');') && !serverEnds.endsWith('}') && !serverEnds.endsWith("});")) {
-    console.log('[AIRS Studio] Server code truncated — appending safe closing...');
-    serverCode += "\n});\n";
-  }
-  // Count braces and close any unclosed ones
-  const openBraces = (serverCode.match(/{/g) || []).length;
-  const closeBraces = (serverCode.match(/}/g) || []).length;
-  if (openBraces > closeBraces) {
-    serverCode += '\n' + '}'.repeat(openBraces - closeBraces) + '\n';
-    console.log('[AIRS Studio] Closed', openBraces - closeBraces, 'unclosed braces');
-  }
 
   // Call C: frontend
   console.log('[AIRS Studio] Step C: frontend...');
@@ -362,8 +345,13 @@ app.post('/api/generate', async (req, res) => {
       deploy: { startCommand: 'node server.cjs', restartPolicyType: 'ON_FAILURE' }
     }, null, 2);
 
+    const fs_tmpl = require('fs');
+    const templateCode = fs_tmpl.readFileSync(require('path').join(__dirname, 'nexus-template.cjs'), 'utf8');
+    const tableName = (nexusData.primary_entity || 'records').toLowerCase().replace(/[^a-z0-9]/g, '_') + '_records';
+
     const filesToPush = [
-      { path: 'server.cjs', content: nexusData.server_code },
+      { path: 'server.cjs', content: templateCode },
+      { path: 'nexus-template.cjs', content: templateCode },
       { path: 'public/index.html', content: nexusData.frontend_code },
       { path: 'package.json', content: pkgJson },
       { path: 'railway.json', content: railwayJson },
@@ -415,6 +403,17 @@ app.post('/api/generate', async (req, res) => {
           { input: { name: 'app', projectId, source: { repo: repoFullName } } }
         );
         const serviceId = serviceData.serviceCreate.id;
+
+        // Set env vars on the app service
+        await railwayQuery(
+          'mutation VariableCollectionUpsert($input: VariableCollectionUpsertInput!) { variableCollectionUpsert }',
+          { input: { projectId, environmentId, serviceId, variables: {
+            NEXUS_NAME: nexusData.nexus_name,
+            TABLE_NAME: tableName,
+            ENTITY_LABEL: nexusData.primary_entity || 'Record',
+            NODE_ENV: 'production'
+          }}}
+        );
 
         await railwayQuery(
           'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
