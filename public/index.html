@@ -417,7 +417,11 @@ async function generateNexus() {
         } else if (nexus.status === 'deployed' && stepShown < 7) {
           setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
           evtSource.close();
-          if (livePanel) livePanel.style.display = 'none';
+          if (livePanel) {
+            livePanel.style.borderTop = '1px solid rgba(51,224,196,.2)';
+            livePanel.style.opacity = '0.6';
+            livePanel.style.fontSize = '11px';
+          }
           showNexusResult(nexus);
           btn.disabled = false;
           document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
