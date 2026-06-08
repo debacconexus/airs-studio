@@ -448,13 +448,28 @@ app.post('/api/generate', async (req, res) => {
     // Async Railway provisioning — cascading steps, each saves context
     (async () => {
       try {
-        // Step 1 — Create Railway project
-        console.log('[AIRS Studio] Railway Step 1: Creating project...');
-        const projectData = await railwayQuery(
-          'mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }',
-          { input: { name: repoName, description: 'AIRS Nexus: ' + nexusData.nexus_name } }
-        );
-        const projectId = projectData.projectCreate.id;
+        // Step 1 — Find or create Railway project
+        console.log('[AIRS Studio] Railway Step 1: Finding or creating project...');
+        let projectId = null;
+        try {
+          const existingProjects = await railwayQuery(
+            'query { projects { edges { node { id name } } } }', {}
+          );
+          const existing = existingProjects.projects.edges.find(e => e.node.name === repoName);
+          if (existing) {
+            projectId = existing.node.id;
+            console.log('[AIRS Studio] Railway Step 1: Found existing project:', projectId);
+          }
+        } catch(findErr) {
+          console.log('[AIRS Studio] Railway Step 1: Could not query existing projects, creating new...');
+        }
+        if (!projectId) {
+          const projectData = await railwayQuery(
+            'mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }',
+            { input: { name: repoName, description: 'AIRS Nexus: ' + nexusData.nexus_name } }
+          );
+          projectId = projectData.projectCreate.id;
+        }
         console.log('[AIRS Studio] Railway Step 1 done:', projectId);
 
         // Step 2 — Get environment (saved: projectId)

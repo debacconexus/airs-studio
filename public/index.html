@@ -373,6 +373,30 @@ async function generateNexus() {
     evtSource.onerror = () => {
       console.warn('[AIRS] SSE connection lost — falling back to poll');
       evtSource.close();
+      // Start polling fallback
+      pollInterval = setInterval(async () => {
+        try {
+          const statusRes = await fetch('/api/status/' + currentNexusId);
+          const statusData = await statusRes.json();
+          if (!statusData.success) return;
+          const nexus = statusData.nexus;
+          if (nexus.status === 'provisioned' && stepShown < 6) {
+            setStep(5, 'done'); setStep(6, 'active'); stepShown = 6;
+          } else if (nexus.status === 'deployed' && stepShown < 7) {
+            setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
+            clearInterval(pollInterval);
+            showNexusResult(nexus);
+            btn.disabled = false;
+            document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+            stepShown = 7;
+          } else if (nexus.status === 'error') {
+            setStep(stepShown, 'error', nexus.error || 'Generation error');
+            clearInterval(pollInterval);
+            btn.disabled = false;
+            document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+          }
+        } catch(e) {}
+      }, 3000);
     };
 
     evtSource.onmessage = (e) => {
