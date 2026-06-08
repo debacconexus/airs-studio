@@ -453,7 +453,21 @@ function showNexusResult(nexus) {
   
   if (nexus.url) {
     document.getElementById('result-url').innerHTML = `<a href="${nexus.url}" target="_blank">${nexus.url}</a>`;
-    document.getElementById('result-open-btn').href = nexus.url;
+    const openBtn = document.getElementById('result-open-btn');
+    openBtn.href = nexus.url;
+    openBtn.onclick = async function(e) {
+      e.preventDefault();
+      const url = nexus.url;
+      openBtn.textContent = 'Checking...';
+      try {
+        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(8000) });
+        window.open(url, '_blank');
+        openBtn.textContent = 'Open Nexus →';
+      } catch(err) {
+        openBtn.textContent = 'Still building — try again';
+        setTimeout(() => { openBtn.textContent = 'Open Nexus →'; }, 4000);
+      }
+    };
   }
 
   // Show pod builder
