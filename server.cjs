@@ -694,6 +694,7 @@ app.get('/api/stream/:id', async (req, res) => {
           send({ type: 'meta', field: 'nexus_name', value: nexus.nexus_name });
           send({ type: 'meta', field: 'primary_entity', value: nexus.primary_entity });
           send({ type: 'meta', field: 'governance_tier', value: nexus.classification?.governance_tier });
+          send({ type: 'meta', field: 'schema_description', value: nexus.schema_description });
           if (nexus.fields) {
             nexus.fields.forEach((f, i) => {
               const label = typeof f === 'object' ? (f.field_name || f.name || f.label || Object.values(f)[0]) : f;
