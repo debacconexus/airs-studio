@@ -117,7 +117,7 @@ async function generateNexusCode(prompt, nexusId, classification) {
   console.log('[AIRS Studio] Step B: server...');
   const serverRes = await axios.post('https://api.anthropic.com/v1/messages', {
     model: 'claude-sonnet-4-20250514',
-    max_tokens: 5000,
+    max_tokens: 6000,
     system: 'Generate complete Node.js/Express server.cjs for a "' + meta.nexus_name + '" system. Output ONLY raw JavaScript, no markdown. CommonJS, pg with DATABASE_URL, PORT env, serve static from public/, CRUD API, POST /api/contacts, GET /api/stats, [IGM-GOVERNED] tags on notes. Comments in ' + langHint + '.',
     messages: [{ role: 'user', content: 'Build server.cjs for: ' + prompt }]
   }, { headers: apiHeaders });
