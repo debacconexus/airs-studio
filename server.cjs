@@ -465,8 +465,8 @@ app.post('/api/generate', async (req, res) => {
         let finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
         try {
           const domainData = await railwayQuery(
-            'mutation ServiceDomainCreate($input: ServiceDomainCreateInput!) { serviceDomainCreate(input: $input) { domain } }',
-            { input: { serviceId, environmentId } }
+            'mutation ServiceDomainCreate($environmentId: String!, $serviceId: String!) { serviceDomainCreate(input: { environmentId: $environmentId, serviceId: $serviceId }) { id domain } }',
+            { environmentId, serviceId }
           );
           if (domainData && domainData.serviceDomainCreate && domainData.serviceDomainCreate.domain) {
             finalUrl = 'https://' + domainData.serviceDomainCreate.domain;
