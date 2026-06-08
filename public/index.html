@@ -403,6 +403,7 @@ async function generateNexus() {
           setStep(3, 'active');
           stepShown = 3;
         } else if (nexus.status === 'built' && stepShown < 4) {
+          if (stepShown < 3) { setStep(2, 'done'); }
           setStep(3, 'done');
           setStep(4, 'active');
           stepShown = 4;
