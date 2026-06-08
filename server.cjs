@@ -485,6 +485,23 @@ app.post('/api/generate', async (req, res) => {
         const serviceId = serviceData.serviceCreate.id;
         console.log('[AIRS Studio] Railway Step 3 done:', serviceId);
 
+        // Step 3.5 — Set environment variables on app service
+        console.log('[AIRS Studio] Railway Step 3.5: Setting environment variables...');
+        try {
+          await railwayQuery(
+            'mutation VariableCollectionUpsert($input: VariableCollectionUpsertInput!) { variableCollectionUpsert }',
+            { input: { projectId, environmentId, serviceId, variables: {
+              NEXUS_NAME: nexusData.nexus_name,
+              ENTITY_LABEL: nexusData.primary_entity || 'Record',
+              TABLE_NAME: (nexusData.primary_entity || 'records').toLowerCase().replace(/[^a-z0-9]/g,'_') + '_records',
+              NODE_ENV: 'production'
+            }}}
+          );
+          console.log('[AIRS Studio] Railway Step 3.5 done: env vars set');
+        } catch(varErr) {
+          console.error('[AIRS Studio] Railway Step 3.5 error:', varErr.message);
+        }
+
         // Step 4 — Trigger deployment (saved: projectId, environmentId, serviceId)
         console.log('[AIRS Studio] Railway Step 4: Triggering deployment...');
         try {
