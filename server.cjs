@@ -445,44 +445,62 @@ app.post('/api/generate', async (req, res) => {
     });
     console.log('[AIRS Studio] Nexus ' + nexusId + ' code pushed, provisioning Railway in background...');
 
-    // Async Railway provisioning — does not block response
+    // Async Railway provisioning — cascading steps, each saves context
     (async () => {
       try {
+        // Step 1 — Create Railway project
+        console.log('[AIRS Studio] Railway Step 1: Creating project...');
         const projectData = await railwayQuery(
           'mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { id name } }',
           { input: { name: repoName, description: 'AIRS Nexus: ' + nexusData.nexus_name } }
         );
         const projectId = projectData.projectCreate.id;
+        console.log('[AIRS Studio] Railway Step 1 done:', projectId);
 
+        // Step 2 — Get environment (saved: projectId)
+        console.log('[AIRS Studio] Railway Step 2: Getting environment...');
         const envData = await railwayQuery(
           'query GetEnvironments($projectId: String!) { environments(projectId: $projectId) { edges { node { id name } } } }',
           { projectId }
         );
         const environmentId = envData.environments.edges[0].node.id;
+        console.log('[AIRS Studio] Railway Step 2 done:', environmentId);
 
+        // Step 3 — Create app service (saved: projectId, environmentId)
+        console.log('[AIRS Studio] Railway Step 3: Creating app service...');
         const serviceData = await railwayQuery(
           'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
           { input: { name: 'app', projectId, source: { repo: repoFullName } } }
         );
         const serviceId = serviceData.serviceCreate.id;
+        console.log('[AIRS Studio] Railway Step 3 done:', serviceId);
 
-        // Trigger deployment on the app service
+        // Step 4 — Trigger deployment (saved: projectId, environmentId, serviceId)
+        console.log('[AIRS Studio] Railway Step 4: Triggering deployment...');
         try {
           await railwayQuery(
             'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
             { serviceId, environmentId }
           );
-          console.log('[AIRS Studio] Deployment triggered for service:', serviceId);
+          console.log('[AIRS Studio] Railway Step 4 done: deployment triggered');
         } catch (deployErr) {
-          console.error('[AIRS Studio] Deploy trigger error:', deployErr.message);
+          console.error('[AIRS Studio] Railway Step 4 error:', deployErr.message);
         }
 
-        await railwayQuery(
-          'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
-          { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
-        );
+        // Step 5 — Add PostgreSQL (saved: projectId)
+        console.log('[AIRS Studio] Railway Step 5: Adding PostgreSQL...');
+        try {
+          await railwayQuery(
+            'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
+            { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
+          );
+          console.log('[AIRS Studio] Railway Step 5 done: PostgreSQL added');
+        } catch (pgErr) {
+          console.error('[AIRS Studio] Railway Step 5 error:', pgErr.message);
+        }
 
-        // Generate public domain for the app service
+        // Step 6 — Generate domain (saved: environmentId, serviceId)
+        console.log('[AIRS Studio] Railway Step 6: Generating domain...');
         let finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
         try {
           const domainData = await railwayQuery(
@@ -491,10 +509,10 @@ app.post('/api/generate', async (req, res) => {
           );
           if (domainData && domainData.serviceDomainCreate && domainData.serviceDomainCreate.domain) {
             finalUrl = 'https://' + domainData.serviceDomainCreate.domain;
-            console.log('[AIRS Studio] Domain created:', finalUrl);
+            console.log('[AIRS Studio] Railway Step 6 done:', finalUrl);
           }
         } catch (domainErr) {
-          console.error('[AIRS Studio] Domain creation error:', domainErr.message);
+          console.error('[AIRS Studio] Railway Step 6 error:', domainErr.message);
         }
 
         // Store provisioned state — Railway is still building
