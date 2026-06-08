@@ -385,11 +385,11 @@ app.post('/api/generate', async (req, res) => {
       console.log('[AIRS Studio] Pushed:', file.path);
     }
 
-    // Return success immediately after GitHub push — Railway provisions in background
+    // Status: pushed — all files confirmed on GitHub
     const liveUrl = 'https://' + repoName + '-production.up.railway.app';
     nexusRegistry.set(nexusId, {
       ...nexusRegistry.get(nexusId),
-      status: 'deployed',
+      status: 'pushed',
       github: repoFullName,
       url: liveUrl
     });

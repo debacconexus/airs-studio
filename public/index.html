@@ -353,18 +353,21 @@ async function generateNexus() {
         setStep(3, 'done');
         setStep(4, 'active');
         stepShown = 4;
-      } else if (nexus.status === 'deployed' && stepShown < 5) {
+      } else if (nexus.status === 'pushed' && stepShown < 5) {
         setStep(4, 'done');
         setStep(5, 'active');
         stepShown = 5;
-        setTimeout(() => {
-          setStep(5, 'done');
-          setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
-          clearInterval(pollInterval);
-          showNexusResult(nexus);
-          btn.disabled = false;
-          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
-        }, 2000);
+      } else if (nexus.status === 'provisioned' && stepShown < 6) {
+        setStep(5, 'done');
+        setStep(6, 'active');
+        stepShown = 6;
+      } else if (nexus.status === 'deployed' && stepShown < 7) {
+        setStep(6, 'done', 'Your Nexus is live — ready for Pod customization ★');
+        clearInterval(pollInterval);
+        showNexusResult(nexus);
+        btn.disabled = false;
+        document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+        stepShown = 7;
       } else if (nexus.status === 'error') {
         setStep(stepShown, 'error', nexus.error || 'Generation error');
         clearInterval(pollInterval);
