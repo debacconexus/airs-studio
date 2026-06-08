@@ -370,6 +370,11 @@ async function generateNexus() {
     const livePanel = document.getElementById('live-meta-panel');
     if (livePanel) livePanel.style.display = 'block';
 
+    evtSource.onerror = () => {
+      console.warn('[AIRS] SSE connection lost — falling back to poll');
+      evtSource.close();
+    };
+
     evtSource.onmessage = (e) => {
       const msg = JSON.parse(e.data);
 
@@ -423,7 +428,7 @@ async function generateNexus() {
           btn.disabled = false;
           document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
       }
-    }, 2000);
+    };
 
   } catch (err) {
     console.error(err);
