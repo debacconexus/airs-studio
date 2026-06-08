@@ -185,8 +185,39 @@ async function generateNexusCode(prompt, nexusId, classification) {
   // Call C: frontend
   // Call C: use proven frontend template — fully interactive
   console.log('[AIRS Studio] Step C: loading frontend template...');
-  const frontendCode = fs.readFileSync(path.join(__dirname, 'nexus-base-frontend.html'), 'utf8');
+  let frontendCode = fs.readFileSync(path.join(__dirname, 'nexus-base-frontend.html'), 'utf8');
   console.log('[AIRS Studio] Frontend length:', frontendCode.length);
+
+  // Token substitution — replace CivGATE labels with domain-specific values
+  const fields = meta.fields || ['Field 1','Field 2','Field 3','Field 4','Field 5','Field 6'];
+  const entityLabel = meta.primary_entity || 'Record';
+  const nexusTitle = meta.nexus_name || 'AIRS Nexus';
+
+  // Top-level identity substitutions
+  frontendCode = frontendCode.replaceAll('CivGATE', nexusTitle);
+  frontendCode = frontendCode.replaceAll('Veterans', entityLabel + 's');
+  frontendCode = frontendCode.replaceAll('Veteran', entityLabel);
+  frontendCode = frontendCode.replaceAll('veteran', entityLabel.toLowerCase());
+  frontendCode = frontendCode.replaceAll('VTC CASES', entityLabel.toUpperCase() + ' RECORDS');
+  frontendCode = frontendCode.replaceAll('ACTIVE VTC CASES', 'ACTIVE ' + entityLabel.toUpperCase() + ' RECORDS');
+  frontendCode = frontendCode.replaceAll('Active VTC Caseload', 'Active ' + entityLabel + ' Records');
+  frontendCode = frontendCode.replaceAll('JIV GOVERNED RECORD', entityLabel.toUpperCase() + ' GOVERNED RECORD');
+
+  // Field label substitutions (6 fields from Call A)
+  const fieldLabels = ['NAME','CASE #','COURTHOUSE','CHARGE TYPE','EMPLOYMENT','INTAKE DATE'];
+  const domainFields = [
+    (fields[0]||'Field 1').toUpperCase(),
+    (fields[1]||'Field 2').toUpperCase(),
+    (fields[2]||'Field 3').toUpperCase(),
+    (fields[3]||'Field 4').toUpperCase(),
+    (fields[4]||'Field 5').toUpperCase(),
+    (fields[5]||'Field 6').toUpperCase()
+  ];
+  fieldLabels.forEach((label, i) => {
+    frontendCode = frontendCode.replaceAll('>' + label + '<', '>' + domainFields[i] + '<');
+  });
+
+  console.log('[AIRS Studio] Token substitution complete — entity:', entityLabel, '| fields:', domainFields.join(', '));
 
   return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode });
 }
