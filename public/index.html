@@ -458,22 +458,21 @@ function showNexusResult(nexus) {
   document.getElementById('result-schema').textContent = nexus.schema_description || '—';
   
   if (nexus.url) {
-    document.getElementById('result-url').innerHTML = `<a href="${nexus.url}" target="_blank">${nexus.url}</a>`;
     const openBtn = document.getElementById('result-open-btn');
-    openBtn.href = nexus.url;
-    openBtn.onclick = async function(e) {
-      e.preventDefault();
-      const url = nexus.url;
-      openBtn.textContent = 'Checking...';
-      try {
-        await fetch(url, { mode: 'no-cors', signal: AbortSignal.timeout(8000) });
-        window.open(url, '_blank');
-        openBtn.textContent = 'Open Nexus →';
-      } catch(err) {
-        openBtn.textContent = 'Still building — try again';
-        setTimeout(() => { openBtn.textContent = 'Open Nexus →'; }, 4000);
-      }
-    };
+    const isDeployUrl = nexus.url.includes('railway.app/new');
+    if (isDeployUrl) {
+      document.getElementById('result-url').innerHTML = '<span style="color:#ffca58;font-size:12px">Code ready on GitHub — click to deploy on Railway</span>';
+      openBtn.textContent = 'Deploy on Railway →';
+      openBtn.style.background = 'linear-gradient(135deg,#7c3aed,#4f46e5)';
+      openBtn.href = nexus.url;
+      openBtn.onclick = null;
+    } else {
+      document.getElementById('result-url').innerHTML = '<a href="' + nexus.url + '" target="_blank">' + nexus.url + '</a>';
+      openBtn.textContent = 'Open Nexus →';
+      openBtn.style.background = '';
+      openBtn.href = nexus.url;
+      openBtn.onclick = null;
+    }
   }
 
   // Show pod builder
