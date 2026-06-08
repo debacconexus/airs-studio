@@ -94,7 +94,7 @@ async function railwayQuery(query, variables = {}, retries = 3) {
             'Authorization': `Bearer ${RAILWAY_TOKEN}`,
             'Content-Type': 'application/json'
           },
-          timeout: 30000
+          timeout: 60000
         }
       );
       if (res.data.errors) throw new Error(res.data.errors[0].message);
