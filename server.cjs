@@ -455,6 +455,16 @@ app.post('/api/generate', async (req, res) => {
         );
         const serviceId = serviceData.serviceCreate.id;
 
+        // Trigger deployment on the app service
+        try {
+          await railwayQuery(
+            'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
+            { serviceId, environmentId }
+          );
+          console.log('[AIRS Studio] Deployment triggered for service:', serviceId);
+        } catch (deployErr) {
+          console.error('[AIRS Studio] Deploy trigger error:', deployErr.message);
+        }
 
         await railwayQuery(
           'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
