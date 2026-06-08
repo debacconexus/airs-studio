@@ -83,19 +83,30 @@ const nexusRegistry = {
 };
 
 // ─── RAILWAY GRAPHQL CLIENT ───────────────────────────────────────────────────
-async function railwayQuery(query, variables = {}) {
-  const res = await axios.post(
-    'https://backboard.railway.app/graphql/v2',
-    { query, variables },
-    {
-      headers: {
-        'Authorization': `Bearer ${RAILWAY_TOKEN}`,
-        'Content-Type': 'application/json'
-      }
+async function railwayQuery(query, variables = {}, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await axios.post(
+        'https://backboard.railway.app/graphql/v2',
+        { query, variables },
+        {
+          headers: {
+            'Authorization': `Bearer ${RAILWAY_TOKEN}`,
+            'Content-Type': 'application/json'
+          },
+          timeout: 30000
+        }
+      );
+      if (res.data.errors) throw new Error(res.data.errors[0].message);
+      return res.data.data;
+    } catch (err) {
+      const isLast = attempt === retries;
+      if (isLast) throw err;
+      const wait = attempt * 3000;
+      console.log('[AIRS Studio] Railway API attempt ' + attempt + ' failed, retrying in ' + (wait/1000) + 's...');
+      await new Promise(r => setTimeout(r, wait));
     }
-  );
-  if (res.data.errors) throw new Error(res.data.errors[0].message);
-  return res.data.data;
+  }
 }
 
 // ─── IGM PROMPT CLASSIFIER ────────────────────────────────────────────────────
