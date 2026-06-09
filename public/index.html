@@ -214,7 +214,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div class="nexus-name" id="result-name">&#9733; Your Nexus</div>
         <div class="nexus-url" id="result-url"></div>
       </div>
-      <button class="open-btn" id="open-btn" onclick="openNexus()">Open Nexus &#8594;</button>
+      <a class="open-btn" id="open-btn" href="#" target="_blank" onclick="this.href=currentNexusUrl||document.querySelector('#result-url a')?.href||'#';return true;">Open Nexus &#8594;</a>
     </div>
     <div class="meta-cards">
       <div class="meta-card"><div class="meta-label">Primary Entity</div><div class="meta-value" id="result-entity">&mdash;</div></div>
