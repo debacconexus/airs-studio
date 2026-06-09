@@ -579,8 +579,11 @@ window.addEventListener('load', async () => {
 let currentNexusUrl = null;
 
 function openNexus() {
-  if (currentNexusUrl) {
-    window.open(currentNexusUrl, '_blank');
+  const urlEl = document.getElementById('result-url');
+  const link = urlEl ? urlEl.querySelector('a') : null;
+  const url = currentNexusUrl || (link ? link.href : null);
+  if (url) {
+    window.open(url, '_blank');
   }
 }
 </script>
