@@ -443,7 +443,7 @@ function showNexusResult(nexus) {
   const displayName = nexus.nexus_name || (liveName !== '—' ? liveName : null) || 'Your Nexus';
   const displayEntity = nexus.primary_entity || (liveEntity !== '—' ? liveEntity : null) || '—';
   document.getElementById('result-name').textContent = '★ ' + displayName;
-  document.getElementById('result-desc').textContent = nexus.nexus_description || '';
+  const descEl = document.getElementById('result-desc'); if (descEl) descEl.textContent = nexus.nexus_description || '';
   document.getElementById('result-entity').textContent = displayEntity;
   document.getElementById('result-tier').textContent = `IGM · ${nexus.classification?.governance_tier === 'enhanced' ? 'Enhanced' : 'Standard'} governance`;
   document.getElementById('result-schema').textContent = nexus.schema_description || (liveSchema && liveSchema !== '—' ? liveSchema : '—');
