@@ -620,13 +620,15 @@ app.post('/api/generate', async (req, res) => {
             const req = client.get(finalUrl, { timeout: 5000 }, (res) => {
               if (res.statusCode < 500) {
                 clearInterval(pollLive);
-                nexusRegistry.set(nexusId, {
-                  ...nexusRegistry.get(nexusId).then ? null : nexusRegistry.get(nexusId),
-                  status: 'deployed',
-                  url: finalUrl
-                }).then(() => {
+                (async () => {
+                  const current = await nexusRegistry.get(nexusId);
+                  await nexusRegistry.set(nexusId, {
+                    ...current,
+                    status: 'deployed',
+                    url: finalUrl
+                  });
                   console.log('[AIRS Studio] Nexus ' + nexusId + ' is LIVE:', finalUrl);
-                });
+                })();
               }
             });
             req.on('error', () => {});
