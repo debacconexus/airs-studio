@@ -50,6 +50,10 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:var(--bg);color:va
 .demo-close{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;margin-top:8px}
 .demo-close:hover,.demo-close:focus{border-color:var(--coral);color:var(--coral);outline:2px solid var(--coral)}
 .demo-igm{font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+.demo-action{background:linear-gradient(135deg,#1a3a1a,#2d5a2d);border:1px solid #4ade80;color:#4ade80;font-size:14px;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;margin:8px 8px 0 0}
+.demo-action:hover,.demo-action:focus{outline:2px solid var(--green)}
+.demo-action.clear{background:var(--bg3);border-color:var(--border2);color:var(--text2)}
+.demo-action.clear:hover,.demo-action.clear:focus{border-color:var(--coral);color:var(--coral);outline:2px solid var(--coral)}
 
 .layout{display:flex;padding-top:60px;min-height:100vh}
 .nav{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 12px;position:fixed;top:60px;bottom:0;overflow-y:auto}
@@ -203,6 +207,7 @@ textarea.form-input{resize:vertical;min-height:100px}
     <div class="demo-section"><div class="demo-label">Governed Fields</div><div class="demo-chips" id="demo-fields"></div></div>
     <div class="demo-section" id="demo-pods-wrap"><div class="demo-label">Suggested Pods</div><div class="demo-chips" id="demo-pods"></div></div>
     <div class="demo-section"><div class="demo-label">Tour &#8212; Tap a Step to Go There</div><div id="demo-steps"></div></div>
+    <div class="demo-section"><div class="demo-label">Sample Data &#8212; Synthetic Records, No Real PII</div><button class="demo-action" onclick="loadDemoData()">Load 8 Sample Records</button><button class="demo-action clear" onclick="clearDemoData()">Clear Sample Data</button></div>
     <div class="demo-igm">Every write is logged. Every inference is accountable. RQ = I(d) / P(s) + T(c)</div>
     <button class="demo-close" id="demo-close-btn" onclick="closeDemo()">Close Demo</button>
   </div>
@@ -426,6 +431,23 @@ function openDemo(){
 }
 function closeDemo(){document.getElementById("demo-overlay").classList.remove("show");const b=document.getElementById("demo-btn");if(b)b.focus();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDemo();});
+async function loadDemoData(){
+  try{const labels=[0,1,2,3,4,5].map(i=>fieldLabel(i));
+    const r=await fetch("/api/demo/seed",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:labels})});
+    const d=await r.json();
+    if(!d.success){toast("Seed error: "+d.error,true);return;}
+    if(d.existing){toast("Sample data already loaded ("+d.existing+" records)");}
+    else{toast(d.seeded+" sample records loaded - all synthetic");}
+    closeDemo();showMode("dashboard");
+  }catch(err){toast("Error: "+err.message,true);}
+}
+async function clearDemoData(){
+  try{const r=await fetch("/api/demo/clear",{method:"DELETE"});const d=await r.json();
+    if(!d.success){toast("Clear error: "+d.error,true);return;}
+    toast(d.cleared+" sample records cleared");
+    closeDemo();showMode("dashboard");
+  }catch(err){toast("Error: "+err.message,true);}
+}
 
 document.addEventListener("DOMContentLoaded",()=>{
   initHome();buildNewRecordForm();buildTableHeaders();showMode("home");

@@ -22,6 +22,7 @@ async function initDB() {
     await pool.query(`CREATE TABLE IF NOT EXISTS documents (id SERIAL PRIMARY KEY, record_id INTEGER, document_type VARCHAR(100), document_source VARCHAR(100), received_via VARCHAR(100), event_date DATE, assigned_to VARCHAR(255), extracted_text TEXT, igm_governed BOOLEAN DEFAULT true, chain_status VARCHAR(50) DEFAULT 'submitted', created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
     await pool.query(`CREATE TABLE IF NOT EXISTS raw_notes (id SERIAL PRIMARY KEY, record_id INTEGER, note_type VARCHAR(50) DEFAULT 'general', content TEXT, author VARCHAR(255), igm_governed BOOLEAN DEFAULT false, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
     await pool.query(`CREATE TABLE IF NOT EXISTS calendar_events (id SERIAL PRIMARY KEY, record_id INTEGER, event_date DATE, event_type VARCHAR(100), location VARCHAR(255), assigned_to VARCHAR(255), notes TEXT, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)`);
+    await pool.query(`ALTER TABLE ${TABLE_NAME} ADD COLUMN IF NOT EXISTS is_demo BOOLEAN DEFAULT false`);
     console.log('[IGM] Database initialized: ' + NEXUS_NAME);
   } catch (err) {
     console.error('[IGM] DB init error:', err.message);
@@ -183,6 +184,62 @@ app.get('/api/stats', async (req, res) => {
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, nexus: NEXUS_NAME, entity: ENTITY_LABEL, igm: 'GOVERNED', timestamp: new Date().toISOString() });
+});
+
+// --- AIRS Demo Sample Data (synthetic, no real PII) ---
+const DEMO_CAST = ['Alex Rivera','Jordan Lee','Sam Okafor','Taylor Nguyen','Morgan Castillo','Casey Brightwater','Riley Cohen','Devon Park'];
+function demoValue(label, i) {
+  const L = (label || '').toUpperCase();
+  if (L.includes('NAME') && !L.includes('USERNAME')) return DEMO_CAST[i];
+  if (L.includes('ID') || L.includes('#') || L.includes('CASE') || L.includes('NUMBER')) return 'DEMO-' + (1001 + i);
+  if (L.includes('DATE')) { const d = new Date(); d.setDate(d.getDate() - (i * 11 + 3)); return d.toISOString().slice(0, 10); }
+  if (L.includes('PHONE')) return '(555) 010' + i;
+  if (L.includes('EMAIL')) return 'demo' + (i + 1) + '@example.com';
+  if (L.includes('LOCATION') || L.includes('SITE') || L.includes('COURT') || L.includes('FACILITY')) return 'Demo Site ' + String.fromCharCode(65 + (i % 4));
+  if (L.includes('TEAM') || L.includes('ASSIGNED') || L.includes('WORKER') || L.includes('STAFF')) return 'Demo Staff ' + String.fromCharCode(65 + (i % 3));
+  return 'Sample ' + (label || 'Entry') + ' ' + (i + 1);
+}
+app.post('/api/demo/seed', async (req, res) => {
+  try {
+    const existing = await pool.query(`SELECT COUNT(*) FROM ${TABLE_NAME} WHERE is_demo = true`);
+    if (parseInt(existing.rows[0].count) > 0) {
+      return res.json({ success: true, seeded: 0, existing: parseInt(existing.rows[0].count), message: 'Sample data already loaded' });
+    }
+    const fields = (req.body && req.body.fields) || [];
+    const statuses = ['active','active','active','active','active','completed','pending','active'];
+    let seeded = 0;
+    for (let i = 0; i < 8; i++) {
+      const vals = [0,1,2,3,4,5].map(f => demoValue(fields[f], i));
+      const r = await pool.query(
+        `INSERT INTO ${TABLE_NAME} (field_1,field_2,field_3,field_4,field_5,field_6,status,notes,is_demo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true) RETURNING id`,
+        vals.concat([statuses[i], '[DEMO] Synthetic record for demonstration only - no real PII'])
+      );
+      const rid = r.rows[0].id;
+      await pool.query(`INSERT INTO contact_log (record_id, contact_type, notes, author) VALUES ($1,$2,$3,$4)`,
+        [rid, 'Demo Contact', '[DEMO] Synthetic contact entry - governed and logged', 'AIRS Demo']);
+      const ev = new Date(); ev.setDate(ev.getDate() + (i * 4 + 2));
+      await pool.query(`INSERT INTO calendar_events (record_id, event_date, event_type, location, assigned_to, notes) VALUES ($1,$2,$3,$4,$5,$6)`,
+        [rid, ev.toISOString().slice(0, 10), 'Demo Review', 'Demo Site A', 'Demo Staff A', '[DEMO]']);
+      seeded++;
+    }
+    console.log('[IGM] Demo seed: ' + seeded + ' synthetic records loaded');
+    res.json({ success: true, seeded });
+  } catch (err) { res.status(500).json({ success: false, error: err.message }); }
+});
+app.delete('/api/demo/clear', async (req, res) => {
+  try {
+    const ids = await pool.query(`SELECT id FROM ${TABLE_NAME} WHERE is_demo = true`);
+    const list = ids.rows.map(r => r.id);
+    if (list.length) {
+      await pool.query(`DELETE FROM contact_log WHERE record_id = ANY($1)`, [list]);
+      await pool.query(`DELETE FROM calendar_events WHERE record_id = ANY($1)`, [list]);
+      await pool.query(`DELETE FROM documents WHERE record_id = ANY($1)`, [list]);
+      await pool.query(`DELETE FROM raw_notes WHERE record_id = ANY($1)`, [list]);
+      await pool.query(`DELETE FROM ${TABLE_NAME} WHERE is_demo = true`);
+    }
+    console.log('[IGM] Demo clear: ' + list.length + ' synthetic records removed');
+    res.json({ success: true, cleared: list.length });
+  } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
 
 app.get('*', (req, res) => {
