@@ -459,8 +459,8 @@ function showNexusResult(nexus) {
       openBtn.href = nexus.url;
       openBtn.onclick = null;
     } else {
-      document.getElementById('result-url').innerHTML = '<a href="' + nexus.url + '" target="_blank">' + nexus.url + '</a>';
       currentNexusUrl = nexus.url;
+      document.getElementById('result-url').innerHTML = '<a href="' + nexus.url + '" target="_blank">' + nexus.url + '</a>';
       openBtn.textContent = 'Open Nexus →';
       openBtn.style.background = '';
       openBtn.href = nexus.url;
