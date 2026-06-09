@@ -425,13 +425,14 @@ function showNexusResult(nexus) {
   // Pull from live panel if nexus object missing name
   const liveName = document.getElementById('live-nexus_name')?.textContent;
   const liveEntity = document.getElementById('live-primary_entity')?.textContent;
+  const liveSchema = document.getElementById('live-schema_description')?.textContent;
   const displayName = nexus.nexus_name || (liveName !== '—' ? liveName : null) || 'Your Nexus';
   const displayEntity = nexus.primary_entity || (liveEntity !== '—' ? liveEntity : null) || '—';
   document.getElementById('result-name').textContent = '★ ' + displayName;
   document.getElementById('result-desc').textContent = nexus.nexus_description || '';
   document.getElementById('result-entity').textContent = displayEntity;
   document.getElementById('result-tier').textContent = `IGM · ${nexus.classification?.governance_tier === 'enhanced' ? 'Enhanced' : 'Standard'} governance`;
-  document.getElementById('result-schema').textContent = nexus.schema_description || '—';
+  document.getElementById('result-schema').textContent = nexus.schema_description || (liveSchema && liveSchema !== '—' ? liveSchema : '—');
   
   if (nexus.url) {
     const openBtn = document.getElementById('result-open-btn');
