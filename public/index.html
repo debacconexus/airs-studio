@@ -236,6 +236,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <textarea class="pod-input" id="pod-input" placeholder="Describe a Pod to build... e.g. 'A dashboard window showing enrollment by department'"></textarea>
     <button class="pod-btn" onclick="buildPod()">&#9670; Build Pod with Node</button>
     <div class="pod-list" id="pod-list"></div>
+    <div id="pods-built"></div>
   </div>
 
   <div class="history-card" id="history-card" style="display:none">
@@ -579,11 +580,14 @@ window.addEventListener('load', async () => {
 let currentNexusUrl = null;
 
 function openNexus() {
+  const btn = document.getElementById('open-btn');
   const urlEl = document.getElementById('result-url');
   const link = urlEl ? urlEl.querySelector('a') : null;
-  const url = currentNexusUrl || (link ? link.href : null);
+  const url = currentNexusUrl || (link ? link.href : null) || (btn ? btn.href : null);
   if (url) {
     window.open(url, '_blank');
+  } else {
+    alert('No Nexus URL available. Please generate a Nexus first.');
   }
 }
 </script>
