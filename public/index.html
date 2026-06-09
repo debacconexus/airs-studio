@@ -358,6 +358,19 @@ async function generateNexus() {
       if (msg.type === 'meta') {
         const el = document.getElementById('live-' + msg.field);
         if (el) { el.textContent = msg.value; el.classList.add('live-reveal'); }
+        // Also update result card directly
+        if (msg.field === 'primary_entity' && msg.value) {
+          const re = document.getElementById('result-entity');
+          if (re) re.textContent = msg.value;
+        }
+        if (msg.field === 'schema_description' && msg.value) {
+          const rs = document.getElementById('result-schema');
+          if (rs) rs.textContent = msg.value;
+        }
+        if (msg.field === 'nexus_name' && msg.value) {
+          const rn = document.getElementById('result-name');
+          if (rn) rn.textContent = '\u2605 ' + msg.value;
+        }
       }
 
       if (msg.type === 'field') {
