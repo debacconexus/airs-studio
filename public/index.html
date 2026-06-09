@@ -514,7 +514,7 @@ async function buildPod() {
       alert('Pod build error: ' + data.error);
     }
   } catch (err) {
-    alert('Connection error');
+    alert('Connection error: ' + err.message);
   }
 
   btn.disabled = false;
