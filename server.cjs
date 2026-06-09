@@ -712,6 +712,13 @@ app.get('/api/status/:id', async (req, res) => {
   res.json({ success: true, nexus });
 });
 
+// GET /api/nexus/:id — Get single Nexus
+app.get('/api/nexus/:id', async (req, res) => {
+  const nexus = await nexusRegistry.get(req.params.id);
+  if (!nexus) return res.json({ success: false, error: 'Nexus not found' });
+  res.json({ success: true, nexus });
+});
+
 // GET /api/nexus — List all Nexus deployments
 app.get('/api/nexus', async (req, res) => {
   const list = (await nexusRegistry.values()).map(n => ({
