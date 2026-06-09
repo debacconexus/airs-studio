@@ -267,24 +267,217 @@ async function runNSI(meta, prompt, classification) {
   };
 
   const domainStandards = `
-DOMAIN STANDARDS REFERENCE LIBRARY — NSI AUDIT ENGINE
-DeBacco Nexus LLC · Negative Space Intelligence
+DOMAIN STANDARDS REFERENCE LIBRARY — NSI AUDIT ENGINE v1.5
+DeBacco Nexus LLC · Negative Space Intelligence · USPTO Patent Pending 19/571,156
 
-VA DATA ELEMENTS (Veterans Affairs):
-- Service era, discharge status, disability rating (0-100%), service-connected conditions
-- Benefit categories: compensation, pension, education (GI Bill), vocational rehab, home loan, life insurance
-- Healthcare enrollment tier, mental health diagnosis codes, substance use disorder flags
-- Claims status, appeals status, fiduciary assignment
+═══════════════════════════════════════════════════════
+FEDERAL DEPARTMENT STANDARDS
+═══════════════════════════════════════════════════════
+
+VA DATA ELEMENTS (Department of Veterans Affairs):
+- Service era, branch, discharge status (honorable/general/OTH/dishonorable), discharge upgrade status
+- Disability rating (0-100%), service-connected conditions, individual unemployability status
+- Benefit categories: compensation, pension, education (GI Bill chapters 30/33/35), vocational rehab (Ch.31), home loan, life insurance, burial
+- Healthcare enrollment tier (1-8), priority group, copay status
+- Mental health diagnosis codes (DSM-5), substance use disorder flags, MST indicator
+- TBI screening status, TBI diagnosis, polytrauma designation
+- Claims status, appeals status (BVA/CAVC), fiduciary assignment
 - Last meaningful contact vs last administrative contact (distinct fields)
 - Benefit assessed vs benefit eligible vs benefit received (three distinct states)
+- Caregiver program enrollment, VSO representation, power of attorney status
+- Homeless or at-risk flag, HUD-VASH voucher status
 
-HUD HMIS (Homeless Management Information System):
-- Housing status at intake, housing status at exit, housing status at 6-month follow-up
-- Chronic homelessness indicator, literally homeless flag
-- Service referral made vs service referral accessed vs service referral outcome (three distinct states)
+HUD DATA ELEMENTS (Dept. of Housing and Urban Development):
+- Housing status at intake/exit/6-month/12-month follow-up
+- Chronic homelessness indicator, literally homeless flag, at-risk flag
+- Service referral made vs accessed vs outcome (three distinct states)
 - Income sources at entry/exit, non-cash benefits, health insurance coverage
-- Domestic violence survivor flag, fleeing DV flag
+- Domestic violence survivor flag, fleeing DV flag, safety planning status
 - Prior living situation, length of time homeless, times homeless in past 3 years
+- HUD-VASH voucher status, rapid rehousing enrollment, permanent supportive housing placement
+- CoC program enrollment, HMIS release of information consent status
+- Housing unit type, rental subsidy type, landlord contact, lease status
+
+SAMHSA DATA ELEMENTS (Substance Abuse and Mental Health Services Administration):
+- Primary substance, secondary substance, route of administration
+- Age of first use, duration of use, frequency of use
+- Treatment episode: admission date, discharge date, discharge reason
+- Treatment modality: detox, residential, intensive outpatient, outpatient, medication-assisted
+- Medication-assisted treatment: medication type, dosage, prescribing provider
+- Mental health diagnosis (primary/secondary), co-occurring disorder flag
+- Prior treatment episodes, treatment completion rate
+- Recovery support services: peer support, housing, employment, transportation
+- Overdose history, naloxone training/kit status, emergency contact
+- Insurance type at admission/discharge
+
+DCFS / CHILD WELFARE DATA ELEMENTS (Dept. of Children and Family Services):
+- Referral source, referral date, allegation type (abuse/neglect/exploitation)
+- Investigation status, substantiation determination, risk assessment score
+- Child safety assessment: immediate danger vs underlying risk (distinct fields)
+- Placement type: home, foster care, kinship, group home, congregate care
+- Placement stability: number of placements, placement disruption reasons
+- Reunification goal, permanency plan type, permanency plan date
+- Court involvement: dependency petition, hearing dates, court orders
+- Parent/guardian contact frequency, visitation compliance
+- Sibling placement together vs separated flag
+- Educational status, school enrollment, school stability indicator
+- Medical/dental/developmental needs assessed vs addressed (distinct fields)
+- Trauma screening conducted, trauma-informed services received
+- Child fatality risk indicators: prior CPS history, domestic violence, substance abuse, mental illness
+
+NCMEC / ANTI-TRAFFICKING DATA ELEMENTS (National Center for Missing and Exploited Children):
+- Trafficking type: sex trafficking, labor trafficking, both
+- Victim age at first exploitation, age at identification
+- Recruitment method: online, in-person, familial, intimate partner
+- Recruitment platform: social media platform name, app name
+- Controller/trafficker relationship to victim
+- Prior runaway episodes, prior missing person reports
+- Commercial sexual exploitation indicators
+- Labor exploitation indicators: industry, working conditions, wages withheld
+- Safe harbor status, specialized services accessed
+- Immigration status, country of origin, language
+- Physical indicators documented, forensic evidence collected
+- Law enforcement involvement: report filed, case number, detective assigned
+- Prosecution status, victim advocacy services
+
+DEPARTMENT OF JUSTICE / CRIMINAL JUSTICE DATA ELEMENTS:
+- Arrest history, charge history, conviction history
+- Sentence type, sentence length, probation/parole status
+- Supervision officer contact, compliance status
+- Reentry program enrollment, reentry plan completion
+- Employment obtained post-release, housing secured post-release
+- Recidivism indicators: rearrest, reconviction, reincarceration
+- Diversion program type, diversion eligibility criteria met vs assessed
+- Restorative justice participation
+
+DEPARTMENT OF EDUCATION DATA ELEMENTS:
+- Enrollment status, grade level, school type
+- Attendance rate, chronic absenteeism flag (missing 10%+ of school days)
+- Academic performance: GPA, standardized test scores, grade retention
+- IEP/504 plan status, disability category, services received
+- English language learner status, language proficiency level
+- Homeless/McKinney-Vento status, foster care enrollment flag
+- Suspension/expulsion history, school discipline incidents
+- Postsecondary enrollment, credential attainment, completion status
+- FAFSA completion, financial aid type, unmet financial need
+
+DEPARTMENT OF LABOR DATA ELEMENTS:
+- Employment status: employed/unemployed/not in labor force
+- Employment barriers: criminal record, disability, lack of childcare, transportation, education
+- Job type, industry, wages, hours worked, benefits
+- Unemployment insurance claim status, weeks claimed, exhaustion status
+- Job training program: enrolled vs completed vs employed post-completion
+- Apprenticeship status, certification/credential obtained
+- Workplace injury history, workers compensation claim status
+
+DEPARTMENT OF TREASURY / FINANCIAL DATA ELEMENTS:
+- Income sources: wages, benefits, self-employment, investment
+- Banking status: banked/unbanked/underbanked
+- Credit score range, credit history length, derogatory marks
+- Debt type: medical, student, consumer, tax
+- Asset ownership: real property, vehicle, savings
+- Financial exploitation indicators: unauthorized transactions, coerced transfers
+- Benefits cliff indicators: income threshold proximity to benefit cutoff
+- Tax filing status, EITC eligibility vs claimed
+
+═══════════════════════════════════════════════════════
+INTERNATIONAL AND UN STANDARDS
+═══════════════════════════════════════════════════════
+
+UN SUSTAINABLE DEVELOPMENT GOALS (SDG) DATA ELEMENTS:
+- SDG 1 (No Poverty): extreme poverty threshold, multidimensional poverty index
+- SDG 2 (Zero Hunger): food insecurity severity scale (HFIAS), stunting/wasting indicators
+- SDG 3 (Good Health): maternal mortality ratio, under-5 mortality rate, disease burden indicators
+- SDG 4 (Quality Education): literacy rate, completion rate, out-of-school children
+- SDG 5 (Gender Equality): gender-based violence prevalence, female representation in leadership
+- SDG 8 (Decent Work): informal employment rate, living wage compliance
+- SDG 10 (Reduced Inequalities): Gini coefficient, income share ratios
+- SDG 16 (Peace/Justice): violence prevalence, access to legal identity, institutional trust
+
+UN TRAFFICKING PROTOCOL (Palermo Protocol) DATA ELEMENTS:
+- Trafficking definition elements: act, means, purpose (all three required for adult; act+purpose for minor)
+- Consent validity assessment (coercion/deception/abuse of power negates consent)
+- Country of origin, transit countries, destination country
+- Recruitment location, exploitation location
+- Identification method: self-identification, law enforcement, NGO, healthcare, education
+- Formal identification status, national referral mechanism engagement
+- Reflection and recovery period granted, duration
+- Residence permit status, voluntary return vs assisted return
+- Compensation/restitution status
+- Long-term reintegration support: housing, employment, legal, psychosocial
+
+INTERPOL DATA ELEMENTS (International Criminal Police Organization):
+- Notice type: Red, Blue, Green, Yellow, Black, Orange, Purple
+- Country of issue, requesting member country
+- Fugitive status, extradition treaty applicability
+- International arrest warrant status
+- Stolen/lost travel document flag
+- Organized crime group affiliation indicators
+- Cybercrime indicators: IP addresses, digital identifiers, cryptocurrency wallets
+
+═══════════════════════════════════════════════════════
+SECTOR-SPECIFIC STANDARDS
+═══════════════════════════════════════════════════════
+
+HEALTHCARE / HIPAA DATA ELEMENTS:
+- Patient identifier, insurance member ID, NPI (provider)
+- Diagnosis codes (ICD-10-CM), procedure codes (CPT), DRG
+- Medication list: drug name, dose, frequency, prescriber, start/stop dates
+- Allergy list, adverse drug reactions
+- Vital signs: BP, pulse, temperature, weight, BMI, O2 saturation
+- Lab values: ordered vs resulted vs communicated to patient (three distinct states)
+- Care plan: goals set vs goals addressed vs goals achieved
+- Advance directive: existence, location, content summary
+- Social history: substance use, housing, employment, support system
+- Consent: informed consent obtained, capacity assessment, surrogate decision-maker
+- Referral: made vs accepted vs accessed vs completed (four distinct states)
+- No-show/cancellation pattern, barriers to attendance documented
+
+BANKING / FINANCIAL COMPLIANCE DATA ELEMENTS:
+- KYC (Know Your Customer): identity verified, beneficial owner identified, PEP screening
+- AML (Anti-Money Laundering): transaction monitoring alerts, SAR filed, CTR filed
+- Risk rating: customer risk, product risk, geographic risk, channel risk
+- Beneficial ownership: ultimate beneficial owner identified vs verified
+- Source of funds: documented vs verified vs assessed
+- Transaction pattern: baseline established vs deviation detected vs investigated
+- Correspondent banking: due diligence conducted, nested account screening
+- Sanctions screening: OFAC, UN, EU — screened vs cleared vs escalated
+- Fraud indicators: velocity, geolocation anomaly, device fingerprint mismatch
+- Cybersecurity indicators: access anomaly, privilege escalation, data exfiltration pattern
+
+CYBERSECURITY DATA ELEMENTS:
+- Asset inventory: known assets vs shadow IT vs unmanaged devices
+- Vulnerability: identified vs assessed vs patched vs verified (four distinct states)
+- Threat intelligence: indicator of compromise (IOC) type, TTP (tactics/techniques/procedures)
+- MITRE ATT&CK coverage: techniques detected vs techniques in environment
+- Access control: privileged access managed, least privilege enforced, MFA coverage
+- Incident: detected vs contained vs eradicated vs recovered vs lessons learned
+- Security awareness training: assigned vs completed vs assessed for retention
+- Third-party risk: vendor identified vs assessed vs monitored vs offboarded
+- Data classification: data identified vs classified vs protected vs monitored
+- Backup: backup exists vs tested vs recovery time verified
+
+MILITARY / DEFENSE DATA ELEMENTS:
+- Security clearance: level, adjudication date, continuous evaluation status
+- Unit assignment, deployment history, combat exposure
+- Training: required vs completed vs current vs lapsed
+- Readiness status: medical, dental, mental health, physical fitness, legal
+- Equipment: assigned vs serviceable vs mission-capable
+- Maintenance: scheduled vs performed vs documented vs verified effective
+- Intelligence gap: collection requirement vs collection asset vs coverage vs product disseminated
+- Rules of engagement: understood vs applied vs deviation documented
+- After-action review: incident documented vs analyzed vs lessons incorporated
+
+ROBOTICS / AI SYSTEMS DATA ELEMENTS:
+- Training data: domain coverage, edge case representation, demographic representation
+- Model performance: accuracy vs precision vs recall vs F1 by subgroup
+- Failure mode: identified vs documented vs mitigated vs monitored
+- Environmental coverage: conditions trained on vs conditions deployed in
+- Sensor coverage: inputs available vs inputs used vs inputs validated
+- Human override: mechanism exists vs tested vs response time measured
+- Bias audit: conducted vs findings documented vs remediation applied
+- Explainability: decision rationale available vs auditable vs human-interpretable
+- Safety boundary: defined vs enforced vs monitored vs logged
 
 VTC / JUSTICE-INVOLVED (Veterans Treatment Court):
 - Diversion program milestone tracking (phase 1/2/3 completion dates)
@@ -295,19 +488,29 @@ VTC / JUSTICE-INVOLVED (Veterans Treatment Court):
 - Graduation eligibility criteria met vs criteria assessed (distinct fields)
 - Service gap log: services needed but not received with reason
 
-SOCIAL DETERMINANTS OF HEALTH (SDOH):
-- Food security status, transportation access, childcare access
-- Employment status, employment barriers, vocational training enrollment
-- Education level, literacy indicators
-- Social support network strength, isolation indicators
-- Digital access: device ownership, internet access, digital literacy
+SOCIAL DETERMINANTS OF HEALTH (SDOH — expanded):
+- Food security: USDA 6-item food security scale score
+- Housing quality: overcrowding, habitability, ownership vs rental, subsidy type
+- Transportation: vehicle access, public transit access, transportation barrier to care
+- Childcare: access, cost barrier, quality rating
+- Employment: status, barriers, job quality indicators (wages, benefits, stability)
+- Education: level, literacy, digital literacy
+- Social support: network size, isolation indicators, caregiver burden
+- Digital access: device, broadband, digital literacy score
+- Neighborhood: area deprivation index, walkability, green space access, food desert flag
+- Legal needs: civil legal problem present vs identified vs addressed
 
-ASSESSMENT COVERAGE META-FIELDS (universal gap indicators):
+ASSESSMENT COVERAGE META-FIELDS (universal governance indicators):
 - Was assessment conducted (boolean) — distinct from assessment result
 - Date of last substantive engagement vs date of last administrative contact
 - Services offered vs services accepted vs services accessed vs services completed
 - Eligibility determined vs eligibility assessed (pre-determination field)
 - Reason service not provided when eligible
+- Consent: informed consent obtained vs documented vs renewed
+- Risk level: assessed vs documented vs communicated vs acted upon
+- Outcome: defined vs measured vs reported vs used for program improvement
+- Equity indicator: demographic disparities in access, service, outcome documented
+- Governance decision: decision not to collect documented with reason and date
 `;
 
   const nsiPrompt = `You are the NSI Engine — the Negative Space Intelligence auditor for AIRS Studio.
@@ -340,7 +543,7 @@ Return this exact structure:
       "gap_id": "gap_001",
       "title": "Short gap name under 50 chars",
       "description": "One sentence: what the schema cannot capture and why it matters",
-      "domain_source": "VA|HUD HMIS|VTC|SDOH|Universal",
+      "domain_source": "VA|HUD HMIS|HUD|SAMHSA|DCFS|NCMEC|DOJ|DOE|DOL|Treasury|UN SDG|UN Trafficking|INTERPOL|Healthcare|Banking|Cybersecurity|Military|Robotics|VTC|SDOH|Universal",
       "severity": "critical|high|moderate",
       "what_exists": "What the current schema CAN capture related to this area",
       "what_is_missing": "Specific field or data type that does not exist in the schema",
