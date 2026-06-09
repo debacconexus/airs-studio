@@ -539,13 +539,13 @@ async function loadNexus(n) {
   try {
     const res = await fetch('/api/nexus/' + currentNexusId);
     const data = await res.json();
-    if (data.success && data.nexus.pods) {
+    if (data.success && (data.nexus.pods || data.nexus.pods_suggested)) {
       const podList = document.getElementById('pod-list');
       if (podList) {
-        podList.innerHTML = data.nexus.pods.map(p => `
+        podList.innerHTML = (data.nexus.pods || data.nexus.pods_suggested).map(p => `
           <div class="pod-item">
             <div class="pod-icon">${p.pod_type === 'window' ? '🪟' : p.pod_type === 'room' ? '🏛' : p.pod_type === 'infographic' ? '📊' : p.pod_type === 'form' ? '📋' : '🚪'}</div>
-            <div><div class="pod-name">${p.pod_name}</div><div class="pod-desc">${p.pod_type} · ${p.description}</div></div>
+            <div><div class="pod-name">${p.pod_name||p.name||'Pod'}</div><div class="pod-desc">${p.pod_type||'window'} · ${p.description||''}</div></div>
           </div>`).join('');
       }
     }
