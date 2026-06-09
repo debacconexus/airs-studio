@@ -265,7 +265,7 @@ let totalTokensIn = 0, totalTokensOut = 0;
 function selectDomain(el, text) {
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
   el.classList.add('selected');
-  document.getElementById('nexus-prompt').value = text;
+  document.getElementById('prompt-input').value = text;
 }
 
 function setStep(num, state, text) {
@@ -281,7 +281,7 @@ function setStep(num, state, text) {
 }
 
 async function generateNexus() {
-  const prompt = document.getElementById('nexus-prompt').value.trim();
+  const prompt = document.getElementById('prompt-input').value.trim();
   if (!prompt || prompt.length < 10) { alert('Please describe your domain problem in more detail.'); return; }
 
   const btn = document.getElementById('gen-btn');
