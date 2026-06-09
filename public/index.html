@@ -460,6 +460,14 @@ async function generateNexus() {
   }
 }
 
+function showToast(msg, type = 'ok') {
+  const t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast ' + type + ' show';
+  setTimeout(() => { t.className = 'toast'; }, 3000);
+}
+
 function renderNSIReport(report) {
   if (!report || !report.gaps) return;
   const section = document.getElementById('nsi-section');
