@@ -241,7 +241,127 @@ async function generateNexusCode(prompt, nexusId, classification) {
 
   console.log('[AIRS Studio] Token substitution complete — entity:', entityLabel, '| fields:', domainFields.join(', '));
 
-  return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode });
+  // Call D: NSI — Negative Space Intelligence audit
+  console.log('[AIRS Studio] Step D: NSI gap audit...');
+  let nsiReport = null;
+  try {
+    nsiReport = await runNSI(meta, prompt, classification);
+    console.log('[AIRS Studio] NSI complete —', nsiReport.gaps.length, 'gaps identified');
+  } catch (nsiErr) {
+    console.error('[AIRS Studio] NSI error (non-fatal):', nsiErr.message);
+    nsiReport = { gaps: [], audit_status: 'error', error: nsiErr.message };
+  }
+
+  return Object.assign({}, meta, { server_code: serverCode, frontend_code: frontendCode, nsi_report: nsiReport });
+}
+
+// ─── NSI — NEGATIVE SPACE INTELLIGENCE ───────────────────────────────────────
+// IGM Call D: Audits the generated schema against known domain standards.
+// Returns a Structural Gap Report — governed map of what the schema cannot see.
+// DeBacco Nexus LLC · USPTO Patent Pending 19/571,156
+async function runNSI(meta, prompt, classification) {
+  const apiHeaders = {
+    'x-api-key': ANTHROPIC_KEY,
+    'anthropic-version': '2023-06-01',
+    'Content-Type': 'application/json'
+  };
+
+  const domainStandards = `
+DOMAIN STANDARDS REFERENCE LIBRARY — NSI AUDIT ENGINE
+DeBacco Nexus LLC · Negative Space Intelligence
+
+VA DATA ELEMENTS (Veterans Affairs):
+- Service era, discharge status, disability rating (0-100%), service-connected conditions
+- Benefit categories: compensation, pension, education (GI Bill), vocational rehab, home loan, life insurance
+- Healthcare enrollment tier, mental health diagnosis codes, substance use disorder flags
+- Claims status, appeals status, fiduciary assignment
+- Last meaningful contact vs last administrative contact (distinct fields)
+- Benefit assessed vs benefit eligible vs benefit received (three distinct states)
+
+HUD HMIS (Homeless Management Information System):
+- Housing status at intake, housing status at exit, housing status at 6-month follow-up
+- Chronic homelessness indicator, literally homeless flag
+- Service referral made vs service referral accessed vs service referral outcome (three distinct states)
+- Income sources at entry/exit, non-cash benefits, health insurance coverage
+- Domestic violence survivor flag, fleeing DV flag
+- Prior living situation, length of time homeless, times homeless in past 3 years
+
+VTC / JUSTICE-INVOLVED (Veterans Treatment Court):
+- Diversion program milestone tracking (phase 1/2/3 completion dates)
+- Court appearance compliance rate, missed court dates with reason codes
+- Revocation risk indicators: pattern of missed dates, failed contacts, program non-compliance
+- Treatment engagement: attended vs scheduled sessions (ratio field)
+- Legal status: charges, case number, DA contact, public defender contact
+- Graduation eligibility criteria met vs criteria assessed (distinct fields)
+- Service gap log: services needed but not received with reason
+
+SOCIAL DETERMINANTS OF HEALTH (SDOH):
+- Food security status, transportation access, childcare access
+- Employment status, employment barriers, vocational training enrollment
+- Education level, literacy indicators
+- Social support network strength, isolation indicators
+- Digital access: device ownership, internet access, digital literacy
+
+ASSESSMENT COVERAGE META-FIELDS (universal gap indicators):
+- Was assessment conducted (boolean) — distinct from assessment result
+- Date of last substantive engagement vs date of last administrative contact
+- Services offered vs services accepted vs services accessed vs services completed
+- Eligibility determined vs eligibility assessed (pre-determination field)
+- Reason service not provided when eligible
+`;
+
+  const nsiPrompt = `You are the NSI Engine — the Negative Space Intelligence auditor for AIRS Studio.
+Your function is to identify structural gaps in a generated data schema — fields and data types that are ABSENT from the schema but that a domain expert would expect to find given the stated domain, entity, and organizational purpose.
+
+You do NOT analyze missing data values. You analyze missing schema structure — data the organization structurally CANNOT collect because no field exists for it.
+
+GENERATED NEXUS SCHEMA:
+- Name: ${meta.nexus_name}
+- Description: ${meta.nexus_description}
+- Primary Entity: ${meta.primary_entity}
+- Schema Description: ${meta.schema_description}
+- Fields: ${JSON.stringify(meta.fields)}
+- Domain Prompt: "${prompt}"
+- Classification: ${JSON.stringify(classification)}
+
+DOMAIN STANDARDS REFERENCE:
+${domainStandards}
+
+Identify 3-5 structural gaps. For each gap, respond ONLY with valid JSON — no markdown, no explanation outside the JSON.
+
+Return this exact structure:
+{
+  "audit_status": "complete",
+  "domain_standards_applied": ["list of standards you cross-referenced"],
+  "coverage_score": 0-100,
+  "coverage_narrative": "One sentence describing what the schema can and cannot see",
+  "gaps": [
+    {
+      "gap_id": "gap_001",
+      "title": "Short gap name under 50 chars",
+      "description": "One sentence: what the schema cannot capture and why it matters",
+      "domain_source": "VA|HUD HMIS|VTC|SDOH|Universal",
+      "severity": "critical|high|moderate",
+      "what_exists": "What the current schema CAN capture related to this area",
+      "what_is_missing": "Specific field or data type that does not exist in the schema",
+      "real_world_consequence": "One sentence: what happens organizationally when this gap exists",
+      "instrument_fields": ["field1", "field2", "field3"]
+    }
+  ]
+}`;
+
+  const nsiRes = await axios.post('https://api.anthropic.com/v1/messages', {
+    model: 'claude-sonnet-4-20250514',
+    max_tokens: 1200,
+    system: 'You are the NSI Engine for AIRS Studio. Respond ONLY with valid JSON. No markdown. No preamble. No explanation outside the JSON structure.',
+    messages: [{ role: 'user', content: nsiPrompt }]
+  }, { headers: apiHeaders });
+
+  const nsiRaw = nsiRes.data.content.map(c => c.text || '').join('');
+  const nsiClean = nsiRaw.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+  const nsiStart = nsiClean.indexOf('{');
+  const nsiEnd = nsiClean.lastIndexOf('}');
+  return JSON.parse(nsiClean.substring(nsiStart, nsiEnd + 1));
 }
 
 // ─── RAILWAY DEPLOYMENT ───────────────────────────────────────────────────────
@@ -403,7 +523,8 @@ app.post('/api/generate', async (req, res) => {
       primary_entity: nexusData.primary_entity,
       fields: nexusData.fields,
       pods_suggested: nexusData.pods_suggested,
-      schema_description: nexusData.schema_description
+      schema_description: nexusData.schema_description,
+      nsi_report: nexusData.nsi_report || null
     });
 
     // Write files locally
@@ -691,6 +812,10 @@ app.get('/api/stream/:id', async (req, res) => {
               setTimeout(() => send({ type: 'pod_seed', index: i, value: p }), i * 200 + 500);
             });
           }
+          // NSI — send gap report once available
+          if (nexus.nsi_report && nexus.nsi_report.gaps) {
+            setTimeout(() => send({ type: 'nsi_report', report: nexus.nsi_report }), 1200);
+          }
         }
 
         if (currentStatus === 'deployed' || currentStatus === 'error') {
@@ -790,6 +915,105 @@ app.post('/api/pod/build', async (req, res) => {
     console.error('[AIRS Studio] Pod build error:', err.message);
     res.json({ success: false, error: err.message });
   }
+});
+
+// POST /api/nsi/instrument — Generate a collection instrument Pod for a specific NSI gap
+app.post('/api/nsi/instrument', async (req, res) => {
+  const { nexus_id, gap_id } = req.body;
+  if (!nexus_id || !gap_id) return res.json({ success: false, error: 'nexus_id and gap_id required' });
+
+  const nexus = await nexusRegistry.get(nexus_id);
+  if (!nexus) return res.json({ success: false, error: 'Nexus not found' });
+
+  const nsiReport = nexus.nsi_report;
+  if (!nsiReport || !nsiReport.gaps) return res.json({ success: false, error: 'No NSI report found for this Nexus' });
+
+  const gap = nsiReport.gaps.find(g => g.gap_id === gap_id);
+  if (!gap) return res.json({ success: false, error: 'Gap not found: ' + gap_id });
+
+  try {
+    const instrRes = await axios.post('https://api.anthropic.com/v1/messages', {
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 600,
+      system: 'You are the NSI Instrument Generator for AIRS Studio. Generate a governed collection instrument as a Pod descriptor. Respond ONLY with valid JSON, no markdown.',
+      messages: [{
+        role: 'user',
+        content: `Generate a collection instrument Pod to close this structural gap in a "${nexus.nexus_name}" Nexus.
+
+Gap: ${gap.title}
+Description: ${gap.description}
+What is missing: ${gap.what_is_missing}
+Domain source: ${gap.domain_source}
+Suggested fields: ${JSON.stringify(gap.instrument_fields)}
+
+Return JSON:
+{
+  "pod_name": "Short name under 40 chars",
+  "pod_type": "form",
+  "description": "One sentence under 100 chars",
+  "fields": ["field1", "field2", "field3", "field4"],
+  "color": "teal",
+  "gap_id": "${gap_id}",
+  "governed": true,
+  "nsi_generated": true
+}`
+      }]
+    }, {
+      headers: {
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'Content-Type': 'application/json'
+      }
+    });
+
+    const instrRaw = instrRes.data.content.map(c => c.text || '').join('');
+    const instrClean = instrRaw.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
+    const instrStart = instrClean.indexOf('{');
+    const instrEnd = instrClean.lastIndexOf('}');
+    const instrument = JSON.parse(instrClean.substring(instrStart, instrEnd + 1));
+
+    const instrId = uuidv4();
+
+    // Update gap status in NSI report
+    const updatedGaps = nsiReport.gaps.map(g =>
+      g.gap_id === gap_id
+        ? { ...g, status: 'instrument_generated', instrument_id: instrId }
+        : g
+    );
+    await nexusRegistry.set(nexus_id, {
+      ...nexus,
+      nsi_report: { ...nsiReport, gaps: updatedGaps },
+      pods: [...(nexus.pods || []), { id: instrId, ...instrument, created_at: new Date().toISOString() }]
+    });
+
+    res.json({ success: true, instrument_id: instrId, instrument });
+
+  } catch (err) {
+    console.error('[AIRS Studio] NSI instrument error:', err.message);
+    res.json({ success: false, error: err.message });
+  }
+});
+
+// POST /api/nsi/exempt — Document a governed exemption decision (decision not to collect)
+app.post('/api/nsi/exempt', async (req, res) => {
+  const { nexus_id, gap_id, reason } = req.body;
+  if (!nexus_id || !gap_id) return res.json({ success: false, error: 'nexus_id and gap_id required' });
+
+  const nexus = await nexusRegistry.get(nexus_id);
+  if (!nexus || !nexus.nsi_report) return res.json({ success: false, error: 'Nexus or NSI report not found' });
+
+  const updatedGaps = nexus.nsi_report.gaps.map(g =>
+    g.gap_id === gap_id
+      ? { ...g, status: 'documented_exemption', exemption_reason: reason || 'Not specified', exemption_date: new Date().toISOString() }
+      : g
+  );
+
+  await nexusRegistry.set(nexus_id, {
+    ...nexus,
+    nsi_report: { ...nexus.nsi_report, gaps: updatedGaps }
+  });
+
+  res.json({ success: true, message: 'Exemption documented in governance record' });
 });
 
 // GET /api/nexus/:id/download — Download Nexus as deployable zip
