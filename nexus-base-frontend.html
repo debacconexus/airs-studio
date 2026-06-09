@@ -32,6 +32,25 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:var(--bg);color:va
 .hbtn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;border:1px solid var(--border2);background:rgba(98,200,255,.08);color:var(--text2);transition:all .2s}
 .hbtn:hover{background:rgba(98,200,255,.15);color:var(--text)}
 .hbtn.demo{background:linear-gradient(135deg,#1a3a1a,#2d5a2d);border-color:#4ade80;color:#4ade80}
+.demo-overlay{display:none;position:fixed;inset:0;background:rgba(4,10,20,.85);z-index:300;align-items:center;justify-content:center;padding:24px}
+.demo-overlay.show{display:flex}
+.demo-modal{background:var(--bg2);border:1px solid rgba(74,222,128,.35);border-radius:16px;max-width:680px;width:100%;max-height:85vh;overflow-y:auto;padding:32px;box-shadow:0 8px 48px rgba(0,0,0,.6)}
+.demo-modal h2{font-size:24px;font-weight:800;color:var(--green);margin-bottom:6px;letter-spacing:-.02em}
+.demo-sub{font-size:13px;color:var(--text2);font-family:'IBM Plex Mono',monospace;margin-bottom:20px}
+.demo-section{margin-bottom:20px}
+.demo-label{font-size:12px;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:.12em;margin-bottom:8px}
+.demo-text{font-size:15px;color:var(--text);line-height:1.7}
+.demo-chips{display:flex;flex-wrap:wrap;gap:8px}
+.demo-chip{font-size:13px;font-weight:600;padding:6px 14px;border-radius:8px;border:1px solid var(--border2);color:var(--text);background:var(--bg3)}
+.demo-step{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border);border-radius:10px;margin-bottom:8px;background:var(--bg3);cursor:pointer;width:100%;text-align:left;font-family:inherit}
+.demo-step:hover,.demo-step:focus{border-color:var(--green);outline:2px solid var(--green);outline-offset:1px}
+.demo-step-num{font-size:14px;font-weight:800;color:var(--gold);font-family:'IBM Plex Mono',monospace;min-width:22px}
+.demo-step-title{font-size:15px;font-weight:700;color:var(--text);margin-bottom:2px}
+.demo-step-desc{font-size:13px;color:var(--text2);line-height:1.5}
+.demo-close{background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-size:14px;font-weight:700;padding:10px 22px;border-radius:8px;cursor:pointer;margin-top:8px}
+.demo-close:hover,.demo-close:focus{border-color:var(--coral);color:var(--coral);outline:2px solid var(--coral)}
+.demo-igm{font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border);padding-top:14px;margin-top:6px}
+
 .layout{display:flex;padding-top:60px;min-height:100vh}
 .nav{width:220px;min-width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:20px 12px;position:fixed;top:60px;bottom:0;overflow-y:auto}
 .nav-section{font-size:10px;font-weight:700;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;padding:16px 8px 6px}
@@ -173,9 +192,21 @@ textarea.form-input{resize:vertical;min-height:100px}
   <div class="header-right">
     <button class="hbtn" onclick="showMode('home')">&#8962; Home</button>
     <button class="hbtn" onclick="togglePrivacy()">&#8857; Privacy</button>
-    <button class="hbtn demo">&#9889; DEMO</button>
+    <button class="hbtn demo" id="demo-btn" onclick="openDemo()" aria-haspopup="dialog">&#9889; DEMO</button>
   </div>
 </header>
+<div id="demo-overlay" class="demo-overlay" role="dialog" aria-modal="true" aria-labelledby="demo-title" onclick="if(event.target===this)closeDemo()">
+  <div class="demo-modal">
+    <h2 id="demo-title">&#9889; <span id="demo-nexus-name"></span> &#8212; Guided Demo</h2>
+    <div class="demo-sub">AIRS Nexus &middot; IGM Governed &middot; Tier: <span id="demo-tier"></span> &middot; USPTO 19/571,156</div>
+    <div class="demo-section"><div class="demo-label">What This Nexus Does</div><div class="demo-text" id="demo-desc"></div></div>
+    <div class="demo-section"><div class="demo-label">Governed Fields</div><div class="demo-chips" id="demo-fields"></div></div>
+    <div class="demo-section" id="demo-pods-wrap"><div class="demo-label">Suggested Pods</div><div class="demo-chips" id="demo-pods"></div></div>
+    <div class="demo-section"><div class="demo-label">Tour &#8212; Tap a Step to Go There</div><div id="demo-steps"></div></div>
+    <div class="demo-igm">Every write is logged. Every inference is accountable. RQ = I(d) / P(s) + T(c)</div>
+    <button class="demo-close" id="demo-close-btn" onclick="closeDemo()">Close Demo</button>
+  </div>
+</div>
 <div class="layout">
 <nav class="nav">
   <div class="nav-section">AIRS Nexus</div>
@@ -380,6 +411,21 @@ function statusBadge(s){const m={active:"status-active",completed:"status-comple
 function toast(msg,isErr){const t=document.getElementById("toast");t.textContent=msg;t.className="toast show "+(isErr?"err":"ok");setTimeout(()=>t.className="toast",3000);}
 function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
 function togglePrivacy(){document.getElementById("privacy-screen").classList.toggle("show");}
+function openDemo(){
+  document.getElementById("demo-nexus-name").textContent=NEXUS_NAME;
+  document.getElementById("demo-tier").textContent=TIER;
+  document.getElementById("demo-desc").textContent=(M.schema_description||("A governed data infrastructure for "+ENTITY.toLowerCase()+" records. Generated by AIRS Studio with the Inference Governance Module at its core."));
+  document.getElementById("demo-fields").innerHTML=FIELDS.map((f,i)=>`<span class="demo-chip">${fieldLabel(i)}</span>`).join("");
+  const pw=document.getElementById("demo-pods-wrap");
+  if(PODS.length){pw.style.display="";document.getElementById("demo-pods").innerHTML=PODS.map(p=>`<span class="demo-chip" style="border-color:rgba(51,224,196,.4);color:var(--teal)">${typeof p==="string"?toTitle(p):toTitle(p.name||p.label||"Pod")}</span>`).join("");}
+  else{pw.style.display="none";}
+  const steps=[["dashboard","Dashboard","Live counts, status breakdown, and governance activity charts for every "+ENTITY.toLowerCase()+" record."],["newrecord","New Record","Intake a new "+ENTITY.toLowerCase()+" across all six governed fields. Every save is IGM-logged."],["records","Records","Search, filter, and open any governed record. Contact logs and documents attach here."],["datalog","Governed Data Log","The audit-grade view &#8212; every record, every contact, every document, timestamped."]];
+  document.getElementById("demo-steps").innerHTML=steps.map((s,i)=>`<button class="demo-step" onclick="closeDemo();showMode(&quot;${s[0]}&quot;)"><span class="demo-step-num">${i+1}</span><span><span class="demo-step-title">${s[1]}</span><br><span class="demo-step-desc">${s[2]}</span></span></button>`).join("");
+  document.getElementById("demo-overlay").classList.add("show");
+  document.getElementById("demo-close-btn").focus();
+}
+function closeDemo(){document.getElementById("demo-overlay").classList.remove("show");const b=document.getElementById("demo-btn");if(b)b.focus();}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDemo();});
 
 document.addEventListener("DOMContentLoaded",()=>{
   initHome();buildNewRecordForm();buildTableHeaders();showMode("home");

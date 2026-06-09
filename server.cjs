@@ -890,6 +890,31 @@ app.post('/api/generate', async (req, res) => {
           console.error('[AIRS Studio] Railway Step 5 error:', pgErr.message);
         }
 
+        // Step 5.5 - Wire DATABASE_URL on app service (reference to postgres service)
+        // NOTE: reference name must match the service name created in Step 5 ("postgres", lowercase)
+        console.log('[AIRS Studio] Railway Step 5.5: Setting DATABASE_URL on app service...');
+        try {
+          await railwayQuery(
+            'mutation VariableUpsert($input: VariableUpsertInput!) { variableUpsert(input: $input) }',
+            { input: {
+                projectId: projectId,
+                environmentId: environmentId,
+                serviceId: serviceId,
+                name: 'DATABASE_URL',
+                value: '${{postgres.DATABASE_URL}}'
+            } }
+          );
+          console.log('[AIRS Studio] Railway Step 5.5 done: DATABASE_URL reference set');
+          // Redeploy app so the new variable takes effect
+          await railwayQuery(
+            'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
+            { serviceId, environmentId }
+          );
+          console.log('[AIRS Studio] Railway Step 5.5: app redeployed with DATABASE_URL');
+        } catch (varErr) {
+          console.error('[AIRS Studio] Railway Step 5.5 error:', varErr.message);
+        }
+
         // Step 6 — Generate domain (saved: environmentId, serviceId)
         console.log('[AIRS Studio] Railway Step 6: Generating domain...');
         let finalUrl = 'https://' + repoName + '-production-' + projectId.slice(0,8) + '.up.railway.app';
