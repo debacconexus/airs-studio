@@ -435,7 +435,7 @@ function showNexusResult(nexus) {
   document.getElementById('result-schema').textContent = nexus.schema_description || (liveSchema && liveSchema !== '—' ? liveSchema : '—');
   
   if (nexus.url) {
-    const openBtn = document.getElementById('result-open-btn');
+    const openBtn = document.getElementById('open-btn');
     const isDeployUrl = nexus.url.includes('railway.app/new');
     if (isDeployUrl) {
       document.getElementById('result-url').innerHTML = '<span style="color:#d97706;font-size:12px">Code ready on GitHub — click to deploy on Railway</span>';
@@ -445,6 +445,7 @@ function showNexusResult(nexus) {
       openBtn.onclick = null;
     } else {
       document.getElementById('result-url').innerHTML = '<a href="' + nexus.url + '" target="_blank">' + nexus.url + '</a>';
+      currentNexusUrl = nexus.url;
       openBtn.textContent = 'Open Nexus →';
       openBtn.style.background = '';
       openBtn.href = nexus.url;
@@ -560,6 +561,14 @@ window.addEventListener('load', async () => {
   } catch (e) {}
 });
 
+
+let currentNexusUrl = null;
+
+function openNexus() {
+  if (currentNexusUrl) {
+    window.open(currentNexusUrl, '_blank');
+  }
+}
 </script>
 </body>
 </html>
