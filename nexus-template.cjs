@@ -212,8 +212,11 @@ app.post('/api/demo/seed', async (req, res) => {
     for (let i = 0; i < 8; i++) {
       const vals = [0,1,2,3,4,5].map(f => {
         let v = demoValue(fields[f], i);
-        return typeof v === "string" ? v.replace(/[\x00-\x1F\x7F-\x9F]/g, "").replace(/\\/g, "\\\\").substring(0, 40) : v;
-      });
+        if (typeof v === "string") {
+            return v.replace(/[\\\"]/g, "").replace(/[\x00-\x1F\x7F-\x9F]/g, "").substring(0, 30);
+        }
+        return v;
+      }); // ultimateSanitizer
       const r = await pool.query(
         `INSERT INTO ${TABLE_NAME} (field_1,field_2,field_3,field_4,field_5,field_6,status,notes,is_demo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true) RETURNING id`,
         vals.concat([statuses[i], '[DEMO] Synthetic record for demonstration only - no real PII'])
