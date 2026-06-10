@@ -226,7 +226,8 @@ textarea.form-input{resize:vertical;min-height:100px}
   <button class="nav-btn" data-mode="documents" onclick="showMode('documents')"><span class="nav-icon">&#128203;</span> Document Archive</button>
   <div class="nav-divider"></div>
   <div class="nav-section">Reports</div>
-  <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>\n  <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
+  <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>
+  <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
 </nav>
 <div class="main">
 
@@ -519,7 +520,7 @@ function buildTableHeaders(){
 }
 
 function showMode(mode){
-  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog"].forEach(m=>{
+  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi"].forEach(m=>{
     const el=document.getElementById("mode-"+m);if(el)el.style.display=m===mode?"block":"none";
   });
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
