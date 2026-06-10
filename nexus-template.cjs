@@ -205,11 +205,15 @@ app.post('/api/demo/seed', async (req, res) => {
     if (parseInt(existing.rows[0].count) > 0) {
       return res.json({ success: true, seeded: 0, existing: parseInt(existing.rows[0].count), message: 'Sample data already loaded' });
     }
-    const fields = (req.body && req.body.fields) || [];
+    const rawFields = (req.body && req.body.fields) || [];
+    const fields = rawFields.map(f => (typeof f === "string" ? f.substring(0, 30) : f));
     const statuses = ['active','active','active','active','active','completed','pending','active'];
     let seeded = 0;
     for (let i = 0; i < 8; i++) {
-      const vals = [0,1,2,3,4,5].map(f => demoValue(fields[f], i));
+      const vals = [0,1,2,3,4,5].map(f => {
+        let v = demoValue(fields[f], i);
+        return typeof v === "string" ? v.replace(/[\x00-\x1F\x7F-\x9F]/g, "").replace(/\\/g, "\\\\").substring(0, 40) : v;
+      });
       const r = await pool.query(
         `INSERT INTO ${TABLE_NAME} (field_1,field_2,field_3,field_4,field_5,field_6,status,notes,is_demo) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,true) RETURNING id`,
         vals.concat([statuses[i], '[DEMO] Synthetic record for demonstration only - no real PII'])
