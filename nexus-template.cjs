@@ -242,6 +242,56 @@ app.delete('/api/demo/clear', async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
 
+// --- GDI: Governed Data Intelligence (Tier 2) - deterministic cross-record inference, zero tokens ---
+app.post('/api/gdi/analyze', async (req, res) => {
+  const t0 = Date.now();
+  try {
+    const findings = [];
+    const recs = (await pool.query(`SELECT id, field_1, field_2, field_3, field_4, field_5, field_6, status, created_at, is_demo FROM ${TABLE_NAME}`)).rows;
+    const contacts = (await pool.query('SELECT record_id, MAX(created_at) AS last_contact FROM contact_log GROUP BY record_id')).rows;
+    const events = (await pool.query(`SELECT record_id, event_date, event_type FROM calendar_events WHERE event_date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'`)).rows;
+    const lastContact = {}; contacts.forEach(c => lastContact[c.record_id] = new Date(c.last_contact));
+    const now = new Date(); const DAY = 86400000;
+
+    const active = recs.filter(r => r.status === 'active');
+    const stale = active.filter(r => !lastContact[r.id] || (now - lastContact[r.id]) > 30 * DAY);
+    if (stale.length) findings.push({ rule: 'GDI-R1', severity: 'HIGH', title: 'Active records without recent contact', description: stale.length + ' of ' + active.length + ' active records have no logged contact in the last 30 days.', evidence: stale.map(r => r.id) });
+    else if (active.length) findings.push({ rule: 'GDI-R1', severity: 'PASS', title: 'Contact recency verified', description: 'All ' + active.length + ' active records have a logged contact within 30 days.', evidence: active.map(r => r.id) });
+
+    const pending = recs.filter(r => r.status === 'pending');
+    const agedPending = pending.filter(r => (now - new Date(r.created_at)) > 14 * DAY);
+    if (agedPending.length) findings.push({ rule: 'GDI-R2', severity: 'HIGH', title: 'Pending records aging past 14 days', description: agedPending.length + ' pending record(s) have waited more than 14 days for review.', evidence: agedPending.map(r => r.id) });
+    else if (pending.length) findings.push({ rule: 'GDI-R2', severity: 'INFO', title: 'Pending records in queue', description: pending.length + ' record(s) currently pending review, all within the 14-day window.', evidence: pending.map(r => r.id) });
+
+    if (events.length) {
+      const unprepared = events.filter(e => !lastContact[e.record_id]);
+      if (unprepared.length) findings.push({ rule: 'GDI-R3', severity: 'HIGH', title: 'Upcoming events without contact', description: unprepared.length + ' event(s) in the next 7 days belong to records with no contact logged.', evidence: unprepared.map(e => e.record_id) });
+      else findings.push({ rule: 'GDI-R3', severity: 'INFO', title: 'Events in the next 7 days', description: events.length + ' upcoming event(s); every linked record has contact history.', evidence: [...new Set(events.map(e => e.record_id))] });
+    }
+
+    if (recs.length) {
+      let filled = 0; const weak = [];
+      for (let f = 1; f <= 6; f++) {
+        const have = recs.filter(r => r['field_' + f] && String(r['field_' + f]).trim()).length;
+        const pct = Math.round(100 * have / recs.length);
+        filled += pct;
+        if (pct < 60) weak.push('field_' + f + ' (' + pct + '%)');
+      }
+      const overall = Math.round(filled / 6);
+      if (weak.length) findings.push({ rule: 'GDI-R4', severity: 'MODERATE', title: 'Governed fields under-populated', description: 'Fields below 60% completeness: ' + weak.join(', ') + '. Overall completeness ' + overall + '%.', evidence: [] });
+      else findings.push({ rule: 'GDI-R4', severity: 'PASS', title: 'Field completeness ' + overall + '%', description: 'All six governed fields exceed the 60% completeness floor across ' + recs.length + ' records.', evidence: [] });
+    }
+
+    const dist = {}; recs.forEach(r => dist[r.status] = (dist[r.status] || 0) + 1);
+    findings.push({ rule: 'GDI-R5', severity: 'INFO', title: 'Status distribution', description: Object.entries(dist).map(([k, v]) => v + ' ' + k).join(' / ') + ' across ' + recs.length + ' total records.', evidence: [] });
+
+    const receipts = { records_scanned: recs.length, rules_executed: 5, tokens_in: 0, tokens_out: 0, duration_ms: Date.now() - t0, ran_at: new Date().toISOString() };
+    try { await pool.query('INSERT INTO audit_log (table_name, action_type, changed_by, new_value) VALUES ($1,$2,$3,$4)', ['gdi_runs', 'GDI_RUN', req.body && req.body.run_by || 'operator', JSON.stringify({ findings: findings.length, ...receipts })]); } catch (e) {}
+    console.log('[IGM] GDI run: ' + findings.length + ' findings, ' + recs.length + ' records, 0 tokens, ' + receipts.duration_ms + 'ms');
+    res.json({ success: true, tier: 'GDI - Governed Data Intelligence', findings, receipts });
+  } catch (err) { res.status(500).json({ success: false, error: err.message }); }
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

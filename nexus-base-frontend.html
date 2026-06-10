@@ -226,7 +226,7 @@ textarea.form-input{resize:vertical;min-height:100px}
   <button class="nav-btn" data-mode="documents" onclick="showMode('documents')"><span class="nav-icon">&#128203;</span> Document Archive</button>
   <div class="nav-divider"></div>
   <div class="nav-section">Reports</div>
-  <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>
+  <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>\n  <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
 </nav>
 <div class="main">
 
@@ -381,6 +381,17 @@ textarea.form-input{resize:vertical;min-height:100px}
   </div>
 </div>
 
+<div id="mode-gdi" style="display:none">
+  <div class="card">
+    <div class="card-header"><div class="card-title">GDI &#8212; Governed Data Intelligence <span class="igm-badge">TIER 2 &middot; IGM-GOVERNED</span></div></div>
+    <div style="padding:16px">
+      <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px">Cross-record inference with receipts. Deterministic rules, zero tokens, every run audit-logged. GDI reads what the data says &#8212; within the blind spots NSI has declared.</div>
+      <button class="btn btn-primary" onclick="runGDI()" id="gdi-run-btn">&#9670; Run GDI Analysis</button>
+      <span id="gdi-receipts" style="margin-left:14px;font-size:12px;color:var(--teal);font-family:'IBM Plex Mono',monospace"></span>
+    </div>
+    <div id="gdi-findings" style="padding:0 16px 16px"></div>
+  </div>
+</div>
 <div id="mode-datalog" style="display:none">
   <div style="border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);margin-bottom:20px">
     <div class="log-header">
@@ -431,6 +442,19 @@ function openDemo(){
 }
 function closeDemo(){document.getElementById("demo-overlay").classList.remove("show");const b=document.getElementById("demo-btn");if(b)b.focus();}
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDemo();});
+async function runGDI(){
+  const btn=document.getElementById("gdi-run-btn");btn.disabled=true;btn.textContent="Running...";
+  try{
+    const r=await fetch("/api/gdi/analyze",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({run_by:"operator"})});
+    const d=await r.json();
+    if(!d.success){toast("GDI error: "+d.error,true);return;}
+    const sev={CRITICAL:"var(--coral)",HIGH:"var(--gold)",MODERATE:"var(--violet)",INFO:"var(--cyan)",PASS:"var(--green)"};
+    document.getElementById("gdi-receipts").textContent=d.receipts.records_scanned+" records / "+d.receipts.rules_executed+" rules / "+d.receipts.tokens_in+" tokens / "+d.receipts.duration_ms+"ms";
+    document.getElementById("gdi-findings").innerHTML=d.findings.map(x=>`<div style="border:1px solid var(--border);border-left:3px solid ${sev[x.severity]||"var(--border2)"};border-radius:10px;padding:14px 16px;margin-bottom:10px;background:var(--bg3)"><div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:11px;font-weight:800;letter-spacing:.08em;color:${sev[x.severity]};border:1px solid ${sev[x.severity]};padding:2px 8px;border-radius:6px">${x.severity}</span><span style="font-size:14px;font-weight:700;color:var(--text)">${x.title}</span><span style="margin-left:auto;font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">${x.rule}</span></div><div style="font-size:13px;color:var(--text2);line-height:1.6">${x.description}</div>${x.evidence&&x.evidence.length?`<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px">${x.evidence.map(id=>`<button onclick="openRecord(${id})" style="font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cyan);background:transparent;border:1px solid var(--border2);border-radius:6px;padding:3px 9px;cursor:pointer">#${id}</button>`).join("")}</div>`:""}</div>`).join("");
+    toast("GDI: "+d.findings.length+" findings, "+d.receipts.tokens_in+" tokens");
+  }catch(e){toast("GDI error: "+e.message,true);}
+  finally{btn.disabled=false;btn.innerHTML="&#9670; Run GDI Analysis";}
+}
 async function loadDemoData(){
   try{const labels=[0,1,2,3,4,5].map(i=>fieldLabel(i));
     const r=await fetch("/api/demo/seed",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({fields:labels})});
