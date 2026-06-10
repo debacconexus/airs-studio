@@ -878,20 +878,53 @@ app.post('/api/generate', async (req, res) => {
           console.error('[AIRS Studio] Railway Step 4 error:', deployErr.message);
         }
 
-        // Step 5 — Add PostgreSQL (saved: projectId)
+        // Step 5 — Add PostgreSQL (full provisioning: password, volume, DATABASE_URL)
         console.log('[AIRS Studio] Railway Step 5: Adding PostgreSQL...');
+        let pgServiceId = null;
         try {
-          await railwayQuery(
+          const pgData = await railwayQuery(
             'mutation ServiceCreate($input: ServiceCreateInput!) { serviceCreate(input: $input) { id } }',
             { input: { name: 'postgres', projectId, source: { image: 'ghcr.io/railwayapp-templates/postgres-ssl:16' } } }
           );
-          console.log('[AIRS Studio] Railway Step 5 done: PostgreSQL added');
+          pgServiceId = pgData.serviceCreate.id;
+          console.log('[AIRS Studio] Railway Step 5a done: postgres service created:', pgServiceId);
+
+          // 5b — Configure postgres: password, db settings, and its own DATABASE_URL
+          const pgPassword = require('crypto').randomBytes(24).toString('base64url');
+          await railwayQuery(
+            'mutation VariableCollectionUpsert($input: VariableCollectionUpsertInput!) { variableCollectionUpsert(input: $input) }',
+            { input: { projectId, environmentId, serviceId: pgServiceId, variables: {
+                POSTGRES_USER: 'postgres',
+                POSTGRES_PASSWORD: pgPassword,
+                POSTGRES_DB: 'railway',
+                PGDATA: '/var/lib/postgresql/data/pgdata',
+                DATABASE_URL: 'postgresql://postgres:' + pgPassword + '@' + '$' + '{{RAILWAY_PRIVATE_DOMAIN}}:5432/railway'
+            } } }
+          );
+          console.log('[AIRS Studio] Railway Step 5b done: postgres variables set');
+
+          // 5c — Attach persistent volume so data survives restarts
+          try {
+            await railwayQuery(
+              'mutation VolumeCreate($input: VolumeCreateInput!) { volumeCreate(input: $input) { id } }',
+              { input: { projectId, environmentId, serviceId: pgServiceId, mountPath: '/var/lib/postgresql/data' } }
+            );
+            console.log('[AIRS Studio] Railway Step 5c done: volume attached');
+          } catch (volErr) {
+            console.error('[AIRS Studio] Railway Step 5c error (volume):', volErr.message);
+          }
+
+          // 5d — Boot postgres with its new config
+          await railwayQuery(
+            'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
+            { serviceId: pgServiceId, environmentId }
+          );
+          console.log('[AIRS Studio] Railway Step 5d done: postgres deployed');
         } catch (pgErr) {
           console.error('[AIRS Studio] Railway Step 5 error:', pgErr.message);
         }
 
-        // Step 5.5 - Wire DATABASE_URL on app service (reference to postgres service)
-        // NOTE: reference name must match the service name created in Step 5 ("postgres", lowercase)
+        // Step 5.5 — Point the app at postgres and redeploy
         console.log('[AIRS Studio] Railway Step 5.5: Setting DATABASE_URL on app service...');
         try {
           await railwayQuery(
@@ -901,11 +934,10 @@ app.post('/api/generate', async (req, res) => {
                 environmentId: environmentId,
                 serviceId: serviceId,
                 name: 'DATABASE_URL',
-                value: '${{postgres.DATABASE_URL}}'
+                value: '$' + '{{postgres.DATABASE_URL}}'
             } }
           );
           console.log('[AIRS Studio] Railway Step 5.5 done: DATABASE_URL reference set');
-          // Redeploy app so the new variable takes effect
           await railwayQuery(
             'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
             { serviceId, environmentId }
