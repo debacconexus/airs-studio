@@ -565,8 +565,8 @@ function renderRecordsTable(records){
 
 async function openRecord(id){
   try{
-    const r=await fetch("/api/records/"+id);const d=await r.json();if(!d.success)return;
-    const rec=d.record;const det=document.getElementById("record-detail");det.style.display="block";
+    const r=await fetch("/api/records/"+id);const d=await r.json();if(!d.success){toast("Could not open record: "+(d.error||"unknown"),true);return;}
+    const rec=d.record;showMode("records");const det=document.getElementById("record-detail");det.style.display="block";det.scrollIntoView({behavior:"smooth"});
     det.innerHTML=`<div class="record-card"><div class="record-header"><div class="record-id">&#9672; ${ENTITY.toUpperCase()} RECORD &#8212; #${rec.id}</div>${statusBadge(rec.status)}</div><div class="record-fields">${FIELDS.map((f,i)=>`<div class="record-field"><div class="record-field-label">${fieldLabel(i)}</div><div class="record-field-value">${rec["field_"+(i+1)]||"&#8212;"}</div></div>`).join("")}</div>${rec.notes?`<div style="padding:16px;border-top:1px solid var(--border)"><div class="record-field-label" style="margin-bottom:6px">Notes</div><div style="font-size:13px;color:var(--text2);line-height:1.6">${rec.notes}</div></div>`:""}<div style="padding:14px 16px;border-top:1px solid var(--border);display:flex;gap:10px"><button class="btn btn-ghost btn-sm" onclick="document.getElementById('record-detail').style.display='none'">&#10005; Close</button><button class="btn btn-primary btn-sm" onclick="showMode('rawnote')">&#9999; Add Note</button></div></div>`;
     det.scrollIntoView({behavior:"smooth"});
   }catch(err){toast("Error loading record",true);}
