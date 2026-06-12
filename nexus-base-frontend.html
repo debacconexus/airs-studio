@@ -854,7 +854,7 @@ function toggleMic(){
   micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - take your time. Tap the mic again when you are finished.";
   try{micRec.start();}catch(e){st.textContent="Mic failed to start.";micOn=false;}
 }
-async function saveRecord(){
+/* Patched */ async function saveRecord(){
     setTimeout(triggerLiveScan, 500);
   const body={};
   FIELDS.forEach((f,i)=>{const el=document.getElementById("nr-field-"+(i+1));body["field_"+(i+1)]=el?.value||"";});
