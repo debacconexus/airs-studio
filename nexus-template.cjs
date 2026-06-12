@@ -312,6 +312,37 @@ app.post('/api/gdi/analyze', async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
 
+// === NEXUS LIVE — governed live inference (IGM USPTO 19/571,156) ===
+app.post('/api/nexus/live', async (req, res) => {
+  const t0 = Date.now();
+  try {
+    const question = ((req.body && req.body.question) || '').trim().substring(0, 500);
+    if (!question) return res.status(400).json({ success: false, error: 'Question required' });
+    if (!process.env.ANTHROPIC_API_KEY) return res.status(503).json({ success: false, error: 'Live inference not enabled - set ANTHROPIC_API_KEY in Railway variables' });
+    const recs = (await pool.query(`SELECT id, field_1, field_2, field_3, field_4, field_5, field_6, status, notes, created_at FROM ${TABLE_NAME} ORDER BY created_at DESC LIMIT 50`)).rows;
+    const context = recs.map(r => '#' + r.id + '|' + [r.field_1,r.field_2,r.field_3,r.field_4,r.field_5,r.field_6].map(v=>v||'').join('|') + '|' + (r.status||'') + '|' + ((r.notes||'').substring(0,80))).join('\n');
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': process.env.ANTHROPIC_API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5',
+        max_tokens: 300,
+        system: 'You are Nexus Live, the IGM-governed live inference layer (300-token budget). Answer ONLY from the governed records provided. If the records cannot answer, name exactly what is missing. Be concise.',
+        messages: [{ role: 'user', content: 'Governed records (id|f1-f6|status|notes):\n' + context + '\n\nQuestion: ' + question }]
+      })
+    });
+    const d = await resp.json();
+    if (!resp.ok) return res.status(502).json({ success: false, error: (d.error && d.error.message) || 'Inference failed' });
+    const answer = (d.content || []).filter(c => c.type === 'text').map(c => c.text).join('\n');
+    const ti = (d.usage && d.usage.input_tokens) || 0, to = (d.usage && d.usage.output_tokens) || 0;
+    const rq = +((recs.length / Math.max(1, ti + to)) + ((Date.now() - t0) / 1000)).toFixed(3);
+    const receipts = { tier: 'Nexus Live', records_scanned: recs.length, tokens_in: ti, tokens_out: to, rq, model: 'claude-haiku-4-5', duration_ms: Date.now() - t0, ran_at: new Date().toISOString() };
+    try { await pool.query('INSERT INTO audit_log (table_name, action_type, changed_by, new_value) VALUES ($1,$2,$3,$4)', ['nexus_live', 'LIVE_INFERENCE', (req.body && req.body.run_by) || 'operator', JSON.stringify({ question, ...receipts })]); } catch (e) {}
+    console.log('[IGM] Nexus Live: ' + recs.length + ' records, ' + (ti + to) + ' tokens, ' + receipts.duration_ms + 'ms');
+    res.json({ success: true, answer, receipts });
+  } catch (err) { res.status(500).json({ success: false, error: err.message }); }
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });

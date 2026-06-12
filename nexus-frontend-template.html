@@ -106,6 +106,7 @@ select.form-input option{background:#0a2140;color:#eff7ff}
   <button class="nav-btn" onclick="showView('search',this)"><span>🔍</span>Search</button>
   <button class="nav-btn" onclick="showView('contacts',this)"><span>💬</span>Contact Log</button>
   <button class="nav-btn" onclick="showView('audit',this)"><span>🔒</span>IGM Audit Trail</button>
+  <button class="nav-btn" onclick="showView('nexuslive',this)"><span>&#127908;</span>Nexus Live</button>
 </nav>
 <main class="main">
   <div class="view active" id="view-dashboard">
@@ -179,6 +180,22 @@ select.form-input option{background:#0a2140;color:#eff7ff}
     <div class="page-header"><div><div class="page-title">IGM Audit Trail</div><div class="page-subtitle">Every action governed and logged · USPTO 19/571,156</div></div></div>
     <div class="card"><div class="card-header"><h2>Audit Log</h2></div><div class="card-body" id="audit-list"><div class="empty-state"><div class="icon">🔒</div><p>Loading audit trail...</p></div></div></div>
   </div>
+  <div class="view" id="view-nexuslive">
+    <div class="page-header"><div><div class="page-title">Nexus Live</div><div class="page-subtitle">Governed live inference — speak or type, every answer receipted</div></div></div>
+    <div class="card">
+      <div class="card-header"><h2>Ask the Governed Record</h2></div>
+      <div class="card-body">
+        <div style="display:flex;gap:12px;align-items:center">
+          <input class="form-input" id="live-q" placeholder="Speak or type a question..." style="flex:1" onkeydown="if(event.key==='Enter')askLive()">
+          <button class="btn-secondary" id="mic-btn" onclick="toggleMic()" aria-label="Voice input" style="min-width:56px;font-size:20px">&#127908;</button>
+          <button class="btn" onclick="askLive()">Ask</button>
+        </div>
+        <div id="mic-status" role="status" aria-live="polite" style="margin-top:8px;color:#5a7a9a;font-size:13px"></div>
+        <div id="live-answer" aria-live="polite" style="display:none;margin-top:16px;padding:16px;border-radius:12px;background:rgba(51,224,196,0.06);border:1px solid rgba(51,224,196,0.3);white-space:pre-wrap"></div>
+        <div id="live-receipt" style="display:none;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9db8d7"></div>
+      </div>
+    </div>
+  </div>
 </main>
 <div class="modal-overlay" id="record-modal">
   <div class="modal">
@@ -235,7 +252,7 @@ async function loadRecords(){
 }
 function renderTable(id,rows){
   const tb=document.getElementById(id);
-  if(!rows||!rows.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#5a7a9a"><div style="font-size:32px;margin-bottom:8px">&#128203;</div>No records yet — <a href="#" onclick="showView('intake',document.querySelectorAll('.nav-btn')[1]);return false" style="color:#33e0c4">add one</a></td></tr>';return;}
+  if(!rows||!rows.length){tb.innerHTML='<tr><td colspan="8" style="text-align:center;padding:40px;color:#5a7a9a"><div style="font-size:32px;margin-bottom:8px">&#128203;</div>No records yet — <a href="#" onclick="showView(\'intake\',document.querySelectorAll(\'.nav-btn\')[1]);return false" style="color:#33e0c4">add one</a></td></tr>';return;}
   const vis=FIELDS.slice(0,4);
   tb.innerHTML=rows.map(r=>`<tr onclick="openRecord(${r.id})"><td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:#9db8d7">#${r.id}</td>${vis.map(f=>`<td>${r[f]||'<span style="color:#5a7a9a">—</span>'}</td>`).join('')}<td><span class="badge badge-${r.status==='active'?'active':r.status==='pending'?'pending':'inactive'}">${r.status||'active'}</span></td><td style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#9db8d7">${r.created_at?new Date(r.created_at).toLocaleDateString():'—'}</td><td><button class="btn-sm" onclick="event.stopPropagation();openRecord(${r.id})">View</button></td></tr>`).join('');
 }
@@ -278,6 +295,40 @@ async function submitContact(){
 }
 function initAudit(){
   document.getElementById('audit-list').innerHTML=`<div class="audit-item"><div class="audit-dot"></div><div><div class="audit-text">IGM Audit Trail active — all record operations logged</div><div class="audit-time">DeBacco Nexus LLC · USPTO Patent Pending 19/571,156</div></div></div><div class="audit-item"><div class="audit-dot" style="background:#ffca58"></div><div><div class="audit-text">System initialized · ${NEXUS_NAME}</div><div class="audit-time">${new Date().toLocaleString()}</div></div></div>`;
+}
+let micOn=false,micRec=null;
+async function askLive(){
+  const q=document.getElementById('live-q').value.trim();
+  if(!q)return;
+  const a=document.getElementById('live-answer'),rc=document.getElementById('live-receipt');
+  a.style.display='block';a.textContent='Thinking — governed inference running...';rc.style.display='none';
+  try{
+    const r=await fetch('/api/nexus/live',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({question:q})});
+    const d=await r.json();
+    if(!d.success){a.textContent='Error: '+(d.error||'inference failed');return;}
+    a.textContent=d.answer;
+    const x=d.receipts;
+    rc.style.display='block';
+    rc.textContent='IGM RECEIPT  |  records: '+x.records_scanned+'  |  tokens in/out: '+x.tokens_in+'/'+x.tokens_out+'  |  RQ: '+x.rq+'  |  '+x.duration_ms+'ms  |  '+x.ran_at;
+  }catch(e){a.textContent='Connection failed';}
+}
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const st=document.getElementById('mic-status'),btn=document.getElementById('mic-btn');
+  if(!SR){st.textContent='Voice input needs Chrome, Edge, or Safari.';return;}
+  if(micOn){micOn=false;try{micRec.abort();}catch(e){}btn.style.background='';st.textContent='Mic off.';return;}
+  micRec=new SR();micRec.lang='en-US';micRec.interimResults=false;micRec.maxAlternatives=1;
+  micRec.onresult=ev=>{
+    const t=ev.results[0][0].transcript.trim();
+    document.getElementById('live-q').value=t;
+    st.textContent='Heard: "'+t+'" — asking...';
+    micOn=false;btn.style.background='';
+    askLive();
+  };
+  micRec.onerror=ev=>{if(ev.error!=='no-speech'&&ev.error!=='aborted')st.textContent='Mic error: '+ev.error;micOn=false;btn.style.background='';};
+  micRec.onend=()=>{if(micOn){micOn=false;btn.style.background='';st.textContent='Mic off.';}};
+  micOn=true;btn.style.background='rgba(255,133,119,0.4)';st.textContent='Listening — speak your question.';
+  try{micRec.start();}catch(e){st.textContent='Mic failed to start.';micOn=false;}
 }
 function showView(id,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
