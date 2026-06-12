@@ -330,6 +330,41 @@ function toggleMic(){
   micOn=true;btn.style.background='rgba(255,133,119,0.4)';st.textContent='Listening — speak your question.';
   try{micRec.start();}catch(e){st.textContent='Mic failed to start.';micOn=false;}
 }
+
+// Real-Time NSI Compliance Matrix Evaluator
+function triggerLiveScan() {
+    const items = document.querySelectorAll('.record-row, tr, .card-body li');
+    let structuralGaps = 0;
+    
+    items.forEach(item => {
+        const text = (item.textContent || '').toUpperCase();
+        if(text.includes('UNSPECIFIED') || text.includes('FIELD') || text.includes('NULL')) {
+            structuralGaps++;
+        }
+    });
+    
+    document.querySelectorAll('.status-circle').forEach((circle, idx) => {
+        if(structuralGaps > 0 && idx === 0) {
+            circle.style.background = '#ffd700'; // Warning Gold: Gaps Present
+            circle.style.boxShadow = '0 0 12px rgba(255, 215, 0, 0.7)';
+            circle.title = `NSI Engine Alert: ${structuralGaps} data definition blindspots detected.`;
+        } else {
+            circle.style.background = '#33e0c4'; // Active Teal: Governed
+            circle.style.boxShadow = '0 0 12px rgba(51, 224, 196, 0.5)';
+            circle.title = 'IGM Governance Locked';
+        }
+    });
+}
+
+// Hook into state triggers
+if(typeof askLive !== 'undefined') {
+    const originalAskLive = askLive;
+    askLive = async function() {
+        await originalAskLive();
+        setTimeout(triggerLiveScan, 600);
+    };
+}
+
 function showView(id,btn){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
