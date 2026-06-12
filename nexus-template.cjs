@@ -201,6 +201,7 @@ function demoValue(label, i) {
 }
 app.post('/api/demo/seed', async (req, res) => {
   try {
+    await initDB(); // self-heal: never depend on boot order against fresh Postgres
     const existing = await pool.query(`SELECT COUNT(*) FROM ${TABLE_NAME} WHERE is_demo = true`);
     if (parseInt(existing.rows[0].count) > 0) {
       return res.json({ success: true, seeded: 0, existing: parseInt(existing.rows[0].count), message: 'Sample data already loaded' });
