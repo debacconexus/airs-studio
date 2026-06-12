@@ -939,6 +939,13 @@ app.post('/api/generate', async (req, res) => {
             } }
           );
           console.log('[AIRS Studio] Railway Step 5.5 done: DATABASE_URL reference set');
+          if (process.env.ANTHROPIC_API_KEY) {
+            await railwayQuery(
+              'mutation VariableUpsert($input: VariableUpsertInput!) { variableUpsert(input: $input) }',
+              { input: { projectId: projectId, environmentId: environmentId, serviceId: serviceId, name: 'ANTHROPIC_API_KEY', value: process.env.ANTHROPIC_API_KEY } }
+            );
+            console.log('[AIRS Studio] Railway Step 5.6 done: ANTHROPIC_API_KEY passed to newborn Nexus');
+          }
           await railwayQuery(
             'mutation ServiceInstanceDeploy($serviceId: String!, $environmentId: String!) { serviceInstanceDeploy(serviceId: $serviceId, environmentId: $environmentId) }',
             { serviceId, environmentId }
