@@ -189,7 +189,7 @@ select.form-input option{background:#0a2140;color:#eff7ff}
 </div>
 <div class="toast" id="toast"></div>
 <script>
-let FIELDS=['field_1','field_2','field_3','field_4','field_5','field_6'];
+let FIELDS=['field_1','field_2','field_3','field_4','field_5','field_6'];let LABELS={};
 let ENTITY='Record',NEXUS_NAME='AIRS Nexus',allRecords=[];
 async function init(){
   try{
@@ -207,14 +207,14 @@ async function init(){
       document.getElementById('stat-recent').textContent=s.recent_30_days||0;
       document.getElementById('stat-audit').textContent=s.audit_entries||0;
       document.getElementById('header-count').textContent=(s.total||0)+' records';
-      if(s.fields) FIELDS=s.fields;
+      if(s.fields) s.fields.forEach((l,i)=>LABELS['field_'+(i+1)]=l);
     }
   }catch(e){}
   buildForm();buildHeaders();
   await loadRecords();
   initAudit();
 }
-function fmt(f){return f.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
+function fmt(f){return LABELS[f]||f.replace(/_/g,' ').replace(/\b\w/g,c=>c.toUpperCase())}
 function buildForm(){
   document.getElementById('intake-fields').innerHTML=FIELDS.map(f=>`<div class="form-group"><label class="form-label">${fmt(f)}</label><input class="form-input" id="f-${f}" placeholder="${fmt(f)}..."></div>`).join('')+`<div class="form-group"><label class="form-label">Status</label><select class="form-input" id="f-status"><option value="active">Active</option><option value="pending">Pending</option><option value="inactive">Inactive</option><option value="closed">Closed</option></select></div>`;
 }
