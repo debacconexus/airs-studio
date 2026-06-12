@@ -168,7 +168,7 @@ async function generateNexusCode(prompt, nexusId, classification) {
     model: 'claude-sonnet-4-20250514',
     max_tokens: 800,
     system: 'You are AIRS Studio. Respond ONLY with valid JSON, no markdown. Detect the language of the user prompt and use that language for all text content in nexus_name, nexus_description, schema_description, fields, and pods_suggested.',
-    messages: [{ role: 'user', content: 'For this domain: "' + prompt + '" return JSON with keys: nexus_name, nexus_description, primary_entity, schema_description, fields (array of 6), pods_suggested (array of 3)' }]
+    messages: [{ role: 'user', content: 'For this domain: "' + prompt + '" return JSON with keys: nexus_name, nexus_description, primary_entity, schema_description, fields (array of 6), pods_suggested (array of 3, each an object with pod_name, pod_type, description; pod_type one of window, room, doorway, infographic; at least one must be infographic)' }]
   }, { headers: apiHeaders });
   const metaRaw = metaRes.data.content.map(function(c){ return c.text||''; }).join('');
   const metaClean = metaRaw.replace(/```[a-z]*/g, '').replace(/```/g, '').trim();
