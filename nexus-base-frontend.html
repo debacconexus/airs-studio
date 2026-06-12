@@ -173,6 +173,130 @@ textarea.form-input{resize:vertical;min-height:100px}
 </style>
 </head>
 <body>
+<div id="generation-status" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:#07111e; z-index:9999; flex-direction:column; align-items:center; justify-content:center; font-family:'IBM Plex Sans', sans-serif;">
+    <canvas id="cinema-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;"></canvas>
+    
+    <div id="nexus-crown" style="opacity:0; transform: scale(0.5); transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position:relative; z-index:10; margin-bottom: 20px;">
+        <svg width="120" height="120" viewBox="0 0 100 100">
+            <polygon points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5" fill="none" stroke="rgba(51,224,196,0.8)" stroke-width="2" />
+            <line x1="50" y1="5" x2="50" y2="95" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <line x1="5" y1="27.5" x2="95" y2="72.5" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <line x1="5" y1="72.5" x2="95" y2="27.5" stroke="rgba(51,224,196,0.4)" stroke-width="1.5" />
+            <polygon points="50,23 80,38 80,62 50,77 20,62 20,38" fill="none" stroke="rgba(255,215,0,0.8)" stroke-width="1.5" />
+        </svg>
+    </div>
+
+    <div id="cinema-app-name" style="opacity:0; color:#eff7ff; font-size:28px; font-weight:700; letter-spacing:2px; margin-bottom:40px; z-index:10; text-shadow:0 0 20px rgba(51,224,196,0.6); transition: opacity 2s ease;"></div>
+    
+    <div id="cinema-hud" style="color:#62c8ff; font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:1px; z-index:10; background:rgba(13,36,64,0.6); padding:8px 16px; border-radius:20px; border:1px solid rgba(45,80,128,0.4);">
+        INITIALIZING ARCHITECTURAL SPINE...
+    </div>
+</div>
+
+<style>
+    #nexus-crown svg { animation: spinCube 8s linear infinite; transform-style: preserve-3d; }
+    @keyframes spinCube {
+        0% { transform: rotate3d(1, 1, 1, 0deg); }
+        100% { transform: rotate3d(1, 1, 1, 360deg); }
+    }
+</style>
+
+<script>
+let canvas, ctx, particles = [], animationFrameId, buildProgress = 0;
+
+function initCinemaParticles() {
+    canvas = document.getElementById('cinema-canvas');
+    if(!canvas) return;
+    ctx = canvas.getContext('2d');
+    resizeCanvas();
+    window.removeEventListener('resize', resizeCanvas);
+    window.addEventListener('resize', resizeCanvas);
+    
+    particles = [];
+    buildProgress = 0;
+    
+    const crown = document.getElementById('nexus-crown');
+    const nameLabel = document.getElementById('cinema-app-name');
+    if(crown) { crown.style.opacity = '0'; crown.style.transform = 'scale(0.5)'; }
+    if(nameLabel) nameLabel.style.opacity = '0';
+    
+    for(let i=0; i<450; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            targetX: 0, targetY: 0,
+            speed: 0.02 + Math.random() * 0.03,
+            radius: 1 + Math.random() * 2,
+            color: Math.random() > 0.4 ? '51, 224, 196' : '255, 215, 0',
+            angle: Math.random() * Math.PI * 2
+        });
+    }
+    if(animationFrameId) cancelAnimationFrame(animationFrameId);
+    animateCinema();
+}
+
+function resizeCanvas() {
+    if(canvas) { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+}
+
+function animateCinema() {
+    ctx.fillStyle = 'rgba(7, 17, 30, 0.2)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    if(buildProgress < 1) buildProgress += 0.0015;
+    
+    let cx = canvas.width / 2;
+    let cy = canvas.height / 2 + 50;
+    
+    particles.forEach((p, idx) => {
+        if (buildProgress < 0.25) {
+            p.angle += 0.008;
+            p.x += Math.cos(p.angle) * 0.6;
+            p.y += Math.sin(p.angle) * 0.6;
+        } else if (buildProgress < 0.88) {
+            let layer = idx % 3;
+            let baseWidth = 320 - (layer * 95);
+            let layerY = cy - (layer * 65);
+            let segment = idx % 3;
+            
+            if(segment === 0) { p.targetX = cx - baseWidth/2 + ((idx * 7) % baseWidth); p.targetY = layerY; }
+            else if(segment === 1) { p.targetX = cx + baseWidth/2 - ((idx * 7) % baseWidth); p.targetY = layerY; }
+            else { p.targetX = cx; p.targetY = cy - 180; }
+            
+            p.x += (p.targetX - p.x) * p.speed;
+            p.y += (p.targetY - p.y) * p.speed;
+        } else {
+            p.x += (cx - p.x) * 0.07;
+            p.y += ((cy - 90) - p.y) * 0.07;
+            
+            if(buildProgress >= 0.97) {
+                const crown = document.getElementById('nexus-crown');
+                const nameLabel = document.getElementById('cinema-app-name');
+                if(crown) { crown.style.opacity = '1'; crown.style.transform = 'scale(1) rotate(0deg)'; }
+                if(nameLabel) {
+                    nameLabel.style.opacity = '1';
+                    nameLabel.textContent = document.getElementById('status-app-name')?.textContent || 'NEXUS ARRANGEMENT ACTIVE';
+                }
+            }
+        }
+        
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.color}, ${0.4 + Math.random() * 0.6})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = `rgba(${p.color}, 0.4外部)`;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    });
+    
+    const currentMsg = document.getElementById('status-current-step')?.textContent;
+    const hud = document.getElementById('cinema-hud');
+    if(hud && currentMsg) { hud.textContent = currentMsg.toUpperCase(); }
+    
+    animationFrameId = requestAnimationFrame(animateCinema);
+}
+</script>
+
 <div id="privacy-screen" onclick="togglePrivacy()">
   <div style="font-size:80px">&#9733;</div>
   <div style="font-size:20px;font-weight:700;color:var(--text2);font-family:'IBM Plex Mono',monospace">AIRS NEXUS — SCREEN LOCKED</div>
