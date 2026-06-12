@@ -855,6 +855,7 @@ function toggleMic(){
   try{micRec.start();}catch(e){st.textContent="Mic failed to start.";micOn=false;}
 }
 async function saveRecord(){
+    setTimeout(triggerLiveScan, 500);
   const body={};
   FIELDS.forEach((f,i)=>{const el=document.getElementById("nr-field-"+(i+1));body["field_"+(i+1)]=el?.value||"";});
   body.status=document.getElementById("nr-status")?.value||"active";
