@@ -252,6 +252,17 @@ app.delete('/api/demo/clear', async (req, res) => {
 });
 
 // --- GDI: Governed Data Intelligence (Tier 2) - deterministic cross-record inference, zero tokens ---
+app.get('/api/viz/aggregate', async (req, res) => {
+  try {
+    const fld = String(req.query.field || 'status');
+    const allowed = ['field_1','field_2','field_3','field_4','field_5','field_6','status'];
+    if (!allowed.includes(fld)) return res.json({ success: false, error: 'invalid field' });
+    const rows = (await pool.query(`SELECT COALESCE(NULLIF(TRIM(${fld}),''),'(blank)') AS label, COUNT(*)::int AS n FROM ${TABLE_NAME} GROUP BY 1 ORDER BY n DESC LIMIT 12`)).rows;
+    const total = (await pool.query(`SELECT COUNT(*)::int AS t FROM ${TABLE_NAME}`)).rows[0].t;
+    res.json({ success: true, field: fld, total: total, buckets: rows, governed: true, generated_at: new Date().toISOString() });
+  } catch (e) { res.json({ success: false, error: e.message }); }
+});
+
 app.post('/api/gdi/analyze', async (req, res) => {
   const t0 = Date.now();
   try {
