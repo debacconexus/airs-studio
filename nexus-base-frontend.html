@@ -689,7 +689,7 @@ async function askLive(){
   const a=document.getElementById("live-answer"),rc=document.getElementById("live-receipt");
   a.style.display="block";a.textContent="Thinking - governed inference running...";rc.style.display="none";
   try{
-    const r=await fetch("/api/nexus/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})});
+    const r=await fetch("/api/nexus/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q,fields:FIELDS.map(f=>typeof f==="object"?(f.label||f.name||f.field||""):f)})});
     const d=await r.json();
     if(!d.success){a.textContent="Error: "+(d.error||"inference failed");return;}
     a.textContent=d.answer;
@@ -698,22 +698,31 @@ async function askLive(){
     rc.textContent="IGM RECEIPT | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
   }catch(e){a.textContent="Connection failed";}
 }
+let micFinal="";
 function toggleMic(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
   const st=document.getElementById("mic-status"),btn=document.getElementById("mic-btn");
   if(!SR){st.textContent="Voice input needs Chrome, Edge, or Safari.";return;}
-  if(micOn){micOn=false;try{micRec.abort();}catch(e){}btn.style.background="";st.textContent="Mic off.";return;}
-  micRec=new SR();micRec.lang="en-US";micRec.interimResults=false;micRec.maxAlternatives=1;
+  if(micOn){micOn=false;try{micRec.stop();}catch(e){}return;}
+  micFinal="";
+  micRec=new SR();micRec.lang="en-US";micRec.continuous=true;micRec.interimResults=true;
   micRec.onresult=ev=>{
-    const t=ev.results[0][0].transcript.trim();
-    document.getElementById("live-q").value=t;
-    st.textContent="Heard: "+t+" - asking...";
-    micOn=false;btn.style.background="";
-    askLive();
+    let interim="";
+    for(let i=ev.resultIndex;i<ev.results.length;i++){
+      if(ev.results[i].isFinal)micFinal+=ev.results[i][0].transcript+" ";
+      else interim+=ev.results[i][0].transcript;
+    }
+    document.getElementById("live-q").value=(micFinal+interim).trim();
   };
-  micRec.onerror=ev=>{if(ev.error!=="no-speech"&&ev.error!=="aborted")st.textContent="Mic error: "+ev.error;micOn=false;btn.style.background="";};
-  micRec.onend=()=>{if(micOn){micOn=false;btn.style.background="";st.textContent="Mic off.";}};
-  micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - speak your question.";
+  micRec.onerror=ev=>{if(ev.error!=="no-speech"&&ev.error!=="aborted")st.textContent="Mic error: "+ev.error;};
+  micRec.onend=()=>{
+    if(micOn){try{micRec.start();}catch(e){}return;}
+    btn.style.background="";
+    const t=document.getElementById("live-q").value.trim();
+    if(t){st.textContent="Heard: "+t+" - asking...";askLive();}
+    else st.textContent="Mic off.";
+  };
+  micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - take your time. Tap the mic again when you are finished.";
   try{micRec.start();}catch(e){st.textContent="Mic failed to start.";micOn=false;}
 }
 async function saveRecord(){
