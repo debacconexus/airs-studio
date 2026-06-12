@@ -684,6 +684,9 @@ async function openRecord(id){
 
 let micOn=false,micRec=null;
 async function askLive(){
+    // Setup reference elements for global token headers
+    const tInEl = document.getElementById("header-tokens-in") || document.querySelector(".tokens-in-counter");
+    const tOutEl = document.getElementById("header-tokens-out") || document.querySelector(".tokens-out-counter");
   const q=document.getElementById("live-q").value.trim();
   if(!q)return;
   const a=document.getElementById("live-answer"),rc=document.getElementById("live-receipt");
@@ -694,6 +697,8 @@ async function askLive(){
     if(!d.success){a.textContent="Error: "+(d.error||"inference failed");return;}
     a.textContent=d.answer;
     const x=d.receipts;
+        if(tInEl && x.tokens_in) { tInEl.textContent = parseInt(tInEl.textContent || 0) + x.tokens_in; }
+        if(tOutEl && x.tokens_out) { tOutEl.textContent = parseInt(tOutEl.textContent || 0) + x.tokens_out; }
     rc.style.display="block";
     rc.textContent="IGM RECEIPT | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
   }catch(e){a.textContent="Connection failed";}
