@@ -514,7 +514,9 @@ function initHome(){
       const type=typeof p==="object"?(p.pod_type||p.type||"window"):"window";
       const desc=typeof p==="object"?(p.description||""):"";
       const color=colors[type]||"var(--cyan)";
-      return `<div class="pod-card" style="border-color:${color}33"><div class="pod-type-label" style="color:${color}">${type.toUpperCase()}</div><div class="pod-name">${name}</div><div class="pod-desc">${desc}</div></div>`;
+      const route=type==="infographic"?"viz":(type==="doorway"?"datalog":"records");
+      const hint=type==="infographic"?"Opens Governed Viz \u2192":(type==="doorway"?"Opens Governed Data Log \u2192":"Opens Records \u2192");
+      return `<div class="pod-card" onclick="showMode('${route}')" style="border-color:${color}33;cursor:pointer"><div class="pod-type-label" style="color:${color}">${type.toUpperCase()}</div><div class="pod-name">${name}</div><div class="pod-desc">${desc}</div><div style="margin-top:10px;font-size:11px;font-weight:700;color:${color}">${hint}</div></div>`;
     }).join("");
   } else if(pg){pg.innerHTML='<div class="empty"><div class="empty-icon">&#9672;</div><div class="empty-text">No pods generated yet</div></div>';}
   const sal=document.getElementById("stat-active-label");if(sal)sal.textContent="Active "+ENTITY+"s";
