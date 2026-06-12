@@ -229,6 +229,7 @@ textarea.form-input{resize:vertical;min-height:100px}
   <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>
   <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
   <button class="nav-btn" data-mode="viz" onclick="showMode('viz')"><span class="nav-icon">&#9680;</span> Governed Viz</button>
+  <button class="nav-btn" data-mode="nexuslive" onclick="showMode('nexuslive')"><span class="nav-icon">&#127908;</span> Nexus Live</button>
 </nav>
 <div class="main">
 
@@ -383,6 +384,20 @@ textarea.form-input{resize:vertical;min-height:100px}
   </div>
 </div>
 
+<div id="mode-nexuslive" style="display:none">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">IGM-GOVERNED</span></div>
+  <div style="color:var(--text2);font-size:13px;margin-bottom:18px">Governed live inference &mdash; speak or type. Every answer born with a receipt. USPTO 19/571,156</div>
+  <div style="background:var(--bg2,#0d2440);border:1px solid var(--border,#2d5080);border-radius:12px;padding:20px">
+    <div style="display:flex;gap:12px;align-items:center">
+      <input class="form-input" id="live-q" placeholder="Speak or type a question about the governed record..." style="flex:1" onkeydown="if(event.key==='Enter')askLive()">
+      <button id="mic-btn" onclick="toggleMic()" aria-label="Voice input" style="min-width:54px;padding:10px;font-size:20px;border-radius:8px;border:1px solid var(--border,#2d5080);background:var(--bg3,#0a1f3a);color:#eff7ff;cursor:pointer">&#127908;</button>
+      <button onclick="askLive()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#33e0c4,#62c8ff);color:#0a1f3a;cursor:pointer">ASK</button>
+    </div>
+    <div id="mic-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--text3,#5a7a9a);font-size:13px"></div>
+    <div id="live-answer" aria-live="polite" style="display:none;margin-top:16px;padding:16px;border-radius:12px;background:rgba(51,224,196,0.06);border:1px solid rgba(51,224,196,0.3);white-space:pre-wrap;font-size:14px;line-height:1.6"></div>
+    <div id="live-receipt" style="display:none;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#33e0c4"></div>
+  </div>
+</div>
 <div id="mode-viz" style="display:none">
   <div style="font-size:22px;font-weight:800;color:#ffca58;margin-bottom:4px">&#9680; GOVERNED VIZ</div>
   <div style="font-size:13px;color:#9db8d7;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. IGM Governed &middot; USPTO 19/571,156</div>
@@ -589,7 +604,7 @@ async function renderViz(){
   } catch(e) { cv.innerHTML = '<div style="color:#ff8577;padding:20px">'+e.message+'</div>'; }
 }
 function showMode(mode){
-  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi","viz"].forEach(m=>{
+  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi","viz","nexuslive"].forEach(m=>{
     const el=document.getElementById("mode-"+m);if(el)el.style.display=m===mode?"block":"none";
   });
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
@@ -667,6 +682,40 @@ async function openRecord(id){
   }catch(err){toast("Error loading record",true);}
 }
 
+let micOn=false,micRec=null;
+async function askLive(){
+  const q=document.getElementById("live-q").value.trim();
+  if(!q)return;
+  const a=document.getElementById("live-answer"),rc=document.getElementById("live-receipt");
+  a.style.display="block";a.textContent="Thinking - governed inference running...";rc.style.display="none";
+  try{
+    const r=await fetch("/api/nexus/live",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({question:q})});
+    const d=await r.json();
+    if(!d.success){a.textContent="Error: "+(d.error||"inference failed");return;}
+    a.textContent=d.answer;
+    const x=d.receipts;
+    rc.style.display="block";
+    rc.textContent="IGM RECEIPT | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
+  }catch(e){a.textContent="Connection failed";}
+}
+function toggleMic(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  const st=document.getElementById("mic-status"),btn=document.getElementById("mic-btn");
+  if(!SR){st.textContent="Voice input needs Chrome, Edge, or Safari.";return;}
+  if(micOn){micOn=false;try{micRec.abort();}catch(e){}btn.style.background="";st.textContent="Mic off.";return;}
+  micRec=new SR();micRec.lang="en-US";micRec.interimResults=false;micRec.maxAlternatives=1;
+  micRec.onresult=ev=>{
+    const t=ev.results[0][0].transcript.trim();
+    document.getElementById("live-q").value=t;
+    st.textContent="Heard: "+t+" - asking...";
+    micOn=false;btn.style.background="";
+    askLive();
+  };
+  micRec.onerror=ev=>{if(ev.error!=="no-speech"&&ev.error!=="aborted")st.textContent="Mic error: "+ev.error;micOn=false;btn.style.background="";};
+  micRec.onend=()=>{if(micOn){micOn=false;btn.style.background="";st.textContent="Mic off.";}};
+  micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - speak your question.";
+  try{micRec.start();}catch(e){st.textContent="Mic failed to start.";micOn=false;}
+}
 async function saveRecord(){
   const body={};
   FIELDS.forEach((f,i)=>{const el=document.getElementById("nr-field-"+(i+1));body["field_"+(i+1)]=el?.value||"";});
