@@ -254,10 +254,10 @@
     <div>
       <div style="font-size:12px;color:#5a7f9c;margin-bottom:8px;font-weight:600">Tone Mapping (Voice Strategy)</div>
       <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button class="tone-btn" data-tone="urgent" onclick="selectTone('urgent',this)" style="background:rgba(255,107,107,.2);color:#e25749">🔴 Urgent (Risk)<br><span style="font-size:10px">Sharp, high pitch</span></button>
-        <button class="tone-btn" data-tone="neutral" onclick="selectTone('neutral',this)" style="background:rgba(37,99,168,.2);color:#2563a8">🔵 Neutral (Info)<br><span style="font-size:10px">Standard narration</span></button>
-        <button class="tone-btn" data-tone="affirm" onclick="selectTone('affirm',this)" style="background:rgba(0,168,150,.2);color:#00a896">🟢 Affirm (Good)<br><span style="font-size:10px">Calm, affirming</span></button>
-        <button class="tone-btn" data-tone="highlight" onclick="selectTone('highlight',this)" style="background:rgba(212,160,23,.2);color:#d4a017">🟡 Highlight (Key)<br><span style="font-size:10px">Emphasis markers</span></button>
+        <button type="button" class="tone-btn" onclick="selectTone('urgent',this);return false;" style="background:rgba(255,107,107,.2);color:#e25749;padding:10px 12px;border:1px solid rgba(255,107,107,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🔴 Urgent (Risk)<br><span style="font-size:10px">Sharp, high pitch</span></button>
+        <button type="button" class="tone-btn" onclick="selectTone('neutral',this);return false;" style="background:rgba(37,99,168,.2);color:#2563a8;padding:10px 12px;border:1px solid rgba(37,99,168,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🔵 Neutral (Info)<br><span style="font-size:10px">Standard narration</span></button>
+        <button type="button" class="tone-btn" onclick="selectTone('affirm',this);return false;" style="background:rgba(0,168,150,.2);color:#00a896;padding:10px 12px;border:1px solid rgba(0,168,150,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🟢 Affirm (Good)<br><span style="font-size:10px">Calm, affirming</span></button>
+        <button type="button" class="tone-btn" onclick="selectTone('highlight',this);return false;" style="background:rgba(212,160,23,.2);color:#d4a017;padding:10px 12px;border:1px solid rgba(212,160,23,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🟡 Highlight (Key)<br><span style="font-size:10px">Emphasis markers</span></button>
       </div>
     </div>
   </div>
