@@ -381,7 +381,10 @@ function animateCinema() {
   <div class="schema-grid" id="home-schema-grid"><div class="loading">Loading...</div></div>
   <div class="section-label">Generated Pods</div>
   <div class="pods-grid" id="home-pods-grid"><div class="loading">Loading...</div></div>
-  <button class="btn btn-primary" onclick="showMode('dashboard')" style="padding:16px 40px;font-size:15px">Enter Records &#8594;</button>
+  <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:8px">
+    <button class="btn btn-primary" onclick="showMode('dashboard')" style="padding:16px 40px;font-size:15px">Enter Records &#8594;</button>
+    <button onclick="showMode('about')" style="padding:16px 40px;font-size:15px;font-weight:700;border-radius:10px;border:2px solid #0064CD;background:#E8F4FD;color:#0064CD;cursor:pointer;font-family:'Inter',sans-serif">About AIRS &#9733;</button>
+  </div>
 </div>
 
 <div id="mode-dashboard" style="display:none">
