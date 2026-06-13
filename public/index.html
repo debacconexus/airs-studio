@@ -177,7 +177,60 @@
 <div class="generator">
   <div class="gen-card">
         <div style="margin:40px 0 20px;text-align:center">
-    <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:24px">✦ NATIVE GOVERNED GENERATION — BUILD YOUR DOMAIN STRUCTURE</div>
+    <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:20px">✦ NATIVE GOVERNED GENERATION — SELECT A DOMAIN</div>
+    <select id="domain-select" onchange="loadDomain(this.value)" style="padding:12px 16px;font-size:14px;font-weight:600;color:#0d1f3c;background:#ffffff;border:2px solid #0277bd;border-radius:8px;cursor:pointer;min-width:450px;margin-bottom:20px">
+      <option value="">Choose a domain...</option>
+      <optgroup label="Justice & Social Services">
+        <option value="veterans">⚖️ Veterans Treatment Court</option>
+        <option value="probation">🔗 Probation Case Management</option>
+        <option value="foster">👶 Foster Care Coordination</option>
+        <option value="child-welfare">👨‍👩‍👧 Child Protective Services</option>
+        <option value="immigration">📋 Immigration Case Management</option>
+        <option value="victim-services">🛡️ Victim Services & Support</option>
+      </optgroup>
+      <optgroup label="Healthcare & Behavioral Health">
+        <option value="healthcare">🏥 Healthcare Clinic Coordination</option>
+        <option value="mental-health">🧠 Mental Health Services</option>
+        <option value="substance-abuse">💊 Substance Abuse Treatment</option>
+        <option value="public-health">🏢 Public Health Programs</option>
+      </optgroup>
+      <optgroup label="Finance & Lending">
+        <option value="lending">💰 Commercial Lending Portfolio</option>
+        <option value="microfinance">💵 Microfinance Lending</option>
+        <option value="grant-management">🎁 Grant Management & Tracking</option>
+      </optgroup>
+      <optgroup label="Education & Workforce">
+        <option value="education">🎓 University Student Services</option>
+        <option value="k12">📚 K-12 School Enrollment</option>
+        <option value="workforce">💼 Workforce Development Programs</option>
+        <option value="apprenticeship">🔧 Apprenticeship Tracking</option>
+      </optgroup>
+      <optgroup label="Housing & Services">
+        <option value="homeless">🏘️ Homeless Services Coordination</option>
+        <option value="housing-authority">🏠 Housing Authority Waitlist</option>
+        <option value="realestate">🏘️ Real Estate Portfolio</option>
+      </optgroup>
+      <optgroup label="Nonprofit & Civic">
+        <option value="nonprofit">🤝 Nonprofit Fundraising Pipeline</option>
+        <option value="volunteer">🙋 Volunteer Coordination</option>
+        <option value="food-bank">🥫 Food Bank Distribution</option>
+        <option value="disaster-relief">🚨 Disaster Relief Operations</option>
+      </optgroup>
+      <optgroup label="Operations & Supply">
+        <option value="supply">📦 Supply Chain Management</option>
+        <option value="inventory">📊 Inventory & Asset Tracking</option>
+        <option value="fleet">🚗 Fleet Management & Maintenance</option>
+      </optgroup>
+      <optgroup label="Government & Community">
+        <option value="parks">🌳 Parks & Recreation Programs</option>
+        <option value="library">📖 Library Branch Services</option>
+        <option value="utilities">💧 Water & Utility Services</option>
+      </optgroup>
+    </select>
+    <script>
+      const domains={veterans:['veteran participant','multiple courthouses','courts, treatment, mentors','hearing readiness','veterans without recent contact, missing phase data','compliance, readiness'],probation:['probationer','jurisdiction','probation officers, courts, treatment','compliance status','probationers at risk of violation, missing check-ins','risk assessments, program participation'],foster:['child in care','county or region','caseworkers, foster parents, courts','placement stability','children at risk of re-entry, missing visits, permanency delays','casework notes, well-being assessments'],'child-welfare':['family','jurisdiction','caseworkers, supervisors, courts','safety and reunification','families at risk, missing services, substantiation delays','safety assessments, service completion'],immigration:['case','caseload','case managers, legal team, courts','case resolution','cases stalled, missing documents, hearing dates approaching','legal progress, application status'],'victim-services':['victim','service region','advocates, counselors, prosecutors','recovery and safety','victims at risk, service gaps, case delays','support history, safety planning'],healthcare:['patient','multiple clinics','providers, coordinators, clinical staff','treatment adherence','patients overdue for visits, missing outcomes, care gaps','clinical assessments, medication responses'],'mental-health':['client','mental health network','therapists, psychiatrists, case managers','treatment engagement','clients at risk of disengagement, missed appointments, crisis risk','clinical notes, treatment progress'],'substance-abuse':['participant','treatment network','counselors, medical staff, peer support','recovery progress','participants at risk of relapse, missing sessions, withdrawal risk','treatment milestones, support network'],'public-health':['individual','health jurisdiction','public health workers, clinics, epidemiologists','disease prevention and outbreak control','individuals with infection risk, contact tracing gaps, vaccination status','health assessments, exposure history'],lending:['borrower','lending portfolio','loan officers, risk assessors, compliance','credit risk','loans approaching default, missing collateral, concentration risk','risk assessments, covenant compliance'],microfinance:['borrower','microfinance portfolio','loan officers, field agents, finance','loan repayment','borrowers at risk of default, seasonal cash flow issues, business performance','repayment history, business metrics'],'grant-management':['grant','grant portfolio','grant managers, finance, program staff','funding utilization','grants at risk of lapse, underutilization, compliance gaps','budget status, milestone completion'],education:['student','university system','advisors, program directors, student services','academic progress','students at risk of attrition, missing interventions, enrollment barriers','academic performance, personal circumstances'],k12:['student','school district','teachers, counselors, administrators','school attendance and achievement','students at risk of dropout, chronic absenteeism, academic failure','attendance records, academic progress'],workforce:['participant','workforce program','job coaches, trainers, employers','employment placement','participants at risk of dropout, job readiness gaps, placement delays','skill assessments, employment outcomes'],apprenticeship:['apprentice','apprenticeship network','mentors, educators, employers','skill completion and employment','apprentices at risk of dropout, skill gaps, readiness for full employment','skill assessments, employer feedback'],homeless:['individual','service region','shelters, case managers, social services','housing stability','individuals at risk of chronic homelessness, service gaps, housing readiness','shelter history, employment status'],'housing-authority':['applicant','housing system','housing staff, social workers, managers','housing access','applicants with long waitlist, eligibility verification gaps, priority status','application status, household data'],realestate:['property','real estate portfolio','property managers, tenants, finance','occupancy and revenue','properties with maintenance issues, vacant units, lease expiration','condition assessments, tenant relations'],nonprofit:['donor','fundraising campaign','fundraisers, board, finance','donor retention','donors at risk of lapsing, major gift readiness, giving patterns','engagement history, solicitation strategy'],volunteer:['volunteer','volunteer program','volunteer coordinators, program managers','volunteer engagement','volunteers at risk of dropout, skill mismatches, schedule conflicts','availability, skill set, feedback'],'food-bank':['household','service region','food bank staff, community partners','food security','households with food insecurity gaps, nutritional needs, access barriers','household size, dietary needs, barriers'],'disaster-relief':['affected individual','disaster zone','relief workers, volunteers, agencies','recovery and resilience','individuals with unmet needs, vulnerability, recovery progress','damage assessment, support provided'],supply:['vendor','supply network','procurement, logistics, quality','fulfillment reliability','vendors with delivery delays, quality issues, contract expiration','performance metrics, compliance history'],inventory:['item','asset system','warehouse, procurement, finance','inventory accuracy and turnover','items over-stocked, under-stocked, slow-moving, obsolete','movement history, location data'],fleet:['vehicle','fleet system','fleet managers, mechanics, drivers','vehicle availability and maintenance','vehicles with overdue maintenance, high mileage, mechanical issues','maintenance history, usage data'],parks:['program','parks system','program coordinators, facilities staff, community','participation and utilization','programs under-enrolled, facilities with low usage, maintenance needs','attendance, facility condition'],library:['patron','library branch','librarians, circulation staff, IT','library usage and engagement','patrons at risk of disengagement, overdue materials, collection gaps','checkout history, reading interests'],utilities:['account','utility service area','utility staff, field technicians, billing','service reliability and payment','accounts with payment issues, service outages, infrastructure aging','usage history, payment status']};
+      function loadDomain(key){if(!key)return;const d=domains[key];if(!d)return;const[e,sc,st,t,r,n]=d;document.getElementById('entity').value=e;document.getElementById('scope').value=sc;document.getElementById('stakeholders').value=st;document.getElementById('track').value=t;document.getElementById('reveal').value=r;document.getElementById('notes').value=n;updatePrompt();}
+    </script>
   </div>
 
   <style>
