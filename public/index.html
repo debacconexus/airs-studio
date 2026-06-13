@@ -275,14 +275,18 @@
       selectedChart=type;
       document.querySelectorAll('.chart-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      updatePrompt();
+      if(window.updatePrompt) window.updatePrompt();
     }
     function selectTone(tone,btn){
       selectedTone=tone;
       document.querySelectorAll('.tone-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-      updatePrompt();
+      if(window.updatePrompt) window.updatePrompt();
     }
+    document.addEventListener('DOMContentLoaded',function(){
+      document.querySelector('[data-chart="ranked"]').classList.add('active');
+      document.querySelector('[data-tone="neutral"]').classList.add('active');
+    });
     const origUpdate=window.updatePrompt;
     window.updatePrompt=function(){
       origUpdate();
