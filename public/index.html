@@ -1009,7 +1009,7 @@ var cv=document.getElementById('birth-canvas');if(!cv)return;
 var x=cv.getContext('2d'),stage=document.getElementById('birth-stage');
 var W=680,H=520,CX=340,CY=280,SX=1,SY=1;
 function resize(){var inner=document.getElementById('birth-inner');var r=(inner||stage).getBoundingClientRect();cv.width=r.width;cv.height=r.height;W=r.width;H=r.height;CX=W/2;CY=H*.54;SX=W/680;SY=H/520;}
-var TIERS=[[300,400,130,250,'#85B7EB',992],[215,295,65,130,'#9FE1CB',668],[140,210,10,60,'#FAC775',366]];
+var TIERS=[[300,400,130,250,'#378ADD',992],[215,295,65,130,'#1D9E75',668],[140,210,10,60,'#EF9F27',366]];
 var P=[],SW=[],T0=0,IG=[0,0,0],FT=0,RUN=false;
 function tp(t){var T=TIERS[t],f=Math.random(),y=(T[0]+(T[1]-T[0])*f)*(H/520),hw=(T[2]+(T[3]-T[2])*f)*(W/680);return[CX+(Math.random()*2-1)*hw,y];}
 function init(){
@@ -1020,7 +1020,7 @@ for(var ti=0;ti<3;ti++){for(var i=0;i<TIERS[ti][5];i++){
 var tg=tp(ti);var a=Math.random()*6.283,d=60+Math.random()*Math.max(W,H)*.4;
 P.push({x:CX+Math.cos(a)*d,y:CY+Math.sin(a)*d,tx:tg[0],ty:tg[1],
 t:ti,on:false,vx:0,vy:0,ph:Math.random()*6.283,sp:.3+Math.random()*.7,
-sz:ti===2?2.6:ti===1?2:1.5,c:TIERS[ti][4],tr:[],st:false});}}
+sz:ti===2?3.2:ti===1?2.5:2,c:TIERS[ti][4],tr:[],st:false});}}
 }
 function ign(t){IG[t]=performance.now();for(var i=0;i<P.length;i++)if(P[i].t===t)P[i].on=true;
 SW.push({t:performance.now(),y:TIERS[t][0]*(H/520),c:TIERS[t][4]});}
@@ -1070,9 +1070,9 @@ p.st=d<10;
 p.tr.push(p.x,p.y);if(p.tr.length>20)p.tr.splice(0,2);
 }else{
 var dx2=p.x-CX,dy2=p.y-CY,dist=Math.sqrt(dx2*dx2+dy2*dy2)+1;
-var ang=Math.atan2(dy2,dx2)+.001*dist*.18;
-p.x=CX+Math.cos(ang)*dist*.997+Math.sin(now*.0006*p.sp+p.ph)*1.8;
-p.y=CY+Math.sin(ang)*dist*.997+Math.cos(now*.0007*p.sp+p.ph)*1.8;}
+var ang=Math.atan2(dy2,dx2)+.003*dist*.22;
+p.x=CX+Math.cos(ang)*dist*.994+Math.sin(now*.001*p.sp+p.ph)*2.5;
+p.y=CY+Math.sin(ang)*dist*.994+Math.cos(now*.0012*p.sp+p.ph)*2.5;}
 if(p.on&&p.tr.length>4){
 for(var j=0;j<p.tr.length-2;j+=2){
 var ta=(j/2+1)/(p.tr.length/2);
@@ -1084,7 +1084,7 @@ x.globalAlpha=.1;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,p.sz+5,0,6.283);x.f
 x.globalAlpha=.05;x.beginPath();x.arc(p.x,p.y,p.sz+10,0,6.283);x.fill();
 x.globalAlpha=1;x.fillStyle=p.c;x.beginPath();x.arc(p.x,p.y,p.sz,0,6.283);x.fill();
 }else{
-x.globalAlpha=p.on?.95:.5;x.fillStyle=p.c;
+x.globalAlpha=p.on?1:.75;x.fillStyle=p.c;
 x.beginPath();x.arc(p.x,p.y,p.sz*.7,0,6.283);x.fill();x.globalAlpha=1;}}
 if(FT){var ft2=(now-FT)/1000;if(ft2>1.5&&ft2<6){
 x.globalAlpha=Math.min(.7,1-(ft2-5));x.fillStyle='#0064CD';
