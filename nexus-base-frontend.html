@@ -326,7 +326,7 @@ function animateCinema() {
 <div id="demo-overlay" class="demo-overlay" role="dialog" aria-modal="true" aria-labelledby="demo-title" onclick="if(event.target===this)closeDemo()">
   <div class="demo-modal">
     <h2 id="demo-title">&#9889; <span id="demo-nexus-name"></span> &#8212; Guided Demo</h2>
-    <div class="demo-sub">AIRS Nexus &middot; IGM Governed &middot; Tier: <span id="demo-tier"></span> &middot; USPTO 19/571,156</div>
+    <div class="demo-sub">AIRS Nexus &middot; Governed &middot; Tier: <span id="demo-tier"></span> &middot; USPTO 19/571,156</div>
     <div class="demo-section"><div class="demo-label">What This Nexus Does</div><div class="demo-text" id="demo-desc"></div></div>
     <div class="demo-section"><div class="demo-label">Governed Fields</div><div class="demo-chips" id="demo-fields"></div></div>
     <div class="demo-section" id="demo-pods-wrap"><div class="demo-label">Suggested Pods</div><div class="demo-chips" id="demo-pods"></div></div>
@@ -387,7 +387,7 @@ function animateCinema() {
   </div>
   <div class="card">
     <div class="card-header">
-      <div class="card-title" id="dashboard-table-title">Active Records <span class="igm-badge">IGM-GOVERNED</span></div>
+      <div class="card-title" id="dashboard-table-title">Active Records <span class="igm-badge">GOVERNED</span></div>
       <div class="filters">
         <input class="filter-input" id="dash-search" placeholder="Search records..." oninput="loadDashboard()" style="width:220px">
         <select class="filter-input" id="dash-status" onchange="loadDashboard()" style="width:160px">
@@ -405,7 +405,7 @@ function animateCinema() {
 
 <div id="mode-newrecord" style="display:none">
   <div class="card">
-    <div class="card-header"><div class="card-title" id="newrecord-title">New Record <span class="igm-badge">IGM-GOVERNED</span></div></div>
+    <div class="card-header"><div class="card-title" id="newrecord-title">New Record <span class="igm-badge">GOVERNED</span></div></div>
     <div id="newrecord-form-fields" class="form-grid"></div>
     <div style="margin-top:16px"><div class="form-group"><label>Status</label><select class="form-input" id="nr-status"><option value="active">Active</option><option value="pending">Pending</option><option value="completed">Completed</option><option value="inactive">Inactive</option></select></div></div>
     <div style="margin-top:16px"><div class="form-group"><label>Notes</label><textarea class="form-input" id="nr-notes" placeholder="Optional notes..." rows="3"></textarea></div></div>
@@ -418,7 +418,7 @@ function animateCinema() {
 
 <div id="mode-records" style="display:none">
   <div class="card">
-    <div class="card-header"><div class="card-title" id="records-title">Records <span class="igm-badge">IGM-GOVERNED</span></div></div>
+    <div class="card-header"><div class="card-title" id="records-title">Records <span class="igm-badge">GOVERNED</span></div></div>
     <div class="filters">
       <input class="filter-input" id="rec-search" placeholder="Search records..." style="flex:1;min-width:200px">
       <button class="btn btn-primary btn-sm" onclick="searchRecords()">Search</button>
@@ -432,7 +432,7 @@ function animateCinema() {
 <div id="mode-rawnote" style="display:none">
   <div class="card">
     <div class="card-header">
-      <div class="card-title">Raw Note <span class="igm-badge">IGM-GOVERNED</span></div>
+      <div class="card-title">Raw Note <span class="igm-badge">GOVERNED</span></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
         <input class="filter-input" id="note-rec-search" placeholder="Search to link record..." style="width:220px">
         <span id="note-rec-selected" style="font-size:12px;color:var(--text3);font-family:'IBM Plex Mono',monospace">&#8212; No record linked &#8212;</span>
@@ -458,7 +458,7 @@ function animateCinema() {
 
 <div id="mode-calendar" style="display:none">
   <div class="card">
-    <div class="card-header"><div class="card-title">Calendar <span class="igm-badge">IGM-GOVERNED</span></div></div>
+    <div class="card-header"><div class="card-title">Calendar <span class="igm-badge">GOVERNED</span></div></div>
     <div class="filters" style="margin-bottom:20px">
       <div class="form-group"><label>Date</label><input type="date" class="filter-input" id="cal-date" style="width:180px"></div>
       <div class="form-group"><label>Location</label><input class="filter-input" id="cal-location" placeholder="Filter by location..." style="width:200px"></div>
@@ -485,8 +485,8 @@ function animateCinema() {
 
 <div id="mode-documents" style="display:none">
   <div class="card">
-    <div class="card-header"><div class="card-title">Document Intelligence Archive <span class="igm-badge">IGM-GOVERNED</span></div></div>
-    <div class="chain-custody">&#9670; Chain of Custody: <span>Submitted</span> &#8594; <span>IGM Governed</span> &#8594; <span>Confirmed</span> &#8594; <span>Archived</span></div>
+    <div class="card-header"><div class="card-title">Document Intelligence Archive <span class="igm-badge">GOVERNED</span></div></div>
+    <div class="chain-custody">&#9670; Chain of Custody: <span>Submitted</span> &#8594; <span>Governed</span> &#8594; <span>Confirmed</span> &#8594; <span>Archived</span></div>
     <div class="form-grid" style="margin-bottom:16px">
       <div class="form-group"><label>Date</label><input type="date" class="form-input" id="doc-date"></div>
       <div class="form-group"><label>Assigned To</label><input class="form-input" id="doc-assigned" placeholder="Name"></div>
@@ -509,7 +509,7 @@ function animateCinema() {
 </div>
 
 <div id="mode-nexuslive" style="display:none">
-  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">IGM-GOVERNED</span></div>
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">GOVERNED</span></div>
   <div style="color:var(--text2);font-size:13px;margin-bottom:18px">Governed live inference &mdash; speak or type. Every answer born with a receipt. USPTO 19/571,156</div>
   <div style="background:var(--bg2,#ffffff);border:1px solid var(--border,#2d5080);border-radius:12px;padding:20px">
     <div style="display:flex;gap:12px;align-items:center">
@@ -524,7 +524,7 @@ function animateCinema() {
 </div>
 <div id="mode-viz" style="display:none">
   <div style="font-size:22px;font-weight:800;color:#ffca58;margin-bottom:4px">&#9680; GOVERNED VIZ</div>
-  <div style="font-size:13px;color:#41607f;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. IGM Governed &middot; USPTO 19/571,156</div>
+  <div style="font-size:13px;color:#41607f;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. Governed &middot; USPTO 19/571,156</div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
     <select id="viz-field" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2d5080;background:#ffffff;color:#10243c">
       <option value="field_1">Field 1</option><option value="field_2">Field 2</option>
@@ -542,7 +542,7 @@ function animateCinema() {
 </div>
 <div id="mode-gdi" style="display:none">
   <div class="card">
-    <div class="card-header"><div class="card-title">GDI &#8212; Governed Data Intelligence <span class="igm-badge">TIER 2 &middot; IGM-GOVERNED</span></div></div>
+    <div class="card-header"><div class="card-title">GDI &#8212; Governed Data Intelligence <span class="igm-badge">TIER 2 &middot; GOVERNED</span></div></div>
     <div style="padding:16px">
       <div style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:14px">Cross-record inference with receipts. Deterministic rules, zero tokens, every run audit-logged. GDI reads what the data says &#8212; within the blind spots NSI has declared.</div>
       <button class="btn btn-primary" onclick="runGDI()" id="gdi-run-btn">&#9670; Run GDI Analysis</button>
@@ -555,7 +555,7 @@ function animateCinema() {
   <div style="border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);margin-bottom:20px">
     <div class="log-header">
       <span style="color:var(--gold);font-size:16px">&#9632;</span>
-      <div class="log-title">Governed Data Log <span style="font-size:11px;font-weight:400;color:var(--text2)">[IGM-GOVERNED]</span></div>
+      <div class="log-title">Governed Data Log <span style="font-size:11px;font-weight:400;color:var(--text2)">[GOVERNED]</span></div>
       <div style="margin-left:auto">
         <input class="filter-input btn-sm" id="log-search" placeholder="Search records..." style="width:220px" oninput="loadDataLog()">
       </div>
@@ -659,9 +659,9 @@ function initHome(){
     }).join("");
   } else if(pg){pg.innerHTML='<div class="empty"><div class="empty-icon">&#9672;</div><div class="empty-text">No pods generated yet</div></div>';}
   const sal=document.getElementById("stat-active-label");if(sal)sal.textContent="Active "+ENTITY+"s";
-  const dtl=document.getElementById("dashboard-table-title");if(dtl)dtl.innerHTML="Active "+ENTITY+' Records <span class="igm-badge">IGM-GOVERNED</span>';
-  const rtl=document.getElementById("records-title");if(rtl)rtl.innerHTML=ENTITY+' Records <span class="igm-badge">IGM-GOVERNED</span>';
-  const nrtl=document.getElementById("newrecord-title");if(nrtl)nrtl.innerHTML="New "+ENTITY+' <span class="igm-badge">IGM-GOVERNED</span>';
+  const dtl=document.getElementById("dashboard-table-title");if(dtl)dtl.innerHTML="Active "+ENTITY+' Records <span class="igm-badge">GOVERNED</span>';
+  const rtl=document.getElementById("records-title");if(rtl)rtl.innerHTML=ENTITY+' Records <span class="igm-badge">GOVERNED</span>';
+  const nrtl=document.getElementById("newrecord-title");if(nrtl)nrtl.innerHTML="New "+ENTITY+' <span class="igm-badge">GOVERNED</span>';
   const trl=document.getElementById("tab-record-label");if(trl)trl.textContent=ENTITY;
   const nrs=document.getElementById("note-rec-search");if(nrs)nrs.placeholder="Search to link "+ENTITY.toLowerCase()+"...";
 }
@@ -824,7 +824,7 @@ async function askLive(){
         if(tInEl && x.tokens_in) { tInEl.textContent = parseInt(tInEl.textContent || 0) + x.tokens_in; }
         if(tOutEl && x.tokens_out) { tOutEl.textContent = parseInt(tOutEl.textContent || 0) + x.tokens_out; }
     rc.style.display="block";
-    rc.textContent="IGM RECEIPT | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
+    rc.textContent="Receipt | records: "+x.records_scanned+" | tokens in/out: "+x.tokens_in+"/"+x.tokens_out+" | RQ: "+x.rq+" | "+x.duration_ms+"ms | "+x.ran_at;
   }catch(e){a.textContent="Connection failed";}
 }
 let micFinal="";
@@ -848,7 +848,7 @@ function toggleMic(){
     if(micOn){try{micRec.start();}catch(e){}return;}
     btn.style.background="";
     const t=document.getElementById("live-q").value.trim();
-    if(t){st.textContent="Heard: "+t+" - asking...";askLive();}
+    if(t){st.textContent="You asked: "+t+" - thinking...";askLive();}
     else st.textContent="Mic off.";
   };
   micOn=true;btn.style.background="rgba(255,133,119,0.4)";st.textContent="Listening - take your time. Tap the mic again when you are finished.";
