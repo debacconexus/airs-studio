@@ -9,18 +9,18 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#0a1628;--bg2:#0f1f35;--bg3:#1a3a5c;--bg4:#1e4060;
-  --border:rgba(98,200,255,.15);--border2:rgba(98,200,255,.25);
-  --text:#e8f4ff;--text2:#9db8d7;--text3:#6a8aaa;
-  --gold:#ffca58;--gold2:#d97706;
-  --teal:#33e0c4;--teal2:#0d9488;
-  --cyan:#62c8ff;--cyan2:#0284c7;
-  --coral:#ff8577;--violet:#8a8dff;
-  --green:#4ade80;--green2:#16a34a;
-  --shadow:0 4px 24px rgba(0,0,0,.4);--radius:12px;
+  --bg:#eef3fa;--bg2:#ffffff;--bg3:#e3ecf6;--bg4:#d8e6f3;
+  --border:rgba(16,70,120,.16);--border2:rgba(16,70,120,.28);
+  --text:#10243c;--text2:#41607f;--text3:#637e9b;
+  --gold:#b97509;--gold2:#92580a;
+  --teal:#0d9488;--teal2:#0b7c72;
+  --cyan:#0277bd;--cyan2:#015e96;
+  --coral:#e25749;--violet:#5b5ff0;
+  --green:#15803d;--green2:#166534;
+  --shadow:0 4px 24px rgba(30,60,100,.12);--radius:12px;
 }
 body{font-family:'Inter',sans-serif;font-size:15px;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh;overflow-x:hidden}
-.header{background:linear-gradient(180deg,#0a1628,#0f1f35);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.5)}
+.header{background:linear-gradient(180deg,#eef3fa,#ffffff);border-bottom:1px solid var(--border);padding:0 24px;height:60px;display:flex;align-items:center;justify-content:space-between;position:fixed;top:0;left:0;right:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.5)}
 .header-left{display:flex;align-items:center;gap:16px}
 .logo{font-size:22px;font-weight:800;color:#fff;display:flex;align-items:center;gap:8px;cursor:pointer}
 .logo-star{color:var(--gold)}
@@ -119,7 +119,7 @@ label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:.5px;text
 .form-input::placeholder{color:var(--text3)}
 select.form-input option{background:var(--bg2);color:var(--text)}
 textarea.form-input{resize:vertical;min-height:100px}
-.home-hero{background:linear-gradient(135deg,#0f2440,#1a3a5c);border:1px solid var(--border2);border-radius:16px;padding:36px;margin-bottom:28px}
+.home-hero{background:linear-gradient(135deg,#0f2440,#e3ecf6);border:1px solid var(--border2);border-radius:16px;padding:36px;margin-bottom:28px}
 .home-nexus-name{font-size:32px;font-weight:800;color:#fff;margin-bottom:8px}
 .home-entity{font-size:13px;color:var(--text2);font-family:'IBM Plex Mono',monospace}
 .home-tier{display:inline-flex;align-items:center;background:rgba(51,224,196,.12);border:1px solid rgba(51,224,196,.3);color:var(--teal);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;font-family:'IBM Plex Mono',monospace;margin-left:12px;vertical-align:middle}
@@ -134,7 +134,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 .pod-name{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px}
 .pod-desc{font-size:12px;color:var(--text2);line-height:1.5}
 .record-card{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius);overflow:hidden;margin-bottom:20px}
-.record-header{background:linear-gradient(90deg,#0f2440,#1a3a5c);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
+.record-header{background:linear-gradient(90deg,#0f2440,#e3ecf6);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--gold)}
 .record-id{font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:700;color:var(--gold)}
 .record-fields{display:grid;grid-template-columns:repeat(3,1fr)}
 .record-field{padding:14px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
@@ -154,7 +154,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 .upload-icon{font-size:32px;margin-bottom:8px}
 .upload-text{font-size:13px;color:var(--text2)}
 .upload-sub{font-size:11px;color:var(--text3);margin-top:4px}
-.log-header{background:linear-gradient(90deg,#0f2440,#1a3a5c);border-radius:10px 10px 0 0;padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold)}
+.log-header{background:linear-gradient(90deg,#0f2440,#e3ecf6);border-radius:10px 10px 0 0;padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:2px solid var(--gold)}
 .log-title{font-size:14px;font-weight:700;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
 .log-row{display:grid;grid-template-columns:1fr 1fr 1fr 80px 80px 120px;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;align-items:center;cursor:pointer}
 .log-row:hover{background:rgba(98,200,255,.04)}
@@ -167,7 +167,7 @@ textarea.form-input{resize:vertical;min-height:100px}
 .empty{text-align:center;padding:48px 24px;color:var(--text3)}
 .empty-icon{font-size:40px;margin-bottom:12px}
 .loading{text-align:center;padding:32px;color:var(--text3);font-family:'IBM Plex Mono',monospace;font-size:13px}
-#privacy-screen{display:none;position:fixed;inset:0;background:#0a1628;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#privacy-screen{display:none;position:fixed;inset:0;background:#eef3fa;z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 #privacy-screen.show{display:flex}
 @media(max-width:900px){.nav{display:none}.main{margin-left:0}.stats-grid{grid-template-columns:repeat(2,1fr)}.charts-grid{grid-template-columns:1fr}.schema-grid{grid-template-columns:repeat(2,1fr)}.pods-grid{grid-template-columns:1fr}}
 </style>
@@ -186,7 +186,7 @@ textarea.form-input{resize:vertical;min-height:100px}
         </svg>
     </div>
 
-    <div id="cinema-app-name" style="opacity:0; color:#eff7ff; font-size:28px; font-weight:700; letter-spacing:2px; margin-bottom:40px; z-index:10; text-shadow:0 0 20px rgba(51,224,196,0.6); transition: opacity 2s ease;"></div>
+    <div id="cinema-app-name" style="opacity:0; color:#10243c; font-size:28px; font-weight:700; letter-spacing:2px; margin-bottom:40px; z-index:10; text-shadow:0 0 20px rgba(51,224,196,0.6); transition: opacity 2s ease;"></div>
     
     <div id="cinema-hud" style="color:#62c8ff; font-family:'IBM Plex Mono', monospace; font-size:13px; letter-spacing:1px; z-index:10; background:rgba(13,36,64,0.6); padding:8px 16px; border-radius:20px; border:1px solid rgba(45,80,128,0.4);">
         INITIALIZING ARCHITECTURAL SPINE...
@@ -511,34 +511,34 @@ function animateCinema() {
 <div id="mode-nexuslive" style="display:none">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">IGM-GOVERNED</span></div>
   <div style="color:var(--text2);font-size:13px;margin-bottom:18px">Governed live inference &mdash; speak or type. Every answer born with a receipt. USPTO 19/571,156</div>
-  <div style="background:var(--bg2,#0d2440);border:1px solid var(--border,#2d5080);border-radius:12px;padding:20px">
+  <div style="background:var(--bg2,#ffffff);border:1px solid var(--border,#2d5080);border-radius:12px;padding:20px">
     <div style="display:flex;gap:12px;align-items:center">
       <input class="form-input" id="live-q" placeholder="Speak or type a question about the governed record..." style="flex:1" onkeydown="if(event.key==='Enter')askLive()">
-      <button id="mic-btn" onclick="toggleMic()" aria-label="Voice input" style="min-width:54px;padding:10px;font-size:20px;border-radius:8px;border:1px solid var(--border,#2d5080);background:var(--bg3,#0a1f3a);color:#eff7ff;cursor:pointer">&#127908;</button>
-      <button onclick="askLive()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#33e0c4,#62c8ff);color:#0a1f3a;cursor:pointer">ASK</button>
+      <button id="mic-btn" onclick="toggleMic()" aria-label="Voice input" style="min-width:54px;padding:10px;font-size:20px;border-radius:8px;border:1px solid var(--border,#2d5080);background:var(--bg3,#eaf1f9);color:#10243c;cursor:pointer">&#127908;</button>
+      <button onclick="askLive()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#0d9488,#0277bd);color:#ffffff;cursor:pointer">ASK</button>
     </div>
-    <div id="mic-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--text3,#5a7a9a);font-size:13px"></div>
+    <div id="mic-status" role="status" aria-live="polite" style="margin-top:8px;color:var(--text3,#637e9b);font-size:13px"></div>
     <div id="live-answer" aria-live="polite" style="display:none;margin-top:16px;padding:16px;border-radius:12px;background:rgba(51,224,196,0.06);border:1px solid rgba(51,224,196,0.3);white-space:pre-wrap;font-size:14px;line-height:1.6"></div>
-    <div id="live-receipt" style="display:none;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#33e0c4"></div>
+    <div id="live-receipt" style="display:none;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#0b7c72"></div>
   </div>
 </div>
 <div id="mode-viz" style="display:none">
   <div style="font-size:22px;font-weight:800;color:#ffca58;margin-bottom:4px">&#9680; GOVERNED VIZ</div>
-  <div style="font-size:13px;color:#9db8d7;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. IGM Governed &middot; USPTO 19/571,156</div>
+  <div style="font-size:13px;color:#41607f;margin-bottom:16px">Charts generated from live governed records. Every figure traceable. IGM Governed &middot; USPTO 19/571,156</div>
   <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px">
-    <select id="viz-field" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2d5080;background:#0d2440;color:#eff7ff">
+    <select id="viz-field" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2d5080;background:#ffffff;color:#10243c">
       <option value="field_1">Field 1</option><option value="field_2">Field 2</option>
       <option value="field_3">Field 3</option><option value="field_4">Field 4</option>
       <option value="field_5">Field 5</option><option value="field_6">Field 6</option>
       <option value="status" selected>Status</option>
     </select>
-    <select id="viz-type" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2d5080;background:#0d2440;color:#eff7ff">
+    <select id="viz-type" style="padding:10px 14px;font-size:15px;border-radius:8px;border:1px solid #2d5080;background:#ffffff;color:#10243c">
       <option value="bar" selected>Bar Chart</option><option value="donut">Donut Chart</option>
     </select>
-    <button onclick="renderViz()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#33e0c4,#62c8ff);color:#0a1f3a;cursor:pointer">GENERATE CHART</button>
+    <button onclick="renderViz()" style="padding:10px 22px;font-size:15px;font-weight:700;border-radius:8px;border:none;background:linear-gradient(90deg,#0d9488,#0277bd);color:#ffffff;cursor:pointer">GENERATE CHART</button>
   </div>
-  <div id="viz-canvas" style="background:#0d2440;border:1px solid #2d5080;border-radius:12px;padding:24px;min-height:320px"></div>
-  <div id="viz-receipt" style="margin-top:10px;font-size:12px;color:#33e0c4"></div>
+  <div id="viz-canvas" style="background:#ffffff;border:1px solid #2d5080;border-radius:12px;padding:24px;min-height:320px"></div>
+  <div id="viz-receipt" style="margin-top:10px;font-size:12px;color:#0b7c72"></div>
 </div>
 <div id="mode-gdi" style="display:none">
   <div class="card">
@@ -685,7 +685,7 @@ async function renderViz(){
   const typ = document.getElementById('viz-type').value;
   const cv = document.getElementById('viz-canvas');
   const rc = document.getElementById('viz-receipt');
-  cv.innerHTML = '<div style="color:#9db8d7;padding:20px">Generating governed chart...</div>'; rc.textContent='';
+  cv.innerHTML = '<div style="color:#41607f;padding:20px">Generating governed chart...</div>'; rc.textContent='';
   try {
     const d = await (await fetch('/api/viz/aggregate?field=' + encodeURIComponent(fld))).json();
     if (!d.success) { cv.innerHTML = '<div style="color:#ff8577;padding:20px">'+(d.error||'error')+'</div>'; return; }
@@ -698,9 +698,9 @@ async function renderViz(){
       svg = '<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;max-width:760px" xmlns="http://www.w3.org/2000/svg">';
       d.buckets.forEach((b,i)=>{
         const y=i*(BH+GAP)+10, w=Math.max(6,(b.n/max)*(W-LX-90));
-        svg += '<text x="'+(LX-10)+'" y="'+(y+BH/2+5)+'" text-anchor="end" fill="#9db8d7" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,22)+'</text>';
+        svg += '<text x="'+(LX-10)+'" y="'+(y+BH/2+5)+'" text-anchor="end" fill="#41607f" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,22)+'</text>';
         svg += '<rect x="'+LX+'" y="'+y+'" width="'+w+'" height="'+BH+'" rx="6" fill="'+VIZ_COLORS[i%12]+'"/>';
-        svg += '<text x="'+(LX+w+10)+'" y="'+(y+BH/2+5)+'" fill="#eff7ff" font-size="14" font-weight="700" font-family="sans-serif">'+b.n+'</text>';
+        svg += '<text x="'+(LX+w+10)+'" y="'+(y+BH/2+5)+'" fill="#10243c" font-size="14" font-weight="700" font-family="sans-serif">'+b.n+'</text>';
       });
       svg += '</svg>';
     } else {
@@ -714,12 +714,12 @@ async function renderViz(){
         svg += '<path d="M'+x0+' '+y0+' A'+R+' '+R+' 0 '+big+' 1 '+x1+' '+y1+' L'+xi1+' '+yi1+' A'+IR+' '+IR+' 0 '+big+' 0 '+xi0+' '+yi0+' Z" fill="'+VIZ_COLORS[i%12]+'"/>';
         a0=a1;
       });
-      svg += '<text x="'+CX+'" y="'+(CY-2)+'" text-anchor="middle" fill="#eff7ff" font-size="26" font-weight="800" font-family="sans-serif">'+d.total+'</text>';
-      svg += '<text x="'+CX+'" y="'+(CY+18)+'" text-anchor="middle" fill="#9db8d7" font-size="11" font-family="sans-serif">RECORDS</text>';
+      svg += '<text x="'+CX+'" y="'+(CY-2)+'" text-anchor="middle" fill="#10243c" font-size="26" font-weight="800" font-family="sans-serif">'+d.total+'</text>';
+      svg += '<text x="'+CX+'" y="'+(CY+18)+'" text-anchor="middle" fill="#41607f" font-size="11" font-family="sans-serif">RECORDS</text>';
       d.buckets.forEach((b,i)=>{
         const ly=40+i*24;
         svg += '<rect x="360" y="'+(ly-11)+'" width="14" height="14" rx="3" fill="'+VIZ_COLORS[i%12]+'"/>';
-        svg += '<text x="382" y="'+ly+'" fill="#eff7ff" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,26)+' &middot; '+b.n+' ('+Math.round(b.n/d.total*100)+'%)</text>';
+        svg += '<text x="382" y="'+ly+'" fill="#10243c" font-size="13" font-family="sans-serif">'+String(b.label).slice(0,26)+' &middot; '+b.n+' ('+Math.round(b.n/d.total*100)+'%)</text>';
       });
       svg += '</svg>';
     }
@@ -743,7 +743,7 @@ function showMode(mode){
 
 function buildCharts(data){
   const gridColor="rgba(98,200,255,0.08)";
-  const tickColor="#9db8d7";
+  const tickColor="#41607f";
   destroyChart("ts");
   const tc=document.getElementById("chart-timeseries");
   if(tc&&data.time_series){charts["ts"]=new Chart(tc,{type:"line",data:{labels:data.time_series.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{label:"Records",data:data.time_series.map(r=>parseInt(r.count)),borderColor:"#62c8ff",backgroundColor:"rgba(98,200,255,0.08)",fill:true,tension:0.4,pointBackgroundColor:"#62c8ff",pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tickColor,font:{size:10}},grid:{color:gridColor}},y:{ticks:{color:tickColor,font:{size:10}},grid:{color:gridColor},beginAtZero:true}}}});}
@@ -949,9 +949,9 @@ async function loadDataLog(){
     const sr=await fetch("/api/stats");const stats=await sr.json();
     if(stats.charts){
       destroyChart("lg");const lgc=document.getElementById("log-chart-gov");
-      if(lgc&&stats.charts.governance_activity){charts["lg"]=new Chart(lgc,{type:"line",data:{labels:stats.charts.governance_activity.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{data:stats.charts.governance_activity.map(r=>parseInt(r.count)),borderColor:"#33e0c4",backgroundColor:"rgba(51,224,196,0.08)",fill:true,tension:0.4,pointBackgroundColor:"#33e0c4",pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#9db8d7",font:{size:10}},grid:{color:"rgba(98,200,255,0.08)"}},y:{ticks:{color:"#9db8d7",font:{size:10}},grid:{color:"rgba(98,200,255,0.08)"},beginAtZero:true}}}});}
+      if(lgc&&stats.charts.governance_activity){charts["lg"]=new Chart(lgc,{type:"line",data:{labels:stats.charts.governance_activity.map(r=>r.date?new Date(r.date).toLocaleDateString("en-US",{month:"short",day:"numeric"}):""),datasets:[{data:stats.charts.governance_activity.map(r=>parseInt(r.count)),borderColor:"#33e0c4",backgroundColor:"rgba(51,224,196,0.08)",fill:true,tension:0.4,pointBackgroundColor:"#33e0c4",pointRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#41607f",font:{size:10}},grid:{color:"rgba(98,200,255,0.08)"}},y:{ticks:{color:"#41607f",font:{size:10}},grid:{color:"rgba(98,200,255,0.08)"},beginAtZero:true}}}});}
       destroyChart("ls");const lsc=document.getElementById("log-chart-status");
-      if(lsc&&stats.charts.status_breakdown&&stats.charts.status_breakdown.length){charts["ls"]=new Chart(lsc,{type:"pie",data:{labels:stats.charts.status_breakdown.map(r=>toTitle(r.status)),datasets:[{data:stats.charts.status_breakdown.map(r=>parseInt(r.count)),backgroundColor:["#33e0c4","#62c8ff","#ffca58","#ff8577","#8a8dff"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#9db8d7",font:{size:11},padding:8}}}}});}
+      if(lsc&&stats.charts.status_breakdown&&stats.charts.status_breakdown.length){charts["ls"]=new Chart(lsc,{type:"pie",data:{labels:stats.charts.status_breakdown.map(r=>toTitle(r.status)),datasets:[{data:stats.charts.status_breakdown.map(r=>parseInt(r.count)),backgroundColor:["#33e0c4","#62c8ff","#ffca58","#ff8577","#8a8dff"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#41607f",font:{size:11},padding:8}}}}});}
     }
   }catch(err){document.getElementById("log-table-wrap").innerHTML=`<div style="color:var(--coral);font-size:13px;padding:16px">Error: ${err.message}</div>`;}
 }
