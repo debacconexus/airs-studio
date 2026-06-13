@@ -177,8 +177,9 @@ app.get('/api/stats', async (req, res) => {
     const timeSeries = await pool.query(`SELECT DATE(created_at) as date, COUNT(*) as count FROM ${TABLE_NAME} WHERE created_at > NOW() - INTERVAL '30 days' GROUP BY DATE(created_at) ORDER BY date ASC`);
     const statusBreakdown = await pool.query(`SELECT status, COUNT(*) as count FROM ${TABLE_NAME} GROUP BY status`);
     const fieldDist = await pool.query(`SELECT field_3, COUNT(*) as count FROM ${TABLE_NAME} WHERE field_3 IS NOT NULL AND field_3 != '' GROUP BY field_3 ORDER BY count DESC LIMIT 10`);
+    const tokenStats = await pool.query(`SELECT COALESCE(SUM(CASE WHEN new_value::text LIKE '%tokens_in%' THEN (new_value::json->>'tokens_in')::int ELSE 0 END),0) as tokens_in, COALESCE(SUM(CASE WHEN new_value::text LIKE '%tokens_out%' THEN (new_value::json->>'tokens_out')::int ELSE 0 END),0) as tokens_out FROM audit_log WHERE action_type IN ('NEXUS_LIVE','GDI_RUN')`);
     const govActivity = await pool.query(`SELECT DATE(changed_at) as date, COUNT(*) as count FROM audit_log WHERE changed_at > NOW() - INTERVAL '30 days' GROUP BY DATE(changed_at) ORDER BY date ASC`);
-    res.json({ success: true, stats: { total: parseInt(total.rows[0].count), active: parseInt(active.rows[0].count), completed: parseInt(completed.rows[0].count), recent_30_days: parseInt(recent.rows[0].count), audit_entries: parseInt(auditCount.rows[0].count), nexus_name: NEXUS_NAME, entity_label: ENTITY_LABEL, igm_governed: true }, charts: { time_series: timeSeries.rows, status_breakdown: statusBreakdown.rows, field_distribution: fieldDist.rows, governance_activity: govActivity.rows } });
+    res.json({ success: true, stats: { total: parseInt(total.rows[0].count), active: parseInt(active.rows[0].count), completed: parseInt(completed.rows[0].count), recent_30_days: parseInt(recent.rows[0].count), audit_entries: parseInt(auditCount.rows[0].count), nexus_name: NEXUS_NAME, entity_label: ENTITY_LABEL, igm_governed: true, tokens_in: parseInt(tokenStats.rows[0].tokens_in || 0), tokens_out: parseInt(tokenStats.rows[0].tokens_out || 0) }, charts: { time_series: timeSeries.rows, status_breakdown: statusBreakdown.rows, field_distribution: fieldDist.rows, governance_activity: govActivity.rows } });
   } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
 
@@ -260,7 +261,17 @@ app.post('/api/demo/seed', async (req, res) => {
         [rid, ev.toISOString().slice(0, 10), 'Demo Review', 'Demo Site A', 'Demo Staff A', '[DEMO]']);
       seeded++;
     }
-    console.log('[IGM] Demo seed: ' + seeded + ' synthetic records loaded');
+    // Seed governance activity with token tracking
+    for (let d = 0; d < 14; d++) {
+      const dt = new Date(); dt.setDate(dt.getDate() - d);
+      const tokIn = Math.floor(Math.random() * 400) + 200;
+      const tokOut = Math.floor(Math.random() * 150) + 50;
+      await pool.query('INSERT INTO audit_log (table_name, action_type, changed_by, new_value, changed_at) VALUES ($1,$2,$3,$4,$5)',
+        [TABLE_NAME, d % 3 === 0 ? 'NEXUS_LIVE' : d % 3 === 1 ? 'GDI_RUN' : 'RECORD_UPDATE', 'AIRS Demo',
+        JSON.stringify({tokens_in: tokIn, tokens_out: tokOut, rq: (tokIn / (tokIn + tokOut) + (Math.random() * 0.5)).toFixed(3), records_scanned: Math.floor(Math.random() * 8) + 1}),
+        dt.toISOString()]);
+    }
+    console.log('[IGM] Demo seed: ' + seeded + ' synthetic records + 14 days governance activity loaded');
     res.json({ success: true, seeded });
   } catch (err) { res.status(500).json({ success: false, error: err.message }); }
 });
