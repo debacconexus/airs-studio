@@ -57,7 +57,7 @@
 .gen-btn{width:100%;padding:16px;border-radius:10px;background:linear-gradient(135deg,#3730a3,#6366f1);border:none;color:#fff;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px}
 .gen-btn:hover{opacity:.9;transform:translateY(-1px)}
 .gen-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.progress-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;display:none}
+.progress-card{background:transparent;border:none;border-radius:0;padding:0;margin:0;display:none}
 .progress-card.visible{display:block}
 .step-row{display:none}
 .step-icon{animation:pulse-step 2s ease-in-out infinite;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;font-family:'IBM Plex Mono',monospace}
@@ -434,7 +434,7 @@
   </div>
 
   <div class="progress-card" id="progress-card">
-    <div class="gen-label">&#9672; AIRS Studio is building your Nexus...</div>
+    <div class="gen-label" style="padding:8px 24px;margin:0">&#9672; AIRS Studio is building your Nexus...</div>
     <div id="birth-stage" style="position:relative;width:100vw;margin-left:calc(-50vw + 50%);height:100vh;background:#0a1628;overflow:hidden;display:flex;justify-content:center"><div id="birth-inner" style="position:relative;width:100%;height:100%;max-width:178vh;margin:0 auto">
       <canvas id="birth-canvas" width="680" height="400" style="width:100%;height:100%;display:block"></canvas>
       <div id="birth-name" aria-hidden="true" style="position:absolute;top:50px;left:0;right:0;text-align:center;font-size:22px;font-weight:500;letter-spacing:1px;color:#eaf4ff;opacity:0;transition:opacity 2s ease"></div><div id="birth-labels" style="position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:16px;opacity:0;transition:opacity 1s"><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(90,160,255,.2);color:#85B7EB">NSI — What gaps will be audited</span><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(51,224,196,.2);color:#5DCAA5">GDI — What rules fire automatically</span><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(255,202,88,.2);color:#FAC775">PGI — What predictions are possible</span></div>
@@ -445,15 +445,8 @@
     <div class="step-row"><div class="step-icon pending" id="step-4-icon">4</div><div class="step-text pending" id="step-4-text">Provisioning Railway project and PostgreSQL database...</div></div></div>
     <div class="step-row"><div class="step-icon pending" id="step-5-icon">5</div><div class="step-text pending" id="step-5-text">Deploying to Railway and activating IGM governance...</div></div></div>
     <div class="step-row"><div class="step-icon pending" id="step-6-icon">&#9733;</div><div class="step-text pending" id="step-6-text">Your Nexus is live &mdash; ready for Pod customization</div></div>
-    <div class="live-meta-panel" id="live-meta-panel" style="display:none">
-      <div class="live-meta-row"><span class="live-meta-label">Nexus Name</span><span class="live-meta-value" id="live-nexus_name">&mdash;</span></div>
-      <div class="live-meta-row"><span class="live-meta-label">Primary Entity</span><span class="live-meta-value" id="live-primary_entity">&mdash;</span></div>
-      <div class="live-meta-row"><span class="live-meta-label">Governance Tier</span><span class="live-meta-value" id="live-governance_tier">&mdash;</span></div>
-      <div style="margin-top:10px"><div class="live-meta-label" style="margin-bottom:6px">Fields</div><div id="live-fields-chips"></div></div>
-      <div style="margin-top:10px"><div class="live-meta-label" style="margin-bottom:6px">Pod Seeds</div><div id="live-pods-chips"></div></div>
-    </div>
+    
   </div>
-
   <div class="nexus-result" id="nexus-result">
     <div class="nexus-result-header">
       <div>
