@@ -982,9 +982,9 @@ function openNexus() {
     });
     ctx.globalAlpha=1;
     const tierLabels=[
-      {on:parts.some(p=>p.tier===0&&p.on),y:CY+180,text:'NSI — What the schema cannot see',color:'#5aa0ff'},
-      {on:parts.some(p=>p.tier===1&&p.on),y:CY+60,text:'GDI — Governed inference, receipted',color:'#33e0c4'},
-      {on:parts.some(p=>p.tier===2&&p.on),y:CY-60,text:'PGI — Predictive governed intelligence',color:'#ffca58'}
+      {on:parts.some(p=>p.tier===0&&p.on),y:CY+180,text:'NSI — What gaps will be audited',color:'#5aa0ff'},
+      {on:parts.some(p=>p.tier===1&&p.on),y:CY+60,text:'GDI — What rules fire automatically',color:'#33e0c4'},
+      {on:parts.some(p=>p.tier===2&&p.on),y:CY-60,text:'PGI — What predictions are possible',color:'#ffca58'}
     ];
     tierLabels.forEach(tl=>{
       if(tl.on){
