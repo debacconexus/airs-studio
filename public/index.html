@@ -298,6 +298,119 @@
   
 
 
+
+  <!-- GOVERNANCE BLUEPRINT -->
+  <div id="gov-blueprint" style="display:none;margin-top:20px">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#0064CD;margin-bottom:16px;text-align:center">YOUR GOVERNANCE BLUEPRINT — WHAT AIRS WILL BUILD</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div style="background:#E8F4FD;border:1px solid rgba(2,136,209,.25);border-radius:12px;padding:16px">
+        <div style="font-size:12px;font-weight:700;color:#0064CD;margin-bottom:8px">Schema Architecture</div>
+        <div style="font-size:11px;color:#5a7f9c;margin-bottom:4px;font-style:italic">What am I building?</div>
+        <div style="font-size:12px;color:#0d1f3c;line-height:1.6" id="bp-schema">Select a domain to preview...</div>
+      </div>
+
+      <div style="background:#E0F5EE;border:1px solid rgba(13,148,136,.25);border-radius:12px;padding:16px">
+        <div style="font-size:12px;font-weight:700;color:#0b7c72;margin-bottom:8px">Governance Envelope</div>
+        <div style="font-size:11px;color:#5a7f9c;margin-bottom:4px;font-style:italic">Who watches the watchers?</div>
+        <div style="font-size:12px;color:#0d1f3c;line-height:1.6" id="bp-governance">Select a domain to preview...</div>
+      </div>
+
+      <div style="background:#EEEDFE;border:1px solid rgba(124,109,255,.25);border-radius:12px;padding:16px">
+        <div style="font-size:12px;font-weight:700;color:#534ab7;margin-bottom:8px">Compliance Surface</div>
+        <div style="font-size:11px;color:#5a7f9c;margin-bottom:4px;font-style:italic">What regulations apply?</div>
+        <div style="font-size:12px;color:#0d1f3c;line-height:1.6" id="bp-compliance">Select a domain to preview...</div>
+      </div>
+
+      <div style="background:#FEF3D7;border:1px solid rgba(185,117,9,.25);border-radius:12px;padding:16px">
+        <div style="font-size:12px;font-weight:700;color:#92580a;margin-bottom:8px">Intelligence Layers</div>
+        <div style="font-size:11px;color:#5a7f9c;margin-bottom:4px;font-style:italic">What will the system think about?</div>
+        <div style="font-size:12px;color:#0d1f3c;line-height:1.6" id="bp-intelligence">Select a domain to preview...</div>
+      </div>
+    </div>
+
+    <div style="background:#FDE8E4;border:1px solid rgba(226,87,73,.2);border-radius:12px;padding:16px;margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;color:#c0392b;margin-bottom:8px">Reporting Outputs</div>
+      <div style="font-size:11px;color:#5a7f9c;margin-bottom:4px;font-style:italic">What comes out?</div>
+      <div style="font-size:12px;color:#0d1f3c;line-height:1.6" id="bp-reporting">Select a domain to preview...</div>
+    </div>
+  </div>
+
+  <script>
+    const blueprints={
+      veterans:{
+        schema:'Entity: Veteran Participant\nPrimary key: Case ID\n6 fields: Branch, Mentor, Phase, Hearing Date, Courthouse, Compliance\nRelationships: Veteran → Mentor → Court',
+        governance:'Audit trail: every note timestamped with author\nToken budget: 150 tokens per governed query\nReceipts: RQ score, tokens in/out, duration, timestamp',
+        compliance:'VA regulations, HIPAA (health data), ADA (accessibility), State court mandates, CDCR (justice-involved)',
+        intelligence:'NSI: Missing mentor contacts, incomplete phase data\nGDI: Contact recency rules, hearing preparedness checks\nPGI: Phase advancement readiness predictions',
+        reporting:'Dashboard: Active vs graduated, courthouse breakdown\nExports: Compliance reports, hearing calendars\nAlerts: No mentor contact > 14 days, hearing in 7 days'
+      },
+      healthcare:{
+        schema:'Entity: Patient\nPrimary key: Patient ID\n6 fields: Condition, Provider, Visit Date, Treatment Plan, Status, Follow-up\nRelationships: Patient → Provider → Clinic',
+        governance:'Audit trail: every clinical note logged with timestamp\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'HIPAA (protected health information), ADA, State licensing, CMS quality measures, Joint Commission standards',
+        intelligence:'NSI: Missing clinical assessments, no treatment outcomes\nGDI: Visit recency, medication adherence checks\nPGI: Readmission risk, treatment response predictions',
+        reporting:'Dashboard: Visits by provider, overdue patients\nExports: Clinical summaries, quality reports\nAlerts: Overdue visits, missing assessments'
+      },
+      lending:{
+        schema:'Entity: Borrower\nPrimary key: Loan ID\n6 fields: Business Type, Balance, Officer, Review Date, Risk Level, Payment Status\nRelationships: Borrower → Officer → Portfolio',
+        governance:'Audit trail: every risk assessment logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'OCC/FDIC regulations, BSA/AML, CRA (Community Reinvestment Act), Fair Lending, ECOA',
+        intelligence:'NSI: Missing collateral docs, no financial capacity data\nGDI: Payment recency, covenant compliance checks\nPGI: Default probability, concentration risk predictions',
+        reporting:'Dashboard: Portfolio risk distribution, officer caseloads\nExports: Regulatory filings, risk reports\nAlerts: Payment default approaching, review overdue'
+      },
+      education:{
+        schema:'Entity: Student\nPrimary key: Student ID\n6 fields: Program, Advisor, GPA, Enrollment Status, Intervention, Graduation Date\nRelationships: Student → Advisor → Program',
+        governance:'Audit trail: every academic action logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'FERPA (student records), ADA, Title IX, Accreditation standards, State education codes',
+        intelligence:'NSI: Missing intervention records, no personal barriers data\nGDI: GPA threshold checks, enrollment status rules\nPGI: Attrition risk, graduation timeline predictions',
+        reporting:'Dashboard: Enrollment by program, at-risk students\nExports: Accreditation reports, student progress\nAlerts: GPA below threshold, enrollment gap detected'
+      },
+      homeless:{
+        schema:'Entity: Individual\nPrimary key: Client ID\n6 fields: Shelter Status, Case Manager, Employment, Housing Readiness, Last Contact, Service Region\nRelationships: Individual → Case Manager → Shelter',
+        governance:'Audit trail: every service encounter logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'HMIS (HUD reporting), HIPAA, McKinney-Vento Act, CoC program rules, Fair Housing',
+        intelligence:'NSI: Missing employment history, no housing barrier data\nGDI: Contact recency, shelter stay duration rules\nPGI: Chronic homelessness risk, housing readiness predictions',
+        reporting:'Dashboard: Shelter utilization, housing placements\nExports: HUD Annual Performance Report, service logs\nAlerts: No contact > 30 days, chronic threshold approaching'
+      },
+      nonprofit:{
+        schema:'Entity: Donor\nPrimary key: Donor ID\n6 fields: Giving Level, Last Gift Date, Campaign, Solicitor, Engagement Score, Next Action\nRelationships: Donor → Solicitor → Campaign',
+        governance:'Audit trail: every gift and contact logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'IRS 501(c)(3) reporting, State charity registration, GDPR (if international), PCI-DSS (payment data)',
+        intelligence:'NSI: Missing engagement history, no wealth screening data\nGDI: Gift recency, lapsed donor detection rules\nPGI: Major gift readiness, donor retention predictions',
+        reporting:'Dashboard: Revenue by campaign, donor retention\nExports: Annual fund reports, tax receipts\nAlerts: Major donor lapsing, campaign underperforming'
+      },
+      'mental-health':{
+        schema:'Entity: Client\nPrimary key: Client ID\n6 fields: Diagnosis, Therapist, Session Date, Treatment Plan, Crisis Level, Medication\nRelationships: Client → Therapist → Program',
+        governance:'Audit trail: every session note logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'HIPAA, 42 CFR Part 2 (substance abuse), State licensing, Duty to warn statutes, Medi-Cal/Medicaid',
+        intelligence:'NSI: Missing crisis assessments, no medication tracking\nGDI: Session recency, crisis escalation rules\nPGI: Disengagement risk, crisis probability predictions',
+        reporting:'Dashboard: Caseload by therapist, crisis events\nExports: Clinical quality reports, utilization data\nAlerts: Missed sessions, crisis level elevated'
+      },
+      'substance-abuse':{
+        schema:'Entity: Participant\nPrimary key: Participant ID\n6 fields: Substance, Counselor, Phase, Last Session, Support Network, Recovery Score\nRelationships: Participant → Counselor → Program',
+        governance:'Audit trail: every treatment event logged\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp',
+        compliance:'42 CFR Part 2, HIPAA, SAMHSA guidelines, State licensing, Drug court mandates',
+        intelligence:'NSI: Missing relapse indicators, no peer support data\nGDI: Session attendance rules, phase progression checks\nPGI: Relapse risk, recovery trajectory predictions',
+        reporting:'Dashboard: Phase distribution, session attendance\nExports: Treatment outcomes, court compliance\nAlerts: Missed sessions, relapse indicators detected'
+      }
+    };
+    const origLoadDomain=window.loadDomain;
+    window.loadDomain=function(key){
+      if(origLoadDomain) origLoadDomain(key);
+      const bp=blueprints[key];
+      const bpDiv=document.getElementById('gov-blueprint');
+      if(bp && bpDiv){
+        bpDiv.style.display='block';
+        document.getElementById('bp-schema').innerText=bp.schema.replace(/\\n/g,'\n');
+        document.getElementById('bp-governance').innerText=bp.governance.replace(/\\n/g,'\n');
+        document.getElementById('bp-compliance').innerText=bp.compliance;
+        document.getElementById('bp-intelligence').innerText=bp.intelligence.replace(/\\n/g,'\n');
+        document.getElementById('bp-reporting').innerText=bp.reporting.replace(/\\n/g,'\n');
+      } else if(bpDiv){ bpDiv.style.display='none'; }
+    };
+  </script>
+
 <!-- LIVE PROMPT ASSEMBLY -->
   <div style="margin-bottom:16px">
     <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:8px">YOUR DOMAIN PROMPT</div>
