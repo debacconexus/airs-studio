@@ -394,15 +394,7 @@
   </div>
 
   <script>
-    function populateExample(ent,sco,stak,tra,rev,not){
-      document.getElementById('entity').value=ent;
-      document.getElementById('scope').value=sco;
-      document.getElementById('stakeholders').value=stak;
-      document.getElementById('track').value=tra;
-      document.getElementById('reveal').value=rev;
-      document.getElementById('notes').value=not;
-      updatePrompt();
-    }
+
     function updatePrompt(){
       const e=document.getElementById('entity').value;
       const sc=document.getElementById('scope').value;
@@ -583,7 +575,7 @@ async function generateNexus() {
     if (!data.success) {
       setStep(1, 'error', data.error);
       btn.disabled = false;
-      document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+      document.getElementById('gen-btn-text').textContent = 'DEPLOY';
       return;
     }
 
@@ -615,13 +607,13 @@ async function generateNexus() {
             clearInterval(pollInterval);
             showNexusResult(nexus);
             btn.disabled = false;
-            document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+            document.getElementById('gen-btn-text').textContent = 'DEPLOY';
             stepShown = 7;
           } else if (nexus.status === 'error') {
             setStep(stepShown, 'error', nexus.error || 'Generation error');
             clearInterval(pollInterval);
             btn.disabled = false;
-            document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+            document.getElementById('gen-btn-text').textContent = 'DEPLOY';
           }
         } catch(e) {}
       }, 3000);
@@ -694,13 +686,13 @@ async function generateNexus() {
           }
           showNexusResult(nexus);
           btn.disabled = false;
-          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+          document.getElementById('gen-btn-text').textContent = 'DEPLOY';
           stepShown = 7;
         } else if (nexus.status === 'error') {
           setStep(stepShown, 'error', nexus.error || 'Generation error');
           evtSource.close();
           btn.disabled = false;
-          document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+          document.getElementById('gen-btn-text').textContent = 'DEPLOY';
         }
       }
     };
@@ -709,7 +701,7 @@ async function generateNexus() {
     console.error(err);
     setStep(1, 'error', 'Connection error — is AIRS Studio server running?');
     btn.disabled = false;
-    document.getElementById('gen-btn-text').textContent = 'Generate My Nexus with AIRS Studio';
+    document.getElementById('gen-btn-text').textContent = 'DEPLOY';
   }
 }
 
