@@ -694,7 +694,7 @@ function showToast(msg, type = 'ok') {
   setTimeout(() => { t.className = 'toast'; }, 3000);
 }
 
-function renderNSIReport(report) {
+function renderNSIReport(report) { return;
   if (!report || !report.gaps) return;
   const section = document.getElementById('nsi-section');
   if (!section) return;
