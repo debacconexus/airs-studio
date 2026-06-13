@@ -1114,5 +1114,65 @@ var bl=document.getElementById('birth-labels');if(bl)bl.style.opacity='1';}
 };
 })();
 </script>
+
+  <script>
+    (function(){
+      var ta=document.getElementById('prompt-input');
+      if(!ta)return;
+      var debounce=null;
+      ta.addEventListener('input',function(){
+        clearTimeout(debounce);
+        debounce=setTimeout(function(){autoBlueprint(ta.value);},600);
+      });
+      function autoBlueprint(text){
+        var bp=document.getElementById('gov-blueprint');
+        if(!bp)return;
+        if(!text||text.length<20){bp.style.display='none';return;}
+        bp.style.display='block';
+        var t=text.toLowerCase();
+        var entity='Record';
+        var words=text.split(/[\s,\.]+/);
+        var entities=['client','patient','student','veteran','borrower','donor','volunteer','applicant','vendor','account','property','participant','individual','apprentice','grant','household','case','family','child','victim','probationer','program','patron','vehicle','item'];
+        for(var i=0;i<entities.length;i++){if(t.indexOf(entities[i])>-1){entity=entities[i].charAt(0).toUpperCase()+entities[i].slice(1);break;}}
+        var compliance=[];
+        if(t.indexOf('health')>-1||t.indexOf('medical')>-1||t.indexOf('clinical')>-1)compliance.push('HIPAA');
+        if(t.indexOf('student')>-1||t.indexOf('education')>-1||t.indexOf('school')>-1)compliance.push('FERPA');
+        if(t.indexOf('tax')>-1||t.indexOf('irs')>-1||t.indexOf('expense')>-1||t.indexOf('income')>-1)compliance.push('IRS reporting standards');
+        if(t.indexOf('homeless')>-1||t.indexOf('shelter')>-1||t.indexOf('housing')>-1)compliance.push('HMIS','HUD regulations');
+        if(t.indexOf('veteran')>-1||t.indexOf('military')>-1)compliance.push('VA regulations');
+        if(t.indexOf('child')>-1||t.indexOf('foster')>-1||t.indexOf('welfare')>-1)compliance.push('CAPTA','ASFA');
+        if(t.indexOf('victim')>-1)compliance.push('VAWA','VOCA');
+        if(t.indexOf('probation')>-1||t.indexOf('justice')>-1)compliance.push('State probation statutes');
+        if(t.indexOf('substance')>-1||t.indexOf('drug')>-1)compliance.push('42 CFR Part 2','SAMHSA');
+        if(t.indexOf('lending')>-1||t.indexOf('loan')>-1||t.indexOf('financial')>-1)compliance.push('OCC/FDIC','Fair Lending');
+        if(t.indexOf('nonprofit')>-1||t.indexOf('donor')>-1||t.indexOf('fundrais')>-1)compliance.push('IRS 501(c)(3)');
+        if(t.indexOf('consult')>-1||t.indexOf('business')>-1)compliance.push('State business regulations','IRS Schedule C');
+        if(t.indexOf('marketing')>-1)compliance.push('CAN-SPAM','FTC guidelines');
+        compliance.push('ADA (accessibility)');
+        if(compliance.length>5)compliance=compliance.slice(0,5);
+        var fields=[];
+        var fieldWords=['name','type','date','status','phase','level','score','amount','category','source','region','location','branch','officer','mentor','provider','counselor','advocate','manager','coordinator','therapist'];
+        for(var i=0;i<fieldWords.length;i++){if(t.indexOf(fieldWords[i])>-1)fields.push(fieldWords[i].charAt(0).toUpperCase()+fieldWords[i].slice(1));if(fields.length>=6)break;}
+        if(fields.length<3)fields=['Primary Field','Status','Timeline','Assignment','Category','Notes'];
+        var nsi='Missing historical data, no outcome tracking';
+        var gdi='Recency checks, threshold monitoring, completeness rules';
+        var pgi='Risk predictions, trend analysis, gap forecasting';
+        if(t.indexOf('marketing')>-1)nsi='Missing campaign ROI data, no conversion attribution';
+        if(t.indexOf('tax')>-1||t.indexOf('expense')>-1)nsi='Missing receipt documentation, no category threshold alerts';
+        if(t.indexOf('consult')>-1)nsi='Missing follow-up history, no client satisfaction data';
+        var alerts=[];
+        if(t.indexOf('follow-up')>-1||t.indexOf('followup')>-1||t.indexOf('contact')>-1)alerts.push('Overdue follow-ups');
+        if(t.indexOf('expense')>-1||t.indexOf('tax')>-1)alerts.push('Expense threshold approaching');
+        if(t.indexOf('marketing')>-1||t.indexOf('campaign')>-1)alerts.push('Campaign underperforming');
+        if(t.indexOf('billing')>-1||t.indexOf('payment')>-1)alerts.push('Payment overdue');
+        if(alerts.length<2)alerts.push('Missing data detected','Review overdue');
+        document.getElementById('bp-schema').innerText='Entity: '+entity+'\nPrimary key: '+entity+' ID\n6 fields: '+fields.slice(0,6).join(', ')+'\nRelationships: '+entity+' → Assigned Staff → Organization';
+        document.getElementById('bp-governance').innerText='Audit trail: every change logged with timestamp\nToken budget: 150 tokens per query\nReceipts: records scanned, tokens, RQ, timestamp';
+        document.getElementById('bp-compliance').innerText=compliance.join(', ');
+        document.getElementById('bp-intelligence').innerText='NSI: '+nsi+'\nGDI: '+gdi+'\nPGI: '+pgi;
+        document.getElementById('bp-reporting').innerText='Dashboard: Key metrics by category\nExports: Compliance reports, summaries\nAlerts: '+alerts.join(', ');
+      }
+    })();
+  </script>
 </body>
 </html>
