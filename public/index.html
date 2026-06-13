@@ -292,73 +292,7 @@
   </div>
 
   
-  <!-- ROW 3: INTELLIGENCE PRESENTATION -->
-  <div class="domain-row">
-    <div class="domain-row-label">Row 3: Intelligence Presentation (How Findings Are Spoken)</div>
-    <div style="margin-bottom:12px">
-      <div style="font-size:12px;color:#5a7f9c;margin-bottom:8px;font-weight:600">Chart Type (Audio Narration Strategy)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button class="chart-btn" data-chart="ranked" onclick="selectChart('ranked',this)">📊 Ranked List<br><span style="font-size:10px;color:#5a7f9c">Numeric comparison</span></button>
-        <button class="chart-btn" data-chart="proportion" onclick="selectChart('proportion',this)">🥧 Proportion<br><span style="font-size:10px;color:#5a7f9c">Percentages</span></button>
-        <button class="chart-btn" data-chart="trend" onclick="selectChart('trend',this)">📈 Trend<br><span style="font-size:10px;color:#5a7f9c">Direction over time</span></button>
-        <button class="chart-btn" data-chart="records" onclick="selectChart('records',this)">📋 Records Detail<br><span style="font-size:10px;color:#5a7f9c">Item by item</span></button>
-      </div>
-    </div>
-    <div>
-      <div style="font-size:12px;color:#5a7f9c;margin-bottom:8px;font-weight:600">Tone Mapping (Voice Strategy)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
-        <button type="button" class="tone-btn" onclick="selectTone('urgent',this);return false;" style="background:rgba(255,107,107,.2);color:#e25749;padding:10px 12px;border:1px solid rgba(255,107,107,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🔴 Urgent (Risk)<br><span style="font-size:10px">Sharp, high pitch</span></button>
-        <button type="button" class="tone-btn" onclick="selectTone('neutral',this);return false;" style="background:rgba(37,99,168,.2);color:#2563a8;padding:10px 12px;border:1px solid rgba(37,99,168,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🔵 Neutral (Info)<br><span style="font-size:10px">Standard narration</span></button>
-        <button type="button" class="tone-btn" onclick="selectTone('affirm',this);return false;" style="background:rgba(0,168,150,.2);color:#00a896;padding:10px 12px;border:1px solid rgba(0,168,150,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🟢 Affirm (Good)<br><span style="font-size:10px">Calm, affirming</span></button>
-        <button type="button" class="tone-btn" onclick="selectTone('highlight',this);return false;" style="background:rgba(212,160,23,.2);color:#d4a017;padding:10px 12px;border:1px solid rgba(212,160,23,.4);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600">🟡 Highlight (Key)<br><span style="font-size:10px">Emphasis markers</span></button>
-      </div>
-    </div>
-  </div>
 
-  <style>
-    .chart-btn, .tone-btn{padding:10px 12px;border:1px solid rgba(2,136,209,.3);background:#f0f9ff;color:#0d1f3c;border-radius:8px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;transition:all .2s}
-    .chart-btn:hover, .tone-btn:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(2,136,209,.15)}
-    .chart-btn.active, .tone-btn.active{background:#0277bd;color:#fff;border-color:#0277bd}
-  </style>
-
-  <script>
-    let selectedChart='ranked';
-    let selectedTone='neutral';
-    function selectChart(type, btn) {
-      selectedChart = type;
-      document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      setTimeout(() => updatePrompt(), 0);
-    }
-    function selectTone(tone, btn) {
-      selectedTone = tone;
-      document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      setTimeout(() => updatePrompt(), 0);
-    }
-    document.addEventListener('DOMContentLoaded',function(){
-      document.querySelector('[data-chart="ranked"]').classList.add('active');
-      document.querySelector('[data-tone="neutral"]').classList.add('active');
-    });
-    const origUpdate=window.updatePrompt;
-    window.updatePrompt=function(){
-      origUpdate();
-      const e=document.getElementById('entity').value;
-      const sc=document.getElementById('scope').value;
-      const st=document.getElementById('stakeholders').value;
-      const t=document.getElementById('track').value;
-      const r=document.getElementById('reveal').value;
-      const n=document.getElementById('notes').value;
-      if(e && sc && st && t && r && n){
-        const chartStrategy={ranked:'ranked numeric comparison',proportion:'proportion with percentages',trend:'trend direction and velocity',records:'record-by-record detail'};
-        const toneStrategy={urgent:'urgent/risk (sharp, high pitch)',neutral:'neutral/informational (standard)',affirm:'affirming/positive (calm)',highlight:'highlight/emphasis (key markers)'};
-        const extra=` Findings are presented as ${chartStrategy[selectedChart]} with ${toneStrategy[selectedTone]} voice strategy.`;
-        const prompt=`${e.charAt(0).toUpperCase()+e.slice(1)} coordination across ${sc}. Each ${e} record tracks key attributes relevant to the domain, assigned stakeholder or ${st.split(',')[0]}, status, and timeline. Governed notes capture ${n}. The system must reveal ${r} and identify patterns across ${sc}.${extra}`;
-        document.getElementById('prompt-display').textContent=prompt;
-        document.getElementById('prompt-input').value=prompt;
-      }
-    };
-  </script>
 
 
   <div style="margin:40px 20px;text-align:center">
