@@ -816,11 +816,12 @@ function openNexus() {
         p.y+=Math.cos(now*.0005*p.sp+p.ph)*.5+(232-p.y)*.0006;
       }
       const bx=CX+(p.x-CX)*(1-beat),by=230+(p.y-230)*(1-beat);
-      ctx.globalAlpha=p.on?(.45+.4*Math.sin(now*.003*p.sp+p.ph)):.22;
+      ctx.globalAlpha=p.on?(.7+.25*Math.sin(now*.003*p.sp+p.ph)):.4;
       ctx.fillStyle=p.c;
       ctx.fillRect(bx,by,p.sz,p.sz);
     });
     ctx.globalAlpha=1;
+    if(finaleT){const ft=now-finaleT;if(ft>800&&ft<3200){ctx.globalAlpha=Math.min(.8,(3200-ft)/800);ctx.font='11px monospace';ctx.fillStyle='rgb(255,212,120)';ctx.textAlign='center';ctx.fillText('RQ = I(d) / P(s) + T(c)',CX,cy+48);}}
     requestAnimationFrame(frame);
   }
   function staticDraw(){
