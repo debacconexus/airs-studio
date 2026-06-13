@@ -364,6 +364,7 @@ function animateCinema() {
   <button class="nav-btn" data-mode="datalog" onclick="showMode('datalog')"><span class="nav-icon">&#9632;</span> Governed Data Log</button>
   <button class="nav-btn" data-mode="gdi" onclick="showMode('gdi')"><span class="nav-icon">&#9670;</span> GDI Analysis</button>
   <button class="nav-btn" data-mode="viz" onclick="showMode('viz')"><span class="nav-icon">&#9680;</span> Governed Viz</button>
+  <button class="nav-btn" data-mode="about" onclick="showMode('about')"><span class="nav-icon">&#9733;</span> About AIRS</button>
   <button class="nav-btn" data-mode="nexuslive" onclick="showMode('nexuslive')"><span class="nav-icon">&#127908;</span> Nexus Live</button>
 </nav>
 <div class="main">
@@ -519,6 +520,51 @@ function animateCinema() {
   </div>
 </div>
 
+<div id="mode-about" style="display:none">
+  <div style="padding:32px;max-width:800px;margin:0 auto">
+    <div style="text-align:center;margin-bottom:32px">
+      <div style="font-size:28px;font-weight:700;color:#0064CD;margin-bottom:8px">About AIRS</div>
+      <div style="font-size:14px;color:#5a7f9c">Adaptive Intelligent Reporting System</div>
+      <div style="font-size:12px;color:#0b7c72;margin-top:4px">USPTO Patent Pending 19/571,156 | DeBacco Nexus LLC</div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px">Your data is governed from birth</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">Every record, every field, every change — audited</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">AIRS does not store your data in a black box. Every record enters a governed envelope where changes are timestamped, authored, and receipted. The Inference Governance Module (IGM) watches every AI interaction — metering tokens, logging queries, and producing audit trails.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E8F4FD;color:#0C447C">Audit Trail</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E1F5EE;color:#085041">Token Budget</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3D7;color:#633806">Receipts</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px">NSI — What gaps will be audited</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">Negative Space Intelligence identifies what your schema cannot see</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">Most systems only analyze the data they have. AIRS also analyzes what is missing. NSI scans your schema structure and identifies fields, relationships, and data types that a domain expert would expect but that do not exist in your system. These gaps are surfaced, categorized by severity, and tracked.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E6F1FB;color:#0C447C">Structural Gaps</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FCEBEB;color:#791F1F">Cannot Capture</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E1F5EE;color:#085041">Can Capture</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px">GDI — What rules fire automatically</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">Governed Data Intelligence runs zero-token deterministic checks</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">Every time you view the dashboard or run analysis, GDI fires five governance rules: contact recency, pending aging, event preparedness, field completeness, and status distribution. These rules use zero AI tokens — they are deterministic, instantaneous, and produce auditable findings with evidence.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E1F5EE;color:#085041">5 Rules</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E8F4FD;color:#0C447C">Zero Tokens</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EEEDFE;color:#3C3489">Evidence Chips</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px">PGI — What predictions are possible</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">Predictive Governed Intelligence with confidence bounds</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">When you ask a question in Nexus Live, PGI provides governed predictions with confidence levels and human-approved action queues. Every prediction is bounded, receipted, and traceable. The system tells you what it thinks, how confident it is, and what data it used.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3D7;color:#633806">Predictions</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E8F4FD;color:#0C447C">Confidence</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FAECE7;color:#712B13">Receipted</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0b7c72;margin-bottom:8px">PII Protection — How AIRS secures your data</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">Every sensitive field is masked, logged, and access-controlled</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">Social Security Numbers are automatically masked (XXX-XX-XXXX). Every time a record containing PII is viewed, AIRS logs the access event with timestamp, user, and action type. Exports containing PII fields trigger governance alerts. The system protects people by making data access transparent and accountable.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E1F5EE;color:#085041">SSN Masked</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E8F4FD;color:#0C447C">Access Logged</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FCEBEB;color:#791F1F">Export Controls</span></div>
+    </div>
+    <div class="story-card">
+      <div style="font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px">Every action receipted</div>
+      <div style="font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px">The IGM formula: RQ = I(d) / P(s) + T(c)</div>
+      <div style="font-size:13px;color:#0d1f3c;line-height:1.7">The Responsiveness Quotient (RQ) measures how efficiently the system responds to your queries. Records scanned, tokens consumed, processing time — all captured in a single auditable receipt. This is not monitoring. This is accountability infrastructure.</div>
+      <div style="margin-top:12px"><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#FEF3D7;color:#633806">RQ Score</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#E1F5EE;color:#085041">Token Metering</span><span style="display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px;background:#EEEDFE;color:#3C3489">Audit Trail</span></div>
+    </div>
+  </div>
+</div>
 <div id="mode-nexuslive" style="display:none">
   <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="font-size:22px">&#127908;</span><span style="font-size:20px;font-weight:800;letter-spacing:.5px">NEXUS LIVE</span><span class="gov-badge">GOVERNED</span></div>
   <div style="color:var(--text2);font-size:13px;margin-bottom:18px">Governed live inference &mdash; speak or type. Every answer born with a receipt. USPTO 19/571,156</div>
@@ -739,7 +785,7 @@ async function renderViz(){
   } catch(e) { cv.innerHTML = '<div style="color:#ff8577;padding:20px">'+e.message+'</div>'; }
 }
 function showMode(mode){
-  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi","viz","nexuslive"].forEach(m=>{
+  ["home","dashboard","newrecord","records","rawnote","calendar","documents","datalog","gdi","viz","about","nexuslive"].forEach(m=>{
     const el=document.getElementById("mode-"+m);if(el)el.style.display=m===mode?"block":"none";
   });
   document.querySelectorAll(".nav-btn").forEach(b=>b.classList.toggle("active",b.dataset.mode===mode));
