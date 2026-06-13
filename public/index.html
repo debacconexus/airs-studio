@@ -183,7 +183,7 @@
   <style>
     .domain-row{background:#f7faff;border:1px solid rgba(2,136,209,.3);border-radius:12px;padding:16px;margin-bottom:16px}
     .domain-row-label{font-size:11px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:12px;text-transform:uppercase}
-    .domain-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+    .domain-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:12px}@media(max-width:900px){.domain-fields{grid-template-columns:repeat(2,1fr)}}
     .domain-field{display:flex;flex-direction:column}
     .domain-field-label{font-size:11px;font-weight:600;color:#5a7f9c;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
     .domain-field input{padding:8px 10px;border:1px solid rgba(2,136,209,.3);border-radius:6px;font-size:13px;font-family:inherit;color:#0d1f3c;background:#fff}
@@ -203,7 +203,7 @@
       <button class="remix-btn" onclick="populateExample('borrower','lending portfolio','loan officers, risk assessors, compliance teams','credit risk','loans approaching default, missing collateral docs, concentration risk','risk assessments, covenant compliance')">💰 Lending</button>
       <button class="remix-btn" onclick="populateExample('patient','multiple clinics','providers, care coordinators, clinical staff','treatment adherence','patients overdue for visits, missing outcomes, care gaps','clinical assessments, medication responses')">🏥 Healthcare</button>
     </div>
-    <div class="domain-fields">
+    <div class="domain-fields" style="grid-template-columns:repeat(4,1fr)">
       <div class="domain-field">
         <label class="domain-field-label">Entity Type</label>
         <input type="text" id="entity" placeholder="e.g., veteran participant" onchange="updatePrompt()">
@@ -222,7 +222,7 @@
   <!-- ROW 2: GOVERNANCE & INTELLIGENCE -->
   <div class="domain-row">
     <div class="domain-row-label">Row 2: Governance & Intelligence</div>
-    <div class="domain-fields">
+    <div class="domain-fields" style="grid-template-columns:repeat(4,1fr)">
       <div class="domain-field">
         <label class="domain-field-label">Track / Monitor</label>
         <input type="text" id="track" placeholder="e.g., hearing readiness" onchange="updatePrompt()">
@@ -244,7 +244,7 @@
     <div class="domain-row-label">Row 3: Intelligence Presentation (How Findings Are Spoken)</div>
     <div style="margin-bottom:12px">
       <div style="font-size:12px;color:#5a7f9c;margin-bottom:8px;font-weight:600">Chart Type (Audio Narration Strategy)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
         <button class="chart-btn" data-chart="ranked" onclick="selectChart('ranked',this)">📊 Ranked List<br><span style="font-size:10px;color:#5a7f9c">Numeric comparison</span></button>
         <button class="chart-btn" data-chart="proportion" onclick="selectChart('proportion',this)">🥧 Proportion<br><span style="font-size:10px;color:#5a7f9c">Percentages</span></button>
         <button class="chart-btn" data-chart="trend" onclick="selectChart('trend',this)">📈 Trend<br><span style="font-size:10px;color:#5a7f9c">Direction over time</span></button>
@@ -253,7 +253,7 @@
     </div>
     <div>
       <div style="font-size:12px;color:#5a7f9c;margin-bottom:8px;font-weight:600">Tone Mapping (Voice Strategy)</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
         <button class="tone-btn" data-tone="urgent" onclick="selectTone('urgent',this)" style="background:rgba(255,107,107,.2);color:#e25749">🔴 Urgent (Risk)<br><span style="font-size:10px">Sharp, high pitch</span></button>
         <button class="tone-btn" data-tone="neutral" onclick="selectTone('neutral',this)" style="background:rgba(37,99,168,.2);color:#2563a8">🔵 Neutral (Info)<br><span style="font-size:10px">Standard narration</span></button>
         <button class="tone-btn" data-tone="affirm" onclick="selectTone('affirm',this)" style="background:rgba(0,168,150,.2);color:#00a896">🟢 Affirm (Good)<br><span style="font-size:10px">Calm, affirming</span></button>
