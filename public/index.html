@@ -295,30 +295,7 @@
 
 
 
-  <div style="margin:40px 20px;text-align:center">
-    <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:24px">ADAPTIVE INTELLIGENT REPORTING SYSTEM — THREE TIERS OF GOVERNANCE</div>
-    <svg viewBox="0 0 620 400" style="max-width:620px;margin:0 auto;height:auto;display:block">
-      <!-- NSI Base - Dark blue background -->
-      <polygon points="80,320 310,380 540,320 440,180 180,180" fill="#5aa0ff" stroke="#2563a8" stroke-width="3"/>
-      <text x="310" y="300" text-anchor="middle" font-size="18" font-weight="bold" fill="#fff">NSI</text>
-      <text x="310" y="325" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">Negative Space Intelligence</text>
-      <text x="310" y="345" text-anchor="middle" font-size="12" fill="#e8f4ff">What the schema cannot see</text>
-      
-      <!-- GDI Middle - Dark teal background -->
-      <polygon points="140,180 310,90 480,180 420,100 200,100" fill="#33e0c4" stroke="#0d9488" stroke-width="3"/>
-      <text x="310" y="155" text-anchor="middle" font-size="18" font-weight="bold" fill="#0d1f3c">GDI</text>
-      <text x="310" y="178" text-anchor="middle" font-size="13" font-weight="600" fill="#0d1f3c">Governed Data Intelligence</text>
-      <text x="310" y="198" text-anchor="middle" font-size="12" fill="#0d1f3c">Zero-token rules, receipted</text>
-      
-      <!-- PGI Apex - Dark gold background -->
-      <polygon points="210,100 310,20 410,100 360,60 260,60" fill="#ffca58" stroke="#b97509" stroke-width="3"/>
-      <text x="310" y="75" text-anchor="middle" font-size="18" font-weight="bold" fill="#0d1f3c">PGI</text>
-      <text x="310" y="95" text-anchor="middle" font-size="13" font-weight="600" fill="#0d1f3c">Predictive Governed Intelligence</text>
-      
-      <!-- Patent marker -->
-      <text x="310" y="395" text-anchor="middle" font-size="12" fill="#2563a8" font-weight="700">USPTO 19/571,156 — RQ = I(d) / P(s) + T(c)</text>
-    </svg>
-  </div>
+  
 
 
 <!-- LIVE PROMPT ASSEMBLY -->
@@ -1002,6 +979,19 @@ function openNexus() {
       ctx.globalAlpha=p.on?(.9+.08*Math.sin(now*.003*p.sp+p.ph)):.55;
       ctx.fillStyle=p.c;
       ctx.fillRect(bx,by,p.sz,p.sz);
+    });
+    ctx.globalAlpha=1;
+    const tierLabels=[
+      {on:parts.some(p=>p.tier===0&&p.on),y:CY+180,text:'NSI — What the schema cannot see',color:'#5aa0ff'},
+      {on:parts.some(p=>p.tier===1&&p.on),y:CY+60,text:'GDI — Governed inference, receipted',color:'#33e0c4'},
+      {on:parts.some(p=>p.tier===2&&p.on),y:CY-60,text:'PGI — Predictive governed intelligence',color:'#ffca58'}
+    ];
+    tierLabels.forEach(tl=>{
+      if(tl.on){
+        ctx.font='600 13px Inter,sans-serif';ctx.fillStyle=tl.color;ctx.textAlign='center';
+        ctx.globalAlpha=.7+.2*Math.sin(now*.002);
+        ctx.fillText(tl.text,CX,tl.y);
+      }
     });
     ctx.globalAlpha=1;
     if(finaleT){const ft=now-finaleT;if(ft>800&&ft<3200){ctx.globalAlpha=Math.min(.8,(3200-ft)/800);ctx.font='11px monospace';ctx.fillStyle='rgb(255,212,120)';ctx.textAlign='center';ctx.fillText('RQ = I(d) / P(s) + T(c)',CX,cy+48);}}
