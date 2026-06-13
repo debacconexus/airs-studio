@@ -816,9 +816,18 @@ function showNexusResult(nexus) {
   // Populate pod suggestions
   const suggestions = nexus.pods_suggested || ['Dashboard window', 'Reporting room', 'Alert doorway', 'Custom infographic', 'Cross-agency doorway'];
   const podChips = document.getElementById('pod-suggestions');
+  const podList = document.getElementById('pod-list');
+  if (podList) podList.innerHTML = '';
   podChips.innerHTML = suggestions.map(s => {
-    const label = typeof s === 'object' ? (s.name || s.title || JSON.stringify(s)) : s;
-    return `<div class="pod-chip" onclick="document.getElementById('pod-input').value='${label}'">${label}</div>`;
+    if (typeof s === 'object') {
+      const name = s.pod_name || s.name || s.title || 'Pod';
+      const type = s.pod_type || 'window';
+      const desc = s.description || '';
+      const icons = {window:'🪟',room:'🏛',infographic:'📊',form:'📋',doorway:'🚪'};
+      if (podList) podList.innerHTML += '<div class="pod-item"><div class="pod-item-icon">'+(icons[type]||'⬟')+'</div><div><div class="pod-item-name">'+name+'</div><div class="pod-item-type">'+type+' · '+desc+'</div></div></div>';
+      return '<div class="pod-chip" onclick="document.getElementById('pod-input').value=''+desc+''">'+name+'</div>';
+    }
+    return '<div class="pod-chip" onclick="document.getElementById('pod-input').value=''+s+''">'+s+'</div>';
   }).join('');
 }
 
