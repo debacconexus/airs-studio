@@ -415,7 +415,7 @@
   <div class="progress-card" id="progress-card">
     <div class="gen-label">&#9672; AIRS Studio is building your Nexus...</div>
     <div id="birth-stage" style="position:relative;width:100vw;margin-left:calc(-50vw + 50%);height:80vh;background:radial-gradient(ellipse at 50% 38%,#13294a,#0a1628 78%);overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      <canvas id="birth-canvas" width="680" height="400" style="width:100%;height:auto;display:block"></canvas>
+      <canvas id="birth-canvas" width="680" height="400" style="width:100%;height:100%;display:block"></canvas>
       <div id="birth-name" aria-hidden="true" style="position:absolute;top:118px;left:0;right:0;text-align:center;font-size:20px;font-weight:700;letter-spacing:.04em;color:#eaf4ff;opacity:0;transition:opacity 1.8s ease"></div>
     </div>
     <div class="step-row" style="opacity:.7;font-size:12px;background:rgba(200,230,245,.3);padding:8px 12px;border-radius:8px;margin-bottom:4px"><div class="step-icon pending" id="step-1-icon">1</div><div class="step-text pending" id="step-1-text">IGM classifying domain and governance tier...</div></div>
@@ -991,9 +991,9 @@ function openNexus() {
 <script>
 // === BIRTH CINEMA — governance assembling itself (IGM USPTO 19/571,156) ===
 (function(){
-  const cv=document.getElementById('birth-canvas');if(!cv)return;
+  const cv=document.getElementById('birth-canvas');if(!cv)return;const rect=cv.getBoundingClientRect();cv.width=rect.width;cv.height=rect.height;
   const ctx=cv.getContext('2d');
-  const W=680,H=400,CX=W/2;
+  const W=cv.width,H=cv.height,CX=W/2;
   const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TIERS=[
     [262,344,118,212,'#5aa0ff',840],
