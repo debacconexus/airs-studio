@@ -1036,10 +1036,10 @@ if(!RUN)return;
 try{
 x.clearRect(0,0,W,H);
 var el=(now-T0)/1000;
-if(el>2.5&&!IG[0])ign(0);
-if(el>5.5&&!IG[1])ign(1);
-if(el>8.5&&!IG[2])ign(2);
-if(el>12&&!FT){FT=now;
+if(el>45&&!IG[0])ign(0);
+if(el>60&&!IG[1])ign(1);
+if(el>75&&!IG[2])ign(2);
+if(el>90&&!FT){FT=now;
 var bn=document.getElementById('birth-name');if(bn)bn.style.opacity='1';
 var bl=document.getElementById('birth-labels');if(bl)bl.style.opacity='1';}
 var s=24*(W/680),cy=95*(H/520),a2=now*.001,tl=.6155;
