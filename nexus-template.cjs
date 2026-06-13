@@ -195,9 +195,25 @@ function demoValue(label, i) {
   if (L.includes('DATE')) { const d = new Date(); d.setDate(d.getDate() - (i * 11 + 3)); return d.toISOString().slice(0, 10); }
   if (L.includes('PHONE')) return '(555) 010' + i;
   if (L.includes('EMAIL')) return 'demo' + (i + 1) + '@example.com';
-  if (L.includes('LOCATION') || L.includes('SITE') || L.includes('COURT') || L.includes('FACILITY')) return 'Demo Site ' + String.fromCharCode(65 + (i % 4));
-  if (L.includes('TEAM') || L.includes('ASSIGNED') || L.includes('WORKER') || L.includes('STAFF')) return 'Demo Staff ' + String.fromCharCode(65 + (i % 3));
-  return 'Sample ' + (label || 'Entry') + ' ' + (i + 1);
+  if (L.includes('LOCATION') || L.includes('SITE') || L.includes('COURT') || L.includes('FACILITY') || L.includes('REGION') || L.includes('BRANCH') || L.includes('OFFICE')) return ['Main Office','East Branch','West Campus','North Center','South Hub','Central HQ','Field Office','Remote Site'][i % 8];
+  if (L.includes('TEAM') || L.includes('ASSIGNED') || L.includes('WORKER') || L.includes('STAFF') || L.includes('OFFICER') || L.includes('MENTOR') || L.includes('PROVIDER') || L.includes('COUNSELOR') || L.includes('ADVOCATE') || L.includes('THERAPIST') || L.includes('COORDINATOR') || L.includes('MANAGER') || L.includes('ADVISOR') || L.includes('COACH')) return ['Maria Santos','David Chen','Lisa Thompson','James Wright','Ana Rodriguez','Kevin Park','Rachel Kim','Thomas Brown'][i % 8];
+  if (L.includes('STATUS') || L.includes('PHASE') || L.includes('STAGE') || L.includes('LEVEL') || L.includes('TIER')) return ['Active','In Progress','Under Review','Scheduled','Pending','Completed','Follow-up','Initial'][i % 8];
+  if (L.includes('TYPE') || L.includes('CATEGORY') || L.includes('CLASS') || L.includes('KIND')) return ['Standard','Premium','Priority','Routine','Specialized','General','Intensive','Basic'][i % 8];
+  if (L.includes('AMOUNT') || L.includes('COST') || L.includes('PRICE') || L.includes('FEE') || L.includes('BUDGET') || L.includes('BILLING') || L.includes('BALANCE')) return '$' + (500 + i * 375);
+  if (L.includes('SCORE') || L.includes('RATING') || L.includes('RISK')) return ['Low','Medium','Medium','High','Low','Medium','High','Low'][i % 8];
+  if (L.includes('SOURCE') || L.includes('CAMPAIGN') || L.includes('CHANNEL') || L.includes('REFERRAL')) return ['Website','Referral','LinkedIn','Conference','Email','Partner','Direct','Social Media'][i % 8];
+  if (L.includes('SERVICE') || L.includes('PROGRAM') || L.includes('TREATMENT') || L.includes('PLAN')) return ['Core Program','Advanced Track','Support Services','Outreach','Intensive','Maintenance','Evaluation','Transition'][i % 8];
+  if (L.includes('COMPANY') || L.includes('BUSINESS') || L.includes('ORGANIZATION') || L.includes('FIRM') || L.includes('AGENCY')) return ['Acme Corp','Beacon LLC','Crest Solutions','Delta Group','Elm Partners','Forge Inc','Globe Consulting','Haven Co'][i % 8];
+  if (L.includes('CONDITION') || L.includes('DIAGNOSIS') || L.includes('ISSUE') || L.includes('CONCERN')) return ['Primary','Secondary','Ongoing','Resolved','Monitoring','Acute','Chronic','Stable'][i % 8];
+  if (L.includes('COMPLIANCE') || L.includes('ADHERENCE')) return ['Compliant','Partial','Full','Non-compliant','Compliant','Under Review','Compliant','Pending'][i % 8];
+  if (L.includes('MILITARY') || L.includes('BRANCH OF') || L.includes('SERVICE BRANCH')) return ['Army','Marines','Navy','Air Force','Coast Guard','Army','Marines','Navy'][i % 8];
+  if (L.includes('SUBSTANCE') || L.includes('DRUG')) return ['Alcohol','Opioids','Stimulants','Cannabis','Multiple','Alcohol','Opioids','Benzodiazepines'][i % 8];
+  if (L.includes('TRADE') || L.includes('SKILL') || L.includes('SPECIALTY')) return ['Electrical','Plumbing','Carpentry','Welding','HVAC','Masonry','Automotive','IT Support'][i % 8];
+  if (L.includes('GRADE') || L.includes('YEAR') || L.includes('ENROLLMENT')) return ['Grade 9','Grade 10','Grade 11','Grade 12','Freshman','Sophomore','Junior','Senior'][i % 8];
+  if (L.includes('DIET') || L.includes('FOOD') || L.includes('NUTRITION')) return ['Standard','Vegetarian','Halal','Diabetic','Gluten-free','Standard','Kosher','Low-sodium'][i % 8];
+  if (L.includes('VEHICLE') || L.includes('FLEET')) return ['Van-101','Truck-205','Sedan-312','SUV-408','Van-117','Truck-223','Sedan-331','SUV-445'][i % 8];
+  if (L.includes('DISASTER') || L.includes('DAMAGE')) return ['Moderate','Severe','Minor','Major','Moderate','Minor','Severe','Destroyed'][i % 8];
+  return (label || 'Entry') + ' ' + String.fromCharCode(65 + (i % 8));
 }
 app.post('/api/demo/seed', async (req, res) => {
   try {
