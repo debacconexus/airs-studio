@@ -188,13 +188,26 @@ app.get('/api/health', (req, res) => {
 
 // --- AIRS Demo Sample Data (synthetic, no real PII) ---
 const DEMO_CAST = ['Alex Rivera','Jordan Lee','Sam Okafor','Taylor Nguyen','Morgan Castillo','Casey Brightwater','Riley Cohen','Devon Park'];
+const DEMO_PII = [
+  {ssn:'XXX-XX-4521',dob:'1988-03-14',addr:'1200 Oak Ave, Unit 4B',phone:'(555) 010-2341',email:'arivera@example.com'},
+  {ssn:'XXX-XX-7834',dob:'1992-07-22',addr:'340 Pine St, Apt 12',phone:'(555) 010-5567',email:'jlee@example.com'},
+  {ssn:'XXX-XX-2190',dob:'1985-11-05',addr:'78 Elm Dr',phone:'(555) 010-8823',email:'sokafor@example.com'},
+  {ssn:'XXX-XX-6643',dob:'1990-01-30',addr:'900 Maple Blvd, Suite 3',phone:'(555) 010-1102',email:'tnguyen@example.com'},
+  {ssn:'XXX-XX-9917',dob:'1987-09-18',addr:'455 Cedar Ln',phone:'(555) 010-3349',email:'mcastillo@example.com'},
+  {ssn:'XXX-XX-3256',dob:'1993-04-12',addr:'2100 Birch Way, Apt 7',phone:'(555) 010-6678',email:'cbrightwater@example.com'},
+  {ssn:'XXX-XX-8401',dob:'1991-12-08',addr:'67 Walnut Ct',phone:'(555) 010-9901',email:'rcohen@example.com'},
+  {ssn:'XXX-XX-5578',dob:'1989-06-25',addr:'1500 Spruce Ave, Unit 2',phone:'(555) 010-4456',email:'dpark@example.com'}
+];
 function demoValue(label, i) {
   const L = (label || '').toUpperCase();
   if (L.includes('NAME') && !L.includes('USERNAME')) return DEMO_CAST[i];
   if (L.includes('ID') || L.includes('#') || L.includes('CASE') || L.includes('NUMBER')) return 'DEMO-' + (1001 + i);
   if (L.includes('DATE')) { const d = new Date(); d.setDate(d.getDate() - (i * 11 + 3)); return d.toISOString().slice(0, 10); }
-  if (L.includes('PHONE')) return '(555) 010' + i;
-  if (L.includes('EMAIL')) return 'demo' + (i + 1) + '@example.com';
+  if (L.includes('PHONE')) return DEMO_PII[i].phone;
+  if (L.includes('SSN') || L.includes('SOCIAL')) return DEMO_PII[i].ssn;
+  if (L.includes('DOB') || L.includes('BIRTH')) return DEMO_PII[i].dob;
+  if (L.includes('ADDRESS') || L.includes('ADDR') || L.includes('STREET')) return DEMO_PII[i].addr;
+  if (L.includes('EMAIL')) return DEMO_PII[i].email;
   if (L.includes('LOCATION') || L.includes('SITE') || L.includes('COURT') || L.includes('FACILITY') || L.includes('REGION') || L.includes('BRANCH') || L.includes('OFFICE')) return ['Main Office','East Branch','West Campus','North Center','South Hub','Central HQ','Field Office','Remote Site'][i % 8];
   if (L.includes('TEAM') || L.includes('ASSIGNED') || L.includes('WORKER') || L.includes('STAFF') || L.includes('OFFICER') || L.includes('MENTOR') || L.includes('PROVIDER') || L.includes('COUNSELOR') || L.includes('ADVOCATE') || L.includes('THERAPIST') || L.includes('COORDINATOR') || L.includes('MANAGER') || L.includes('ADVISOR') || L.includes('COACH')) return ['Maria Santos','David Chen','Lisa Thompson','James Wright','Ana Rodriguez','Kevin Park','Rachel Kim','Thomas Brown'][i % 8];
   if (L.includes('STATUS') || L.includes('PHASE') || L.includes('STAGE') || L.includes('LEVEL') || L.includes('TIER')) return ['Active','In Progress','Under Review','Scheduled','Pending','Completed','Follow-up','Initial'][i % 8];

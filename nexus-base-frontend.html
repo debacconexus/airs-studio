@@ -86,6 +86,17 @@ body{font-family:'Inter',sans-serif;font-size:15px;background:var(--bg);color:va
 .chart-wrap{position:relative;height:180px}
 .table-wrap{overflow-x:auto;border-radius:8px;border:1px solid var(--border)}
 table{width:100%;border-collapse:collapse;font-size:13px}
+.pii-shield{position:relative;display:inline-block}
+.pii-shield::after{content:'IGM Protected';position:absolute;top:-8px;right:-6px;font-size:8px;background:#E1F5EE;color:#0b7c72;padding:1px 5px;border-radius:4px;font-weight:700;letter-spacing:.3px;pointer-events:none}
+.pii-masked{color:#0d1f3c;background:rgba(159,225,203,.15);padding:2px 6px;border-radius:4px;font-family:'IBM Plex Mono',monospace;font-size:12px;border:1px solid rgba(159,225,203,.3)}
+.access-log{font-size:10px;color:#5a7f9c;font-family:'IBM Plex Mono',monospace;margin-top:4px}
+.about-panel{padding:32px;max-width:800px;margin:0 auto}
+.story-card{background:#f7faff;border:1px solid rgba(2,136,209,.2);border-radius:12px;padding:24px;margin-bottom:16px;transition:all .3s}
+.story-card:hover{border-color:#0277bd;transform:translateY(-2px)}
+.story-title{font-size:16px;font-weight:700;color:#0064CD;margin-bottom:8px}
+.story-subtitle{font-size:12px;color:#5a7f9c;font-style:italic;margin-bottom:12px}
+.story-text{font-size:13px;color:#0d1f3c;line-height:1.7}
+.story-badge{display:inline-block;font-size:10px;padding:3px 8px;border-radius:4px;font-weight:700;margin-right:6px}
 thead tr{background:rgba(98,200,255,.06);border-bottom:1px solid var(--border2)}
 th{padding:12px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;white-space:nowrap}
 tbody tr{border-bottom:1px solid var(--border);transition:background .15s;cursor:pointer}
