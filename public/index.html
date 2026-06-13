@@ -435,15 +435,15 @@
 
   <div class="progress-card" id="progress-card">
     <div class="gen-label">&#9672; AIRS Studio is building your Nexus...</div>
-    <div id="birth-stage" style="position:relative;width:100vw;margin-left:calc(-50vw + 50%);height:100vh;background:#0a1628;overflow:hidden">
+    <div id="birth-stage" style="position:relative;width:100vw;margin-left:calc(-50vw + 50%);height:100vh;background:#0a1628;overflow:hidden;display:flex;justify-content:center"><div id="birth-inner" style="position:relative;width:100%;max-width:min(100vw, 177vh);height:100%">
       <canvas id="birth-canvas" width="680" height="400" style="width:100%;height:100%;display:block"></canvas>
       <div id="birth-name" aria-hidden="true" style="position:absolute;top:50px;left:0;right:0;text-align:center;font-size:22px;font-weight:500;letter-spacing:1px;color:#eaf4ff;opacity:0;transition:opacity 2s ease"></div><div id="birth-labels" style="position:absolute;bottom:12px;left:0;right:0;display:flex;justify-content:center;gap:16px;opacity:0;transition:opacity 1s"><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(90,160,255,.2);color:#85B7EB">NSI — What gaps will be audited</span><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(51,224,196,.2);color:#5DCAA5">GDI — What rules fire automatically</span><span style="font-size:11px;padding:5px 12px;border-radius:6px;background:rgba(255,202,88,.2);color:#FAC775">PGI — What predictions are possible</span></div>
-    </div>
-    <div class="step-row" style="opacity:.7;font-size:12px;background:rgba(200,230,245,.3);padding:8px 12px;border-radius:8px;margin-bottom:4px"><div class="step-icon pending" id="step-1-icon">1</div><div class="step-text pending" id="step-1-text">IGM classifying domain and governance tier...</div></div>
-    <div class="step-row"><div class="step-icon pending" id="step-2-icon">2</div><div class="step-text pending" id="step-2-text">Claude generating governed Nexus codebase...</div></div>
-    <div class="step-row"><div class="step-icon pending" id="step-3-icon">3</div><div class="step-text pending" id="step-3-text">Writing server, frontend, and database schema...</div></div>
-    <div class="step-row"><div class="step-icon pending" id="step-4-icon">4</div><div class="step-text pending" id="step-4-text">Provisioning Railway project and PostgreSQL database...</div></div>
-    <div class="step-row"><div class="step-icon pending" id="step-5-icon">5</div><div class="step-text pending" id="step-5-text">Deploying to Railway and activating IGM governance...</div></div>
+    </div></div>
+    <div class="step-row" style="opacity:.7;font-size:12px;background:rgba(200,230,245,.3);padding:8px 12px;border-radius:8px;margin-bottom:4px"><div class="step-icon pending" id="step-1-icon">1</div><div class="step-text pending" id="step-1-text">IGM classifying domain and governance tier...</div></div></div>
+    <div class="step-row"><div class="step-icon pending" id="step-2-icon">2</div><div class="step-text pending" id="step-2-text">Claude generating governed Nexus codebase...</div></div></div>
+    <div class="step-row"><div class="step-icon pending" id="step-3-icon">3</div><div class="step-text pending" id="step-3-text">Writing server, frontend, and database schema...</div></div></div>
+    <div class="step-row"><div class="step-icon pending" id="step-4-icon">4</div><div class="step-text pending" id="step-4-text">Provisioning Railway project and PostgreSQL database...</div></div></div>
+    <div class="step-row"><div class="step-icon pending" id="step-5-icon">5</div><div class="step-text pending" id="step-5-text">Deploying to Railway and activating IGM governance...</div></div></div>
     <div class="step-row"><div class="step-icon pending" id="step-6-icon">&#9733;</div><div class="step-text pending" id="step-6-text">Your Nexus is live &mdash; ready for Pod customization</div></div>
     <div class="live-meta-panel" id="live-meta-panel" style="display:none">
       <div class="live-meta-row"><span class="live-meta-label">Nexus Name</span><span class="live-meta-value" id="live-nexus_name">&mdash;</span></div>
@@ -1015,7 +1015,7 @@ function openNexus() {
 var cv=document.getElementById('birth-canvas');if(!cv)return;
 var x=cv.getContext('2d'),stage=document.getElementById('birth-stage');
 var W=680,H=520,CX=340,CY=280,SX=1,SY=1;
-function resize(){var r=stage.getBoundingClientRect();cv.width=r.width;cv.height=r.height;W=r.width;H=r.height;CX=W/2;CY=H*.54;SX=W/680;SY=H/520;}
+function resize(){var inner=document.getElementById('birth-inner');var r=(inner||stage).getBoundingClientRect();cv.width=r.width;cv.height=r.height;W=r.width;H=r.height;CX=W/2;CY=H*.54;SX=W/680;SY=H/520;}
 var TIERS=[[300,400,130,250,'#5aa0ff',992],[215,295,65,130,'#33e0c4',668],[140,210,10,60,'#ffca58',366]];
 var P=[],SW=[],T0=0,IG=[0,0,0],FT=0,RUN=false;
 function tp(t){var T=TIERS[t],f=Math.random(),y=(T[0]+(T[1]-T[0])*f)*(H/520),hw=(T[2]+(T[3]-T[2])*f)*(W/680);return[CX+(Math.random()*2-1)*hw,y];}
