@@ -996,9 +996,9 @@ function openNexus() {
   const W=cv.width,H=cv.height,CX=W/2;
   const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TIERS=[
-    [W*.385,W*.506,H*.295,H*.53,'#5aa0ff',992],
-    [W*.274,W*.374,H*.155,H*.28,'#33e0c4',668],
-    [W*.176,W*.262,H*.015,H*.14,'#ffca58',366]
+    [262,344,118,212,'#5aa0ff',992],
+    [186,254,62,112,'#33e0c4',668],
+    [120,178,6,56,'#ffca58',366]
   ];
   const parts=[];let running=false,finaleT=0,beat=0;
   function tierPoint(t){
@@ -1010,7 +1010,7 @@ function openNexus() {
     parts.length=0;
     TIERS.forEach((T,ti)=>{for(let i=0;i<T[5];i++){
       const tgt=tierPoint(ti);
-      parts.push({x:Math.random()*W,y:Math.random()*H,tx:tgt.x,ty:tgt.y,
+      parts.push({x:Math.random()*W,y:Math.random()*H,tx:tgt.x*(W/680),ty:tgt.y*(H/400),
         tier:ti,on:false,onAt:0,vx:0,vy:0,ph:Math.random()*6.283,sp:.5+Math.random(),
         sz:ti===2?3:2.2,c:T[4]});
     }});
