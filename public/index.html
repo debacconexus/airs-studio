@@ -271,8 +271,18 @@
   <script>
     let selectedChart='ranked';
     let selectedTone='neutral';
-    function selectChart(type,btn){event.preventDefault();selectedChart=type;document.querySelectorAll('.chart-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');updatePrompt();}
-    function selectTone(tone,btn){event.preventDefault();selectedTone=tone;document.querySelectorAll('.tone-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');updatePrompt();}
+    function selectChart(type, btn) {
+      selectedChart = type;
+      document.querySelectorAll('.chart-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setTimeout(() => updatePrompt(), 0);
+    }
+    function selectTone(tone, btn) {
+      selectedTone = tone;
+      document.querySelectorAll('.tone-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setTimeout(() => updatePrompt(), 0);
+    }
     document.addEventListener('DOMContentLoaded',function(){
       document.querySelector('[data-chart="ranked"]').classList.add('active');
       document.querySelector('[data-tone="neutral"]').classList.add('active');
