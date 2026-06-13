@@ -872,9 +872,9 @@ function showNexusResult(nexus) {
       const desc = s.description || '';
       const icons = {window:'🪟',room:'🏛',infographic:'📊',form:'📋',doorway:'🚪'};
       if (podList) podList.innerHTML += '<div class="pod-item"><div class="pod-item-icon">'+(icons[type]||'⬟')+'</div><div><div class="pod-item-name">'+name+'</div><div class="pod-item-type">'+type+' · '+desc+'</div></div></div>';
-      return '<div class="pod-chip" onclick="document.getElementById('pod-input').value=''+desc+''">'+name+'</div>';
+      return "<div class=\"pod-chip\" onclick=\"document.getElementById('pod-input').value='"+desc.replace(/'/g,"")+"'\">"+name+"</div>";
     }
-    return '<div class="pod-chip" onclick="document.getElementById('pod-input').value=''+s+''">'+s+'</div>';
+      return "<div class=\"pod-chip\" onclick=\"document.getElementById('pod-input').value='"+s.replace(/'/g,"")+"'\">"+s+"</div>";
   }).join('');
 }
 
