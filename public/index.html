@@ -176,7 +176,99 @@
 
 <div class="generator">
   <div class="gen-card">
-      <div style="margin:40px 0 20px;text-align:center">
+        <div style="margin:40px 0 20px;text-align:center">
+    <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:24px">✦ NATIVE GOVERNED GENERATION — BUILD YOUR DOMAIN STRUCTURE</div>
+  </div>
+
+  <style>
+    .domain-row{background:#f7faff;border:1px solid rgba(2,136,209,.3);border-radius:12px;padding:16px;margin-bottom:16px}
+    .domain-row-label{font-size:11px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:12px;text-transform:uppercase}
+    .domain-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:12px}
+    .domain-field{display:flex;flex-direction:column}
+    .domain-field-label{font-size:11px;font-weight:600;color:#5a7f9c;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+    .domain-field input{padding:8px 10px;border:1px solid rgba(2,136,209,.3);border-radius:6px;font-size:13px;font-family:inherit;color:#0d1f3c;background:#fff}
+    .domain-field input:focus{outline:none;border-color:#0277bd;background:#f0f9ff}
+    .remix-blocks{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+    .remix-btn{padding:6px 10px;font-size:11px;font-weight:600;border:1px solid rgba(2,136,209,.4);background:#f0f9ff;color:#0277bd;border-radius:6px;cursor:pointer;transition:all .2s}
+    .remix-btn:hover{background:#e8f4ff;border-color:#0277bd;transform:translateY(-1px)}
+    .remix-btn.active{background:#0277bd;color:#fff}
+    .prompt-preview{background:rgba(2,136,209,.06);border-left:3px solid #0277bd;padding:12px;border-radius:6px;font-size:12px;color:#0d1f3c;line-height:1.6;font-family:'IBM Plex Mono',monospace}
+  </style>
+
+  <!-- ROW 1: ENTITY & SCOPE -->
+  <div class="domain-row">
+    <div class="domain-row-label">Row 1: Entity & Scope</div>
+    <div class="remix-blocks">
+      <button class="remix-btn" onclick="populateExample('veteran participant','multiple courthouses','courts, treatment providers, peer mentors','hearing readiness','veterans without recent mentor contact, missing phase data','compliance observations, readiness assessments')">⚖️ Veterans Court</button>
+      <button class="remix-btn" onclick="populateExample('borrower','lending portfolio','loan officers, risk assessors, compliance teams','credit risk','loans approaching default, missing collateral docs, concentration risk','risk assessments, covenant compliance')">💰 Lending</button>
+      <button class="remix-btn" onclick="populateExample('patient','multiple clinics','providers, care coordinators, clinical staff','treatment adherence','patients overdue for visits, missing outcomes, care gaps','clinical assessments, medication responses')">🏥 Healthcare</button>
+    </div>
+    <div class="domain-fields">
+      <div class="domain-field">
+        <label class="domain-field-label">Entity Type</label>
+        <input type="text" id="entity" placeholder="e.g., veteran participant" onchange="updatePrompt()">
+      </div>
+      <div class="domain-field">
+        <label class="domain-field-label">Scope / Jurisdiction</label>
+        <input type="text" id="scope" placeholder="e.g., multiple courthouses" onchange="updatePrompt()">
+      </div>
+      <div class="domain-field">
+        <label class="domain-field-label">Stakeholders</label>
+        <input type="text" id="stakeholders" placeholder="e.g., courts, providers, mentors" onchange="updatePrompt()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: GOVERNANCE & INTELLIGENCE -->
+  <div class="domain-row">
+    <div class="domain-row-label">Row 2: Governance & Intelligence</div>
+    <div class="domain-fields">
+      <div class="domain-field">
+        <label class="domain-field-label">Track / Monitor</label>
+        <input type="text" id="track" placeholder="e.g., hearing readiness" onchange="updatePrompt()">
+      </div>
+      <div class="domain-field">
+        <label class="domain-field-label">System Must Reveal</label>
+        <input type="text" id="reveal" placeholder="e.g., gaps in data, at-risk groups" onchange="updatePrompt()">
+      </div>
+      <div class="domain-field">
+        <label class="domain-field-label">Governed Notes Capture</label>
+        <input type="text" id="notes" placeholder="e.g., compliance, readiness assessments" onchange="updatePrompt()">
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE PROMPT ASSEMBLY -->
+  <div style="margin-bottom:16px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:8px">YOUR DOMAIN PROMPT</div>
+    <div class="prompt-preview" id="prompt-display">Click an example or fill the fields above to assemble your prompt...</div>
+  </div>
+
+  <script>
+    function populateExample(ent,sco,stak,tra,rev,not){
+      document.getElementById('entity').value=ent;
+      document.getElementById('scope').value=sco;
+      document.getElementById('stakeholders').value=stak;
+      document.getElementById('track').value=tra;
+      document.getElementById('reveal').value=rev;
+      document.getElementById('notes').value=not;
+      updatePrompt();
+    }
+    function updatePrompt(){
+      const e=document.getElementById('entity').value;
+      const sc=document.getElementById('scope').value;
+      const st=document.getElementById('stakeholders').value;
+      const t=document.getElementById('track').value;
+      const r=document.getElementById('reveal').value;
+      const n=document.getElementById('notes').value;
+      if(e && sc && st && t && r && n){
+        const prompt=`${e.charAt(0).toUpperCase()+e.slice(1)} coordination across ${sc}. Each ${e} record tracks key attributes relevant to the domain, assigned stakeholder or ${st.split(',')[0]}, status, and timeline. Governed notes capture ${n}. The system must reveal ${r} and identify patterns across ${sc}.`;
+        document.getElementById('prompt-display').textContent=prompt;
+        document.getElementById('prompt-input').value=prompt;
+      }
+    }
+  </script>
+
     <div style="font-size:13px;font-weight:700;letter-spacing:.08em;color:#2563a8;margin-bottom:20px">✦ START WITH AN EXAMPLE OR PREFIX</div>
   </div>
   <div style="display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-bottom:24px">
