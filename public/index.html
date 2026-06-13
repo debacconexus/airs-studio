@@ -940,9 +940,9 @@ function openNexus() {
   const W=680,H=400,CX=W/2;
   const reduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const TIERS=[
-    [262,344,118,212,'#5aa0ff',420],
-    [186,254,62,112,'#33e0c4',280],
-    [120,178,6,56,'#ffca58',160]
+    [262,344,118,212,'#5aa0ff',840],
+    [186,254,62,112,'#33e0c4',560],
+    [120,178,6,56,'#ffca58',320]
   ];
   const parts=[];let running=false,finaleT=0,beat=0;
   function tierPoint(t){
@@ -956,7 +956,7 @@ function openNexus() {
       const tgt=tierPoint(ti);
       parts.push({x:Math.random()*W,y:Math.random()*H,tx:tgt.x,ty:tgt.y,
         tier:ti,on:false,onAt:0,vx:0,vy:0,ph:Math.random()*6.283,sp:.5+Math.random(),
-        sz:ti===2?1.6:1.2,c:T[4]});
+        sz:ti===2?2.2:1.6,c:T[4]});
     }});
   }
   function ignite(t){const now=performance.now();parts.forEach(p=>{if(p.tier===t&&!p.on){p.on=true;p.onAt=now+Math.random()*900;}});}
@@ -966,7 +966,7 @@ function openNexus() {
       let x1=x*Math.cos(a)-z*Math.sin(a),z1=x*Math.sin(a)+z*Math.cos(a);
       let y1=y*Math.cos(tilt)-z1*Math.sin(tilt);
       V.push([CX+x1,cy+y1]);}
-    ctx.strokeStyle='rgba(255,212,120,'+(.55+.25*Math.sin(now*.002))+')';ctx.lineWidth=1.2;
+    if(finaleT){const ft=Math.min(1,(now-finaleT)/1500);ctx.strokeStyle='rgba(255,202,88,1)';ctx.lineWidth=2+ft*3;ctx.fillStyle='rgba(255,202,88,'+ft*.6+')';ctx.shadowBlur=ft*30;ctx.shadowColor='rgba(255,202,88,.8)';}else{ctx.strokeStyle='rgba(255,212,120,'+(.55+.25*Math.sin(now*.002))+')';ctx.lineWidth=1.2;ctx.fillStyle='transparent';ctx.shadowBlur=0;}
     const E=[[0,1],[0,2],[1,3],[2,3],[4,5],[4,6],[5,7],[6,7],[0,4],[1,5],[2,6],[3,7]];
     ctx.beginPath();E.forEach(e=>{ctx.moveTo(V[e[0]][0],V[e[0]][1]);ctx.lineTo(V[e[1]][0],V[e[1]][1]);});ctx.stroke();
   }
@@ -990,7 +990,7 @@ function openNexus() {
         p.y+=Math.cos(now*.0005*p.sp+p.ph)*.5+(232-p.y)*.0006;
       }
       const bx=CX+(p.x-CX)*(1-beat),by=230+(p.y-230)*(1-beat);
-      ctx.globalAlpha=p.on?(.85+.12*Math.sin(now*.003*p.sp+p.ph)):.5;
+      ctx.globalAlpha=p.on?(.9+.08*Math.sin(now*.003*p.sp+p.ph)):.55;
       ctx.fillStyle=p.c;
       ctx.fillRect(bx,by,p.sz,p.sz);
     });
